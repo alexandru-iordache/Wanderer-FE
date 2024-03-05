@@ -1,0 +1,9 @@
+<div class="sign-in-container">
+    <div *ngIf="isLogin; else registerContainer" class="form-container">
+        <h1 class="generic-heading">Log in</h1>
+    </div>
+</div>
+
+<ng-template #registerContainer>
+    <h1 class="generic-heading">Sign up</h1>
+</ng-template>

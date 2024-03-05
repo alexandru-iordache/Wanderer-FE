@@ -1,0 +1,45 @@
+@import '../../../styles.scss';
+
+nav {
+    background-color: rgba(255, 253, 243, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 84px;
+    border-bottom: 1px solid $secondary-color;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1;
+}
+
+h1 {
+    color: $secondary-color;
+}
+
+.navigation-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.navigation-button {
+    background-color: transparent;
+    border: none;
+    margin-left: 10px;
+    color: $secondary-color;
+}
+
+.sign-in-button {
+    @extend .navigation-button;
+    background-color: $secondary-color;
+    color: $primary-color;
+}
+
+.navigation-button:hover {
+    z-index: 1;
+    font-weight: 600;
+    transition: all 0.5s;
+}
