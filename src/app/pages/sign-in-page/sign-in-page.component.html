@@ -1,31 +1,9 @@
-<div class="sign-in-page-container" *ngIf="isLogin; else registerContainer">
-    <div class="form-container">
-        <h1>Log in</h1>
-        <p>Don't have an account? <a>Sign up instead</a></p>
-        <button class="external-login-button">Continue with Google</button>
-        <button class="external-login-button">Continue with Facebook</button>
-        <div class="line"></div>
-        <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()" class="form-container">
-            <div class="form-row-container">
-                <label class="form-label">Email address:</label>
-                <input type="input" formControlName="email">
-            </div>
-            <div class="form-row-container">
-
-            </div>
-        </form>
-    </div>
-    <div class="illustration-container">
-        salut
+<div class="sign-in-container">
+    <div *ngIf="isLogin; else registerContainer" class="form-container">
+        <h1 class="generic-heading">Log in</h1>
     </div>
 </div>
 
 <ng-template #registerContainer>
-    <div class="sign-in-page-container">
-        <div class="form-container">
-            <h1>Sign up</h1>
-        </div>
-        <div class="illustration-container">
-        </div>
-    </div>
+    <h1 class="generic-heading">Sign up</h1>
 </ng-template>
