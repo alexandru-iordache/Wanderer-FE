@@ -3,7 +3,7 @@
 $primary-color: #FFFDF3;
 $secondary-color: #283618;
 
-$heading-font: 'Montserrat', sans-serif; 
+$heading-font: 'Montserrat', sans-serif;
 
 // Generic Classes
 
@@ -11,7 +11,6 @@ $heading-font: 'Montserrat', sans-serif;
     font-family: $heading-font;
     font-weight: 400;
     font-size: 30px;
-    text-transform: uppercase;
 }
 
 .generic-button {
@@ -21,13 +20,19 @@ $heading-font: 'Montserrat', sans-serif;
     padding: 10px;
 }
 
+html {
+    width: auto;
+}
+
 body {
     margin: 0;
     padding: 0;
+    width: 100%;
     background-color: $primary-color;
 }
 
 * {
     margin: 0px;
     padding: 0px;
+    box-sizing: border-box;
 }

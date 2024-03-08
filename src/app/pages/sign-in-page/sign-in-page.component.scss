@@ -1,8 +1,60 @@
 @import '../../../styles.scss';
 
-.sign-in-container {
+.sign-in-page-container {
     margin-top: 100px;
     background-color: transparent;
+    width: 100%;
+    padding: 10px;
+    display: flex;
     flex-direction: row;
-    top: 84px;
+    justify-content: space-between;
+}
+
+.illustration-container {
+    width: 50%;
+    height: 10px;
+    border: 2px solid $secondary-color;
+}
+
+.form-container {
+    padding: 20px;
+    padding-top: 50px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid $secondary-color;
+}
+
+h1 {
+    @extend  .generic-heading;
+
+    color: $secondary-color;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+p {
+    font-family: $heading-font;
+    margin-bottom: 20px;
+}
+
+.external-login-button {
+    width: 300px;
+    height: 40px;
+    background-color: #FFFFFF;
+    border: 1px solid $secondary-color;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    font-family: $heading-font;
+}
+
+.line {
+    height: 1px;
+    border-radius: 30px;
+    width: 50%;
+    background-color: $secondary-color;
+    margin: 10px 0;
+    display: flex;
 }
