@@ -7,13 +7,15 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { SignInPageComponent } from './pages/sign-in-page/sign-in-page.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SvgComponent } from './shared/svg/svg.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     HomePageComponent,
-    SignInPageComponent
+    SignInPageComponent,
+    SvgComponent
   ],
   imports: [
     BrowserModule,

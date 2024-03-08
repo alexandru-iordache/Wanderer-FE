@@ -32,4 +32,8 @@ export class SignInPageComponent implements OnInit {
   onLoginSubmit(): void {
 
   }
+
+  setIsLogin(): void {
+    this.isLogin = !this.isLogin;
+  }
 }

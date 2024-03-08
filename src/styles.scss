@@ -3,18 +3,18 @@
 $primary-color: #FFFDF3;
 $secondary-color: #283618;
 
-$heading-font: 'Montserrat', sans-serif;
+$primary-font: 'Montserrat', sans-serif;
 
 // Generic Classes
 
 .generic-heading {
-    font-family: $heading-font;
+    font-family: $primary-font;
     font-weight: 400;
     font-size: 30px;
 }
 
 .generic-button {
-    font-family: $heading-font;
+    font-family: $primary-font;
     font-weight: 500;
     font-size: 15px;
     padding: 10px;

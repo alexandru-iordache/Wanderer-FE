@@ -13,48 +13,109 @@
 .illustration-container {
     width: 50%;
     height: 10px;
-    border: 2px solid $secondary-color;
 }
 
 .form-container {
     padding: 20px;
-    padding-top: 50px;
+    margin: 100px 0;
     width: 50%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    border: 2px solid $secondary-color;
 }
 
 h1 {
-    @extend  .generic-heading;
+    @extend .generic-heading;
 
     color: $secondary-color;
     font-weight: 600;
     margin-bottom: 30px;
 }
 
-p {
-    font-family: $heading-font;
-    margin-bottom: 20px;
-}
-
 .external-login-button {
-    width: 300px;
+    width: 40%;
     height: 40px;
-    background-color: #FFFFFF;
+    margin-bottom: 10px;
     border: 1px solid $secondary-color;
     border-radius: 20px;
-    margin-bottom: 10px;
-    font-family: $heading-font;
+    font-family: $primary-font;
+    font-weight: 600;
+    background-color: #FFFFFF;
+    cursor: pointer;
 }
 
 .line {
-    height: 1px;
-    border-radius: 30px;
     width: 50%;
-    background-color: $secondary-color;
+    height: 1px;
     margin: 10px 0;
+    border-radius: 30px;
+    background-color: $secondary-color;
+}
+
+.form-section {
+    width: 40%;
+    margin-top: 20px;
     display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.form-section>* {
+    margin-bottom: 10px;
+}
+
+.form-row-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    font-family: $primary-font;
+    font-size: 12px;
+    font-weight: 600;
+    color: $secondary-color;
+}
+
+input {
+    width: 100%;
+    height: 30px;
+    border: 1px solid $secondary-color;
+    border-radius: 10px;
+    background-color: $primary-color;
+}
+
+input::placeholder {
+    text-align: center;
+    font-family: $primary-font;
+    font-size: 90%;
+    color: $secondary-color;
+}
+
+.forget-password-section {
+    margin-top: 5px;
+    text-align: end;
+    font-family: $primary-font;
+    font-size: 80%;
+    font-weight: 500;
+    color: $secondary-color;
+}
+
+.submit-button {
+    @extend .external-login-button;
+
+    width: 100%;
+    margin-top: 10px;
+    color: #FFFFFF;
+    background-color: $secondary-color;
+}
+
+.alternative-text {
+    font-family: $primary-font;
+}
+
+.alternative-text>a {
+    color: $secondary-color;
 }
