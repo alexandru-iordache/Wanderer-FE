@@ -1,121 +1,220 @@
-@import '../../../styles.scss';
+@import "../../../styles.scss";
 
 .sign-in-page-container {
-    margin-top: 100px;
-    background-color: transparent;
-    width: 100%;
-    padding: 10px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  width: 100%;
+  height: calc(100vh - 84px);
+  margin-top: 84px;
+  padding: 10px;
+  background-color: transparent;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .illustration-container {
-    width: 50%;
-    height: 10px;
+  width: 50%;
+  height: 75%;
+  min-height: 500px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
+  &#login-illustration {
+    background-image: url("../../../assets/illustrations/login-illustration.svg");
+  }
+
+  &#register-illustration {
+    background-image: url("../../../assets/illustrations/register-illustration.svg");
+  }
+
+  @media (max-width: 1024px) {
+    width: 0%;
+  }
 }
 
 .form-container {
-    padding: 20px;
-    margin: 100px 0;
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+  padding: 20px;
+  padding-bottom: 0px;
+  margin-bottom: 50px;
+  width: 50%;
+  min-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (max-width: 1024px) {
+    width: 100%;
+  }
 }
 
 h1 {
-    @extend .generic-heading;
+  @extend .generic-heading;
 
-    color: $secondary-color;
-    font-weight: 600;
-    margin-bottom: 30px;
+  color: $secondary-color;
+  font-weight: 500;
+  margin-bottom: 30px;
+}
+
+.button {
+  border: 1px solid $secondary-color;
+  border-radius: 20px;
+  height: 40px;
+  font-family: $primary-font;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .external-login-button {
-    width: 40%;
-    height: 40px;
-    margin-bottom: 10px;
-    border: 1px solid $secondary-color;
-    border-radius: 20px;
-    font-family: $primary-font;
-    font-weight: 600;
-    background-color: #FFFFFF;
-    cursor: pointer;
+  @extend .button;
+
+  width: 40%;
+  margin-bottom: 10px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.icon {
+  width: 7%;
+  height: 70%;
+  margin-left: 15%;
+  margin-right: 10%;
+  background-repeat: no-repeat;
+  background-size: contain;
+
+  &#google-icon {
+    background-image: url("../../../assets/icons/google-icon.svg");
+  }
+
+  &#facebook-icon {
+    background-image: url("../../../assets/icons/facebook-icon.svg");
+  }
 }
 
 .line {
-    width: 50%;
-    height: 1px;
-    margin: 10px 0;
-    border-radius: 30px;
-    background-color: $secondary-color;
+  width: 50%;
+  height: 1px;
+  margin: 10px 0;
+  border-radius: 30px;
+  background-color: $secondary-color;
 }
 
 .form-section {
-    width: 40%;
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-.form-section>* {
-    margin-bottom: 10px;
+  width: 40%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .form-row-section {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
+  width: 100%;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.date-picker {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 
 label {
-    margin-bottom: 5px;
-    font-family: $primary-font;
-    font-size: 12px;
-    font-weight: 600;
-    color: $secondary-color;
+  margin-bottom: 5px;
+  font-family: $primary-font;
+  font-size: 12px;
+  font-weight: 600;
+  color: $secondary-color;
 }
 
 input {
-    width: 100%;
-    height: 30px;
-    border: 1px solid $secondary-color;
-    border-radius: 10px;
-    background-color: $primary-color;
+  width: 100%;
+  height: 40px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: 1px solid $secondary-color;
+  border-radius: 10px;
+  background-color: $primary-color;
+  font-family: $primary-font;
+  font-weight: 500;
+  color: $secondary-color;
+}
+
+select {
+  min-width: 100px;
+  height: 30px;
+  border: 1px solid $secondary-color;
+  border-radius: 10px;
+  background-color: $primary-color;
+  text-align: center;
+  font-family: $primary-font;
+  font-size: 90%;
+  color: $secondary-color;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 input::placeholder {
-    text-align: center;
-    font-family: $primary-font;
-    font-size: 90%;
-    color: $secondary-color;
+  text-align: center;
+  font-family: $primary-font;
+  font-size: 90%;
+  color: $secondary-color;
 }
 
 .forget-password-section {
-    margin-top: 5px;
-    text-align: end;
-    font-family: $primary-font;
-    font-size: 80%;
-    font-weight: 500;
-    color: $secondary-color;
+  margin-top: 5px;
+  text-align: end;
+  font-family: $primary-font;
+  font-size: 80%;
+  font-weight: 500;
+  color: $secondary-color;
 }
 
 .submit-button {
-    @extend .external-login-button;
+  @extend .button;
 
-    width: 100%;
-    margin-top: 10px;
-    color: #FFFFFF;
-    background-color: $secondary-color;
+  width: 100%;
+  margin-top: 40px;
+  color: #ffffff;
+  background-color: $secondary-color;
 }
 
 .alternative-text {
-    font-family: $primary-font;
+  margin-top: 20px;
+  font-family: $primary-font;
 }
 
-.alternative-text>a {
-    color: $secondary-color;
+.form-section > .alternative-text {
+    font-size: 14px;
+}
+
+.alternative-text > span {
+  color: $secondary-color;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.text-danger {
+    margin-top: 5px;
+    font-family: $primary-font;
+    font-size: 12px;
+    font-weight: 500;
+    color: red;
 }

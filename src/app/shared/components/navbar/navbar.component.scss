@@ -1,4 +1,4 @@
-@import '../../../styles.scss';
+@import '../../../../styles.scss';
 
 nav {
     background-color: rgba(255, 253, 243, 0.7);
@@ -8,11 +8,11 @@ nav {
     width: 100vw;
     height: 84px;
     border-bottom: 1px solid $secondary-color;
+    z-index: 1;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    z-index: 1;
 }
 
 h1 {

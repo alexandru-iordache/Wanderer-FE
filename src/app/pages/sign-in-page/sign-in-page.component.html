@@ -1,28 +1,38 @@
 <div class="sign-in-page-container" *ngIf="isLogin; else registerContainer">
     <div class="form-container">
         <h1>Log in</h1>
-        
-        <div class="external-login-button"><app-svg filePath="@assets/icons/google-icon.svg"  [width]="50" [height]=50></app-svg>Continue with Google</div>
-        <div class="external-login-button">Continue with Facebook</div>
+
+        <div class="external-login-button">
+            <div class="icon" id="google-icon"></div><span>Continue with Google</span>
+        </div>
+        <div class="external-login-button">
+            <div class="icon" id="facebook-icon"></div><span>Continue with Facebook</span>
+        </div>
         <div class="line"></div>
-        <form  class="form-section" [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
+        <form class="form-section" [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
             <div class="form-row-section">
                 <label class="form-label">Email address</label>
                 <input type="input" formControlName="email" placeholder="Enter your email address">
+                <small *ngIf="loginForm.get('email')?.invalid 
+                        && loginForm.get('email')?.touched" class="text-danger">
+                    Email is required!
+                </small>
             </div>
             <div class="form-row-section">
                 <label class="form-label">Password</label>
-                <input type="password" formControlName="password"  placeholder="Enter your password">
-               
+                <input type="password" formControlName="password" placeholder="Enter your password">
+                <small *ngIf="loginForm.get('password')?.invalid 
+                        && loginForm.get('password')?.touched" class="text-danger">
+                    Password is required!
+                </small>
             </div>
-            <a href="" class="forget-password-section">Forget your password</a>
-            <!-- Add checkbox remember me-->
+            <a href="" class="forget-password-section">Forgot your password</a>
+            <!-- IMPORTANT: Add checkbox remember me-->
             <button type="submit" class="submit-button">Log in</button>
         </form>
-        <p class="alternative-text">Don't have an account? <a href="" (click)="setIsLogin()">Sign up instead</a></p>
+        <p class="alternative-text">Don't have an account? <span (click)="setIsLogin()">Sign up instead</span></p>
     </div>
-    <div class="illustration-container">
-        salut
+    <div class="illustration-container" id="login-illustration">
     </div>
 </div>
 
@@ -30,8 +40,70 @@
     <div class="sign-in-page-container">
         <div class="form-container">
             <h1>Sign up</h1>
+            <form class="form-section" [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
+                <div class="form-row-section">
+                    <label class="form-label">Profile name</label>
+                    <input type="input" formControlName="profileName" placeholder="Enter your profile name">
+                    <small *ngIf="registerForm.get('profileName')?.invalid 
+                        && registerForm.get('profileName')?.touched" class="text-danger">
+                        Profile name is required!
+                    </small>
+                </div>
+                <div class="form-row-section">
+                    <label class="form-label">Email</label>
+                    <input type="input" formControlName="email" placeholder="Enter your email">
+                    <small *ngIf="registerForm.get('email')?.invalid 
+                        && registerForm.get('email')?.touched" class="text-danger">
+                        Email is required!
+                    </small>
+                </div>
+                <div class="form-row-section">
+                    <label class="form-label">Password</label>
+                    <input type="password" formControlName="password" placeholder="Enter your password">
+                    <small *ngIf="(registerForm.get('password')?.invalid 
+                        && registerForm.get('password')?.touched)" class="text-danger">
+                        The password should have at least 8 characters, and should contain a digit, one lowercase letter, 
+                        one uppercase letter and a special character.
+                    </small>
+                </div>
+                <div class="form-row-section">
+                    <label class="form-label">Confirm password</label>
+                    <input type="password" formControlName="confirmPassword" placeholder="Confirm your password">
+                    <small *ngIf="(registerForm.get('confirmPassword')?.invalid 
+                        && registerForm.get('confirmPassword')?.touched)" class="text-danger">
+                        The passwords should match.
+                    </small>
+                </div>
+                <div class="form-row-section">
+                    <!-- IMPORTANT: This should be the custom date picker. Until we learn how to do it 
+                        we wil use a normal one. Or matbe Angular Material date picker.-->
+                    <label class="form-label">Birthdate</label>
+                    <!-- <div class="date-picker">
+                        <select class="dropdown">
+                            <option value="0">Day</option>
+                        </select>
+                        <select class="dropdown">
+                            <option value="0">Month</option>
+                        </select>
+                        <select class="dropdown">
+                            <option value="0">Year</option>
+                        </select>
+                    </div> -->
+                    <input type="date" formControlName="birthDate" placeholder="Select your Birthdate">
+                    <small *ngIf="(registerForm.get('birthDate')?.invalid 
+                        && registerForm.get('birthDate')?.touched)" class="text-danger">
+                        You should be at least 18 years old.
+                    </small>
+                </div>
+                <p class="alternative-text">By creating an account, you agree to the <span>Terms of use</span> and
+                    <span>Privacy Policy</span>.
+                </p>
+                <!-- IMPORTANT: Add Captcha -->
+                <button type="submit" class="submit-button">Sign up</button>
+            </form>
+            <p class="alternative-text">Already have an account? <span (click)="setIsLogin()">Log in</span></p>
         </div>
-        <div class="illustration-container">
+        <div class="illustration-container" id="register-illustration">
         </div>
     </div>
 </ng-template>
