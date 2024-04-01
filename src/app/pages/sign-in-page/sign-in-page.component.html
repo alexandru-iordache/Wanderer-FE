@@ -2,11 +2,11 @@
     <div class="form-container">
         <h1>Log in</h1>
 
-        <div class="external-login-button">
+        <div class="external-login-button" (click)="signInWithGoogle()">
             <div class="icon" id="google-icon"></div><span>Continue with Google</span>
         </div>
         <div class="external-login-button">
-            <div class="icon" id="facebook-icon"></div><span>Continue with Facebook</span>
+            <div class="icon" id="facebook-icon" ></div><span>Continue with Facebook</span>
         </div>
         <div class="line"></div>
         <form class="form-section" [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
@@ -27,7 +27,11 @@
                 </small>
             </div>
             <a href="" class="forget-password-section">Forgot your password</a>
-            <!-- IMPORTANT: Add checkbox remember me-->
+            <div class="form-row-section" id="remember-me-section">
+                <input type="checkbox" formControlName="rememberMe" class="checkbox">
+                <label class="form-label" id="remember-me-label">Remember Me</label>
+            </div>
+            <!-- IMPORTANT: Change checkbox color when ticked-->
             <button type="submit" class="submit-button">Log in</button>
         </form>
         <p class="alternative-text">Don't have an account? <span (click)="setIsLogin()">Sign up instead</span></p>

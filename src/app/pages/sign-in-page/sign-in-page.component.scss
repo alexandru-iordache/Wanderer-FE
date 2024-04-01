@@ -117,6 +117,11 @@ h1 {
   margin-bottom: 10px;
   display: flex;
   flex-direction: column;
+
+  &#remember-me-section {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 
 .date-picker {
@@ -131,6 +136,10 @@ label {
   font-size: 12px;
   font-weight: 600;
   color: $secondary-color;
+
+  &#remember-me-label {
+    margin-bottom: 0px;
+  }
 }
 
 input {
@@ -177,6 +186,11 @@ input::placeholder {
   color: $secondary-color;
 }
 
+.checkbox {
+  width: 15px;
+  margin-right: 10px;
+}
+
 .forget-password-section {
   margin-top: 5px;
   text-align: end;
@@ -190,8 +204,8 @@ input::placeholder {
   @extend .button;
 
   width: 100%;
-  margin-top: 40px;
-  color: #ffffff;
+  margin-top: 10px;
+  color: #ffffff; 
   background-color: $secondary-color;
 }
 
@@ -201,7 +215,7 @@ input::placeholder {
 }
 
 .form-section > .alternative-text {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .alternative-text > span {
@@ -212,9 +226,9 @@ input::placeholder {
 }
 
 .text-danger {
-    margin-top: 5px;
-    font-family: $primary-font;
-    font-size: 12px;
-    font-weight: 500;
-    color: red;
+  margin-top: 5px;
+  font-family: $primary-font;
+  font-size: 12px;
+  font-weight: 500;
+  color: red;
 }

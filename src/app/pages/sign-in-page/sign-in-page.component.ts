@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { confirmPasswordValidator, minimumAgeValidator, passwordValidator } from '../../shared/helpers/validators';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-in-page',
@@ -13,13 +15,14 @@ export class SignInPageComponent implements OnInit {
   loginForm: FormGroup = new FormGroup({});
   registerForm: FormGroup = new FormGroup({});
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) {
   }
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
+      rememberMe: [false]
     });
 
     this.registerForm = this.formBuilder.group({
@@ -31,12 +34,48 @@ export class SignInPageComponent implements OnInit {
     }, { validators: confirmPasswordValidator() });
   }
 
-  onLoginSubmit(): void {
+  async onLoginSubmit() {
+    if (this.loginForm.valid) {
+      const email = this.loginForm.get('email')?.value;
+      const password = this.loginForm.get('password')?.value;
 
+      try {
+        const rememberMe = this.loginForm.get('rememberMe')?.value;
+        this.authService.setPersistence(rememberMe);
+        await this.authService.signIn(email, password);
+        this.router.navigate(['/dashboard']);
+      } catch (error) {
+        // IMPORTANT: Add error handling
+        console.log('failed');
+        this.router.navigate(['/']);
+      }
+    }
   }
 
-  onRegisterSubmit(): void {
+  async onRegisterSubmit() {
+    if (this.registerForm.valid) {
+      const email = this.registerForm.get('email')?.value;
+      const password = this.registerForm.get('password')?.value;
 
+      try {
+        await this.authService.signUp(email, password);
+        this.router.navigate(['/dashboard']);
+      }
+      catch (error) {
+        // IMPORTANT: Add error handling
+        console.log("Failed!");
+        this.router.navigate(['/']);
+      }
+    }
+  }
+
+  async signInWithGoogle() {
+    console.log("pressed");
+    try {
+      await this.authService.signInWithGoogle();
+    } catch (error) {
+      console.log("errrorror!");
+    }
   }
 
   setIsLogin(): void {
