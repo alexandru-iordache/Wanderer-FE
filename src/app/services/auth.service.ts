@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { GoogleAuthProvider, browserLocalPersistence, browserSessionPersistence, getAuth, setPersistence } from 'firebase/auth';
-import firebase from 'firebase/auth';
 
 @Injectable({
   providedIn: 'root'
