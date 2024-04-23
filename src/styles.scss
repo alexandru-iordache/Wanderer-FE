@@ -1,8 +1,45 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$wanderer-fe-primary: mat.define-palette(mat.$indigo-palette);
+$wanderer-fe-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$wanderer-fe-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$wanderer-fe-theme: mat.define-light-theme((
+  color: (
+    primary: $wanderer-fe-primary,
+    accent: $wanderer-fe-accent,
+    warn: $wanderer-fe-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($wanderer-fe-theme);
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@418&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 $primary-color: #FFFDF3;
 $secondary-color: #283618;
-
+$secondary-color-highlight: #12170C;
 $primary-font: 'Montserrat', sans-serif;
 
 // Generic Classes
@@ -20,15 +57,16 @@ $primary-font: 'Montserrat', sans-serif;
     padding: 10px;
 }
 
-html {
-    width: auto;
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
     background-color: $primary-color;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
 * {

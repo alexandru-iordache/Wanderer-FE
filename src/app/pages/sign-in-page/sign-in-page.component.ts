@@ -15,7 +15,11 @@ export class SignInPageComponent implements OnInit {
   loginForm: FormGroup = new FormGroup({});
   registerForm: FormGroup = new FormGroup({});
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private router: Router, 
+    private authService: AuthService
+    ) {
   }
 
   ngOnInit(): void {
@@ -54,9 +58,11 @@ export class SignInPageComponent implements OnInit {
 
   async onRegisterSubmit() {
     if (this.registerForm.valid) {
+      const username = this.registerForm.get('profileName')?.value;
+      
       const email = this.registerForm.get('email')?.value;
       const password = this.registerForm.get('password')?.value;
-
+      
       try {
         await this.authService.signUp(email, password);
         this.router.navigate(['/dashboard']);
@@ -70,11 +76,11 @@ export class SignInPageComponent implements OnInit {
   }
 
   async signInWithGoogle() {
-    console.log("pressed");
     try {
       await this.authService.signInWithGoogle();
     } catch (error) {
-      console.log("errrorror!");
+      // IMPORTANT: Add error handling
+      console.log("Failed!");
     }
   }
 

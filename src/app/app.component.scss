@@ -1,1 +1,13 @@
 @import '../styles.scss';
+
+.layout {
+    height: calc(100vh - 80px);
+    width: 100%;
+    position: absolute;
+    top: 80px;
+    display: flex;
+}
+
+.content {
+    flex-grow: 1;
+}
