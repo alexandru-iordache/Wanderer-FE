@@ -1,0 +1,289 @@
+@import "../../../styles.scss";
+
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.modal {
+  width: 50%;
+  min-width: 500px;
+  height: 50%;
+  min-height: 300px;
+  z-index: 99;
+  background-color: $secondary-color;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+}
+
+// Generic classes
+
+.screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.button {
+  width: 200px;
+  height: 40px;
+  border: 1px solid $secondary-color;
+  border-radius: 20px;
+  font-family: $primary-font;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-heading {
+  @extend .generic-heading;
+
+  color: $primary-color;
+  text-align: center;
+}
+// /Generic Classes
+
+.welcome-screen {
+  @extend .screen;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+
+  .create-section-container {
+    height: 100%;
+    width: 49%;
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    &.create-section-container > .modal-heading {
+      min-height: 200px;
+      max-width: 230px;
+    }
+
+    .button {
+      @extend .button;
+      background-color: $primary-color;
+
+      &:hover {
+        transition: 0.2s;
+        background-color: $primary-color-highlight;
+      }
+    }
+  }
+
+  .separator {
+    width: 2px;
+    height: 75%;
+    background-color: $primary-color;
+  }
+}
+
+.create-from-scratch-screen {
+  @extend .screen;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 50px;
+
+  .buttons-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .button {
+    @extend .button;
+    background-color: $primary-color;
+    width: 48%;
+
+    &:hover {
+      transition: 0.2s;
+      background-color: $primary-color-highlight;
+    }
+  }
+
+  .back-button {
+    @extend .button;
+    background-color: $third-color;
+    width: 48%;
+
+    &:hover {
+      transition: 0.2s;
+      background-color: $third-color-highlight;
+    }
+  }
+}
+
+.form-container {
+  width: 50%;
+  min-height: 100px;
+  margin-top: 20px;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  //justify-content: space-evenly;
+  align-items: flex-start;
+
+  .input {
+    width: 100%;
+    height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid $secondary-color;
+    border-radius: 10px;
+    background-color: $primary-color;
+    font-family: $primary-font;
+    font-weight: 500;
+    color: $secondary-color;
+
+    &::placeholder {
+      text-align: center;
+      font-family: $primary-font;
+      font-size: 90%;
+      color: $secondary-color;
+    }
+  }
+
+  &.form-container > * {
+    margin-top: 10px;
+  }
+
+  &.form-container > .checkbox-container {
+    margin-top: 5px;
+    margin-bottom: 10px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &.form-container > .buttons-container {
+    margin-top: 30px;
+  }
+}
+
+.input-label {
+  margin-bottom: 1px;
+  font-family: $primary-font;
+  font-size: 12px;
+  font-weight: 500;
+  color: $primary-color;
+}
+
+.checkbox-label {
+  margin-left: 5px;
+  font-family: $primary-font;
+  font-size: 12px;
+  font-weight: 500;
+  color: $primary-color;
+}
+
+.create-trip-panel {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  min-width: 100px;
+  width: 300px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  
+  .panel-header {
+    width: 100%;
+    height: 30px;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background-color: $secondary-color;
+  }
+
+  .panel-body {
+    width: 90%;
+    height: calc(100% - 30px);
+    padding: 10px;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background-color: $forth-color;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    .option-button {
+      width: 95%;
+      height: 40px;
+      margin-top: 5px;
+      border-radius: 10px;
+      background-color: $primary-color;
+      border: 2px solid $primary-color;
+      cursor: pointer;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+
+      &:first-of-type {
+        margin-top: 0px;
+      }
+
+      &:hover {
+        background-color: $primary-color-highlight;
+        border-color: $primary-color-highlight;
+        transition: 0.2s;
+      }
+
+      &:active {
+        border-color: $secondary-color;
+        transition: 0.1s;
+      }
+
+      .button-icon {
+        height: 20px;
+        width: 20px;
+        margin-left: 5px;
+        background-size: contain;
+
+        &#city-icon {
+          background-image: url("../../../assets/icons/city-icon.svg");
+        }
+
+        &#add-icon {
+          background-image: url("../../../assets/icons/add-icon.svg");
+        }
+      }
+
+      .button-text {
+        margin-left: 5px;
+        font-family: $primary-font;
+        font-weight: 600;
+        font-size: 12px;
+        color: $secondary-color;
+      }
+    }
+  }
+}
+
+.pac-container {
+  background-color: $secondary-color !important;
+}
