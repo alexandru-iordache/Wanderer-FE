@@ -17,7 +17,9 @@ import { SignInPageComponent } from './pages/sign-in-page/sign-in-page.component
 import { DahsboardPageComponent } from './pages/dahsboard-page/dahsboard-page.component';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 import { CreateTripPageComponent } from './pages/create-trip-page/create-trip-page.component';
+import { MapComponent } from './pages/create-trip-page/components/map/map.component';
 import { GoogleMapsModule } from '@angular/google-maps';
+import { CreateTripModalComponent } from './pages/create-trip-page/components/create-trip-modal/create-trip-modal.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { GoogleMapsModule } from '@angular/google-maps';
     SignInPageComponent,
     DahsboardPageComponent,
     SidebarComponent,
-    CreateTripPageComponent
+    CreateTripPageComponent,
+    MapComponent,
+    CreateTripModalComponent
   ],
   imports: [
     BrowserModule,

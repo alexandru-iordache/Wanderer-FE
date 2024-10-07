@@ -1,0 +1,34 @@
+<div class="modal">
+    <div class="welcome-screen" *ngIf="currentStep === modalView.WelcomeView">
+        <div class="create-section-container">
+            <h2 class="modal-heading">Plan your trip in your way</h2>
+            <div class="button" (click)="setCurrentView(modalView.CreateFromScrathView)">Create from scratch</div>
+        </div>
+        <div class="separator"></div>
+        <div class="create-section-container">
+            <h2 class="modal-heading">Or maybe let technology guide you</h2>
+            <div class="button">Create with AI</div>
+        </div>
+    </div>
+    <div class="create-from-scratch-screen" *ngIf="currentStep === modalView.CreateFromScrathView">
+        <h2 class="modal-heading">Tell us some details</h2>
+        <div class="form-container">
+            <label class="input-label">Starting location</label>
+            <input type="text" #startingLocationInput class="input" placeholder="Enter your starting location"
+                [disabled]="userHomeAddressFlag">
+            <div class="checkbox-container">
+                <input type="checkbox" class="checkbox" (click)="setUserHomeAddress()">
+                <label class="checkbox-label">Use Home Address</label>
+            </div>
+            <label class="input-label">Departure Date</label>
+            <!-- IMPORTANT: When we find some new date field selection, change it -->
+            <input type="date" #departureDate class="input" placeholder="Select the departure date">
+            <div class="buttons-container">
+                <div class="back-button" (click)="setCurrentView(modalView.WelcomeView)">Back</div>
+                <button type="submit" class="button" (click)="createTrip()">
+                    Start your journey
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
