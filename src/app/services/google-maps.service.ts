@@ -19,7 +19,6 @@ export class GoogleMapsService {
   async loadScript(): Promise<void> {
     try {
       await this.loader.importLibrary("places");
-      console.log('Google Maps Loaded');
       GoogleMapsService.scriptLoadedFlag = true;
     } catch (exception) {
       console.error(exception);
@@ -27,7 +26,7 @@ export class GoogleMapsService {
     }
   }
 
-  async isScriptLoaded(): Promise<boolean> {
+  isScriptLoaded(): boolean {
     return GoogleMapsService.scriptLoadedFlag;
   }
 }

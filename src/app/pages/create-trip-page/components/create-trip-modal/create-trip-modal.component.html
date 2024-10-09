@@ -1,5 +1,5 @@
-<div class="modal">
-    <div class="welcome-screen" *ngIf="currentStep === modalView.WelcomeView">
+<div class="modal" *ngIf="currentView !== modalView.NoView">
+    <div class="welcome-screen" *ngIf="currentView === modalView.WelcomeView">
         <div class="create-section-container">
             <h2 class="modal-heading">Plan your trip in your way</h2>
             <div class="button" (click)="setCurrentView(modalView.CreateFromScrathView)">Create from scratch</div>
@@ -10,7 +10,7 @@
             <div class="button">Create with AI</div>
         </div>
     </div>
-    <div class="create-from-scratch-screen" *ngIf="currentStep === modalView.CreateFromScrathView">
+    <div class="create-from-scratch-screen" *ngIf="currentView === modalView.CreateFromScrathView">
         <h2 class="modal-heading">Tell us some details</h2>
         <div class="form-container">
             <label class="input-label">Starting location</label>
@@ -25,6 +25,7 @@
             <input type="date" #departureDate class="input" placeholder="Select the departure date">
             <div class="buttons-container">
                 <div class="back-button" (click)="setCurrentView(modalView.WelcomeView)">Back</div>
+                <!-- IMPORTANT: Add validations on this button -->
                 <button type="submit" class="button" (click)="createTrip()">
                     Start your journey
                 </button>

@@ -1,9 +1,17 @@
 export class City {
     name: string;
     country: string;
+    latitude: number;
+    longitude: number;
 
-    constructor(name: string, country: string) {
-        this.name = name;
-        this.country = country;
+    constructor(
+        name: string,
+        country: string,
+        latitude: number,
+        longitude: number) {
+            this.name = name;
+            this.country = country;
+            this.latitude = latitude;
+            this.longitude = longitude;
     }
 }

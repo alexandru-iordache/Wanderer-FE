@@ -1,14 +1,15 @@
 <div class="map-container">
     <app-map [options]="mapOptions" (cityAdded)="onCityAdded($event)"></app-map>
-    <app-create-trip-modal (viewChanged)="onViewChanged($event)" *ngIf="modalClosed === false"></app-create-trip-modal>
+    <app-create-trip-modal (viewChanged)="onViewChanged($event)" (cityAdded)="onCityAdded($event)"
+        *ngIf="modalClosed === false"></app-create-trip-modal>
 </div>
 <div class="create-trip-panel" *ngIf="modalClosed === true">
     <div class="panel-header">
     </div>
     <div class="panel-body">
-        <div class="option-button">
+        <div *ngFor="let city of cityList" class="option-button">
             <div class="button-icon" id="city-icon"></div>
-            <span class="button-text">Test City</span>
+            <span class="button-text">{{city.name}}</span>
         </div>
         <div class="option-button">
             <div class="button-icon" id="add-icon"></div>

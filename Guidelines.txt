@@ -1,1 +1,14 @@
 Comms with IMPORTANT are TODO items
+
+.ts class configs:
+    - declare first Input/Output elements, after that the ViewChild
+
+TBD IMPORTANT:
+   x - autocomplete in create-trip-modal
+     - interface for the google maps info window
+     - mechanism to add cities from the panel
+     - redirect from the info window to the panel with the city selected
+     - see the problem why only one city emitted by the map is shown
+
+TBD:
+    - refactor the create-trip-modal

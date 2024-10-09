@@ -25,13 +25,13 @@ export class CreateTripPageComponent {
 
   cityList: City[] = [];
 
-
   constructor(private googleMapsService: GoogleMapsService) {
   }
 
-  onCityAdded(cityData: { city: string, country: string }): void {
-    this.cityList.push(new City(cityData.city, cityData.country));
-    console.log('Added to list:', cityData.city + ", " + cityData.country);
+  onCityAdded(cityData: { city: City }): void {
+    this.cityList.push(cityData.city);
+    console.log('Added to list:', cityData.city.name + ", " + cityData.city.country + 
+                ", " + cityData.city.latitude + ", " + cityData.city.longitude);
   }
 
   onViewChanged(viewData: { view: ModalView }): void {

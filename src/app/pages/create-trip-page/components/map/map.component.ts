@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { City } from '../../../../interfaces/city';
 
 @Component({
   selector: 'app-map',
@@ -7,11 +8,12 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, View
 })
 export class MapComponent implements AfterViewInit {
   @Input() options: google.maps.MapOptions = {};
-  @Output() cityAdded = new EventEmitter<{ city: string, country: string }>();
+  @Output() cityAdded = new EventEmitter<{ city: City }>();
   @ViewChild('map') mapElement?: ElementRef<HTMLDivElement>;
 
-  private mapInitializationFlag: boolean = false;
   map: google.maps.Map | null = null;
+  private mapInitializationFlag: boolean = false;
+  private infoWindow: google.maps.InfoWindow | undefined = undefined;
 
   ngAfterViewInit(): void {
     this.initializeMap();
@@ -32,20 +34,34 @@ export class MapComponent implements AfterViewInit {
       };
 
       geocoder.geocode({ location: latlng }, (results, status) => {
-        if (status === 'OK' && results && results[0]) {
-          const city = results.find(result => result.types.includes('locality'));
-          if (city) {
-            const shortName = city.address_components
-              .filter(x => x.types.includes('locality'))
-              .at(0)
-              ?.short_name;
-            const countryName = city.address_components
-              .filter(x => x.types.includes('country'))
-              .at(0)
-              ?.long_name;
+        if (status !== 'OK' || results === null || results[0] === null) {
+          // IMPORTANT: Add error snackbar or something
+          console.log("Response status not equal with ok from Google Geocode API.");
+          return;
+        }
 
-            let infoWindow = new google.maps.InfoWindow({
-              content: `
+        const city = results.find(result => result.types.includes('locality'));
+        if (city === undefined) {
+          // IMPORTANT: Add error snackbar or something
+          console.log("No locality found in the results[] response.");
+          return;
+        }
+
+        this.infoWindow?.close();
+
+        const shortName = city.address_components
+          .filter(x => x.types.includes('locality'))
+          .at(0)
+          ?.short_name;
+        const countryName = city.address_components
+          .filter(x => x.types.includes('country'))
+          .at(0)
+          ?.long_name;
+        const latitude = city.geometry?.location?.lat() ?? 0;
+        const longitude = city.geometry?.location?.lng() ?? 0;
+
+        this.infoWindow = new google.maps.InfoWindow({
+          content: `
               <body style="padding: 0; border: 0px;">
                 <div style="background-color: #FFFDF3; width: 100%; height: 100%; margin: 0;">
                   <h1>${shortName}, ${countryName}</h1>
@@ -53,23 +69,20 @@ export class MapComponent implements AfterViewInit {
                 </div>
               </body>
               `,
-              position: latlng
-            });
-            infoWindow.open(this.map);
-            console.log('Added to list:', shortName + ", " + countryName);
+          position: latlng
+        });
+        this.infoWindow.open(this.map);
 
-            google.maps.event.addListener(infoWindow, 'addCityEvent', () => {
-              const button = document.getElementById('add-city-btn');
-              if(button){
-                button.addEventListener('click', () => {
-                  button.addEventListener('click', () => {
-                    this.cityAdded.emit({ city: shortName!, country: countryName!})
-                  })
-                })
-              }
+        google.maps.event.addListener(this.infoWindow, 'domready', () => {
+          const button = document.getElementById('add-city-btn');
+          if (button) {
+            button.addEventListener('click', () => {
+              let city = new City(shortName!, countryName!, latitude, longitude);
+              this.cityAdded.emit({ city: city });
+              console.log("City Added Event emitted.");
             })
           }
-        }
+        })
       })
     });
 
