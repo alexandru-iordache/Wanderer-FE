@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { GoogleMapsService } from '../../services/google-maps.service';
 
 import { environment } from '../../../environments/environment';
@@ -25,13 +25,16 @@ export class CreateTripPageComponent {
 
   cityList: City[] = [];
 
-  constructor(private googleMapsService: GoogleMapsService) {
+  constructor(
+    private googleMapsService: GoogleMapsService,
+    private changeDetector: ChangeDetectorRef) {
   }
 
   onCityAdded(cityData: { city: City }): void {
     this.cityList.push(cityData.city);
     console.log('Added to list:', cityData.city.name + ", " + cityData.city.country + 
                 ", " + cityData.city.latitude + ", " + cityData.city.longitude);
+    this.changeDetector.detectChanges();
   }
 
   onViewChanged(viewData: { view: ModalView }): void {
