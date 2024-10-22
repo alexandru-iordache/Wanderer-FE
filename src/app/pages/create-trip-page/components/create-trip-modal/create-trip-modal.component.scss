@@ -178,3 +178,14 @@
     font-weight: 500;
     color: $primary-color;
 }
+
+@media (max-width: 767px) 
+{
+    .modal {
+        width: 100vw;
+        min-width: 75%;
+        height: 100%;
+        min-height: 0px;
+        border-radius: 0px;
+    }
+}
