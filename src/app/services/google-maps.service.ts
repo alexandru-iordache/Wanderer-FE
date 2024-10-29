@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Loader } from '@googlemaps/js-api-loader';
 
@@ -16,7 +15,7 @@ export class GoogleMapsService {
   constructor() {
   }
 
-  async loadScript(): Promise<void> {
+  async loadScriptAsync(): Promise<void> {
     try {
       await this.loader.importLibrary("places");
       GoogleMapsService.scriptLoadedFlag = true;
@@ -24,6 +23,11 @@ export class GoogleMapsService {
       console.error(exception);
       throw exception;
     }
+  }
+
+  async getOverlayViewAsync(): Promise<typeof google.maps.OverlayView> {
+    const mapsLib = await google.maps.importLibrary('maps') as any;
+    return mapsLib.OverlayView;
   }
 
   isScriptLoaded(): boolean {

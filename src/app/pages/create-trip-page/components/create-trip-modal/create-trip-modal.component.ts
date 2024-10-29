@@ -31,7 +31,7 @@ export class CreateTripModalComponent implements OnInit, AfterViewInit, AfterVie
   async ngAfterViewInit(): Promise<void> {
     try {
       if (this.googleMapsService.isScriptLoaded() === false) {
-        await this.googleMapsService.loadScript();
+        await this.googleMapsService.loadScriptAsync();
       }
     } catch (error) {
       console.error('[Create-Trip-Modal] Google Maps script not loaded.', error);
@@ -85,6 +85,7 @@ export class CreateTripModalComponent implements OnInit, AfterViewInit, AfterVie
         return;
       }
 
+      // IMPORTANT: Show no result feedback, country filtering etc
       const shortName = place.address_components
         .filter(x => x.types.includes('locality'))
         .at(0)

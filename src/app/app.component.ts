@@ -24,7 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
     })
 
     try {
-      await this.googleMapsService.loadScript();
+      await this.googleMapsService.loadScriptAsync();
     } catch (exception) {
       console.error("Couldn't load the Google Maps scipt.", exception);
     }
