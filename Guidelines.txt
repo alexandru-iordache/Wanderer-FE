@@ -8,7 +8,7 @@ TBD IMPORTANT:
      - interface for the google maps info window
      - mechanism to add cities from the panel
      - redirect from the info window to the panel with the city selected
-     - see the problem why only one city emitted by the map is shown
+   x - see the problem why only one city emitted by the map is shown
 
 TBD:
     - refactor the create-trip-modal
