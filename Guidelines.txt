@@ -5,10 +5,14 @@ Comms with IMPORTANT are TODO items
 
 TBD IMPORTANT:
    x - autocomplete in create-trip-modal
-     - interface for the google maps info window
+   x - interface for the google maps info window
      - mechanism to add cities from the panel
      - redirect from the info window to the panel with the city selected
    x - see the problem why only one city emitted by the map is shown
+     - once the city is clicked from the panel or the city added is saved block on the city view on maps  
 
 TBD:
     - refactor the create-trip-modal
+    - see the doouble click problem on the x Overlay 
+    - change font in overlay
+    - change maps cursor over a locality??
