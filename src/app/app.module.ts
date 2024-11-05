@@ -20,6 +20,7 @@ import { CreateTripPageComponent } from './pages/create-trip-page/create-trip-pa
 import { MapComponent } from './pages/create-trip-page/components/map/map.component';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { CreateTripModalComponent } from './pages/create-trip-page/components/create-trip-modal/create-trip-modal.component';
+import { CityListPanelComponent } from './pages/create-trip-page/components/city-list-panel/city-list-panel.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { CreateTripModalComponent } from './pages/create-trip-page/components/cr
     SidebarComponent,
     CreateTripPageComponent,
     MapComponent,
-    CreateTripModalComponent
+    CreateTripModalComponent,
+    CityListPanelComponent
   ],
   imports: [
     BrowserModule,

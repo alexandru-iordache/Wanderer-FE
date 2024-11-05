@@ -8,7 +8,7 @@ import { ModalView } from '../helpers/modal-view.enum';
 @Component({
   selector: 'app-create-trip-page',
   templateUrl: './create-trip-page.component.html',
-  styleUrl: './create-trip-page.component.scss'
+  styleUrl: './create-trip-page.component.scss',
 })
 export class CreateTripPageComponent {
   mapOptions: google.maps.MapOptions = {
@@ -19,22 +19,19 @@ export class CreateTripPageComponent {
     streetViewControl: false,
     fullscreenControl: false,
     zoomControl: true,
-    mapTypeControl: false
-  }
-  modalClosed: boolean = false;
+    mapTypeControl: false,
+  };
+  modalClosed: boolean = true;
+  onCityAddedFromMap: City | undefined = undefined;
 
-  cityList: City[] = [];
+  cityList: City[] = [new City('Barcelona', 'Spain', 40, 50)];
 
-  constructor(
-    private googleMapsService: GoogleMapsService,
-    private changeDetector: ChangeDetectorRef) {
-  }
+  constructor(private googleMapsService: GoogleMapsService) {}
 
   onCityAdded(cityData: { city: City }): void {
     this.cityList.push(cityData.city);
-    console.log('Added to list:', cityData.city.name + ", " + cityData.city.country + 
-                ", " + cityData.city.latitude + ", " + cityData.city.longitude);
-    this.changeDetector.detectChanges();
+    console.log("haha");
+    this.onCityAddedFromMap = cityData.city;
   }
 
   onViewChanged(viewData: { view: ModalView }): void {

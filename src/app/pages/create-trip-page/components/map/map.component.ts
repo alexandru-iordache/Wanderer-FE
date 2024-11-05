@@ -43,7 +43,10 @@ export class MapComponent implements AfterViewInit {
     const geocoder = new google.maps.Geocoder();
 
     this.cityClickListener = this.map.addListener("click",
-      async (event: google.maps.MapMouseEvent) => this.drawCityOverlayAsync(event, geocoder));
+      async (event: google.maps.MapMouseEvent) => {
+        event.stop();
+        this.drawCityOverlayAsync(event, geocoder);
+      });
 
     this.mapInitializationFlag = true;
   }

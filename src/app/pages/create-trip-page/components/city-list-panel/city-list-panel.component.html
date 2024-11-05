@@ -1,0 +1,14 @@
+<div class="create-trip-panel">
+    <div class="panel-header">
+    </div>
+    <div class="panel-body">
+        <div *ngFor="let city of cityList" class="option-button">
+            <div class="button-icon" id="city-icon"></div>
+            <span class="button-text">{{city.name}}</span>
+        </div>
+        <div class="option-button">
+            <div class="button-icon" id="add-icon"></div>
+            <span class="button-text">Add new city</span>
+        </div>
+    </div>
+</div>

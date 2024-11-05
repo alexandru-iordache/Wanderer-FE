@@ -9,7 +9,9 @@ TBD IMPORTANT:
      - mechanism to add cities from the panel
      - redirect from the info window to the panel with the city selected
    x - see the problem why only one city emitted by the map is shown
-     - once the city is clicked from the panel or the city added is saved block on the city view on maps  
+     - once the city is clicked from the panel or the city added is saved, block on the city view on maps(Google Maps Style Swap)
+     - city map lock
+     - Investigate City Panel and Page communication error
 
 TBD:
     - refactor the create-trip-modal
