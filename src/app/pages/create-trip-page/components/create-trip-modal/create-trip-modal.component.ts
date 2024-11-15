@@ -97,7 +97,7 @@ export class CreateTripModalComponent implements OnInit, AfterViewInit, AfterVie
       const latitude = place.geometry?.location?.lat() ?? 0;
       const longitude = place.geometry?.location?.lng() ?? 0;
       
-      this.startingCity = new City(shortName, countryName, latitude, longitude);
+      this.startingCity = new City(shortName, countryName, latitude, longitude, new Date(), new Date());
     })
     this.autocompleteIntializationFlag = true;
   }

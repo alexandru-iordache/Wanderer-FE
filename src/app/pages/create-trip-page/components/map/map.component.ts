@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { City } from '../../../../interfaces/city';
 import { GoogleMapsService } from '../../../../services/google-maps.service';
 import { OverlayFactoryService } from '../../../../services/overlay-factory.service';
+import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
 
 @Component({
   selector: 'app-map',
@@ -10,7 +10,7 @@ import { OverlayFactoryService } from '../../../../services/overlay-factory.serv
 })
 export class MapComponent implements AfterViewInit {
   @Input() options: google.maps.MapOptions = {};
-  @Output() cityAdded = new EventEmitter<{ city: City }>();
+  @Output() cityAdded = new EventEmitter<{ city: CityTransferDto }>();
   @ViewChild('map') mapElement?: ElementRef<HTMLDivElement>;
 
   map: google.maps.Map | null = null;
@@ -86,7 +86,7 @@ export class MapComponent implements AfterViewInit {
       const latitude = city.geometry?.location?.lat() ?? 0;
       const longitude = city.geometry?.location?.lng() ?? 0;
 
-      const cityObject = new City(shortName!, countryName!, latitude, longitude);
+      const cityObject = new CityTransferDto(shortName!, countryName!, latitude, longitude);
 
       this.cityOverlay = this.overlayFactoryService.createCityOverlay(
         { lat: latitude, lng: longitude },

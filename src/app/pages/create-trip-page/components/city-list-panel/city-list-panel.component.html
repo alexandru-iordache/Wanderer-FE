@@ -1,14 +1,68 @@
 <div class="create-trip-panel">
-    <div class="panel-header">
+  <div class="panel-header"></div>
+  <div class="city-list-panel">
+    @switch (currentView) { @case (PanelView.CitiesListView) {
+    <div *ngFor="let city of cityList" class="option-button">
+      <div class="button-icon" id="city-icon"></div>
+      <span class="button-text">{{ city.name }}</span>
     </div>
-    <div class="panel-body">
-        <div *ngFor="let city of cityList" class="option-button">
-            <div class="button-icon" id="city-icon"></div>
-            <span class="button-text">{{city.name}}</span>
-        </div>
-        <div class="option-button">
-            <div class="button-icon" id="add-icon"></div>
-            <span class="button-text">Add new city</span>
-        </div>
+    <div class="option-button" (click)="setCurrentView(PanelView.AddCityView)">
+      <div class="button-icon" id="add-icon"></div>
+      <span class="button-text">Add new city</span>
     </div>
+    } @case (PanelView.AddCityView) {
+    <form
+      class="add-city-form"
+      [formGroup]="addCityForm"
+      (ngSubmit)="onAddCitySubmit()"
+    >
+      <div class="form-row-section">
+        <label class="form-label">City Name</label>
+        <input
+          type="input"
+          formControlName="cityName"
+          placeholder="Enter the city name"
+        />
+        <small
+          *ngIf="
+            addCityForm.get('cityName')?.invalid &&
+            addCityForm.get('cityName')?.touched
+          "
+          class="text-danger"
+        >
+          City name is required
+        </small>
+      </div>
+      <!-- IMPOTANT: Date Picker changes-->
+      <div class="form-row-section">
+        <label class="form-label">Arrival date</label>
+        <input
+          type="date"
+          formControlName="arrivalDate"
+          placeholder="Enter the city name"
+        />
+        <!-- <small *ngIf="loginForm.get('email')?.invalid 
+                    && loginForm.get('email')?.touched" class="text-danger">
+                Email is required!
+            </small> -->
+      </div>
+      <div class="form-row-section">
+        <label class="form-label">Departure date</label>
+        <input
+          type="date"
+          formControlName="departureDate"
+          placeholder="Enter the city name"
+        />
+        <!-- <small *ngIf="loginForm.get('email')?.invalid 
+                    && loginForm.get('email')?.touched" class="text-danger">
+                Email is required!
+            </small> -->
+      </div>
+      <div class="buttons-section">
+        <div class="discard-button" (click)="setCurrentView(PanelView.CitiesListView)">Discard</div>
+        <button type="submit" class="submit-button">Add city</button>
+      </div>
+    </form>
+    } }
+  </div>
 </div>

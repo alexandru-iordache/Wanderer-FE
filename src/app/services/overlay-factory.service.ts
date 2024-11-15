@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { City } from '../interfaces/city';
+import { CityTransferDto } from '../interfaces/dtos/city-transfer-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -9,19 +9,19 @@ export class OverlayFactoryService {
 
   createCityOverlay(
     position: google.maps.LatLngLiteral,
-    city: City,
-    cityAdded: EventEmitter<{ city: City }>
+    city: CityTransferDto,
+    cityAdded: EventEmitter<{ city: CityTransferDto }>
   ) {
     class CityOverlay extends google.maps.OverlayView {
       position: google.maps.LatLngLiteral;
       div: HTMLElement | null = null;
-      city: City;
-      cityAdded: EventEmitter<{ city: City }>;
+      city: CityTransferDto;
+      cityAdded: EventEmitter<{ city: CityTransferDto }>;
 
       constructor(
         position: google.maps.LatLngLiteral,
-        city: City,
-        cityAdded: EventEmitter<{ city: City }>
+        city: CityTransferDto,
+        cityAdded: EventEmitter<{ city: CityTransferDto }>
       ) {
         super();
         this.city = city;

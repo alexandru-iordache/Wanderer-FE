@@ -2,8 +2,8 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { GoogleMapsService } from '../../services/google-maps.service';
 
 import { environment } from '../../../environments/environment';
-import { City } from '../../interfaces/city';
 import { ModalView } from '../helpers/modal-view.enum';
+import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
 
 @Component({
   selector: 'app-create-trip-page',
@@ -22,16 +22,18 @@ export class CreateTripPageComponent {
     mapTypeControl: false,
   };
   modalClosed: boolean = true;
-  onCityAddedFromMap: City | undefined = undefined;
+  onCityAddedFromMap: CityTransferDto | undefined = undefined;
 
-  cityList: City[] = [new City('Barcelona', 'Spain', 40, 50)];
+  cityList: CityTransferDto[] = [new CityTransferDto('Barcelona', 'Spain', 40, 50)];
 
-  constructor(private googleMapsService: GoogleMapsService) {}
+  constructor(private googleMapsService: GoogleMapsService,
+    private changeDetector: ChangeDetectorRef
+  ) { }
 
-  onCityAdded(cityData: { city: City }): void {
+  onCityAdded(cityData: { city: CityTransferDto }): void {
     this.cityList.push(cityData.city);
-    console.log("haha");
     this.onCityAddedFromMap = cityData.city;
+    this.changeDetector.detectChanges();
   }
 
   onViewChanged(viewData: { view: ModalView }): void {

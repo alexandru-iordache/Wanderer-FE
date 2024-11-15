@@ -7,14 +7,22 @@ TBD IMPORTANT:
    x - autocomplete in create-trip-modal
    x - interface for the google maps info window
      - mechanism to add cities from the panel
-     - redirect from the info window to the panel with the city selected
+      - autocomplete for cityName
+      - validations
+      - accomodation idea
+      - waypoint list for city per day (mechansim to count the days and make multiple views for each day)
+
+   x - redirect from the info window to the panel with the city selected
    x - see the problem why only one city emitted by the map is shown
      - once the city is clicked from the panel or the city added is saved, block on the city view on maps(Google Maps Style Swap)
      - city map lock
-     - Investigate City Panel and Page communication error
+   x - Investigate City Panel and Page communication error
 
 TBD:
+    - Enhance CreateTrip panel 
+    - DateTime picker solution
+    - validation for add city component
     - refactor the create-trip-modal
-    - see the doouble click problem on the x Overlay 
+  x - see the doouble click problem on the x Overlay 
     - change font in overlay
     - change maps cursor over a locality??

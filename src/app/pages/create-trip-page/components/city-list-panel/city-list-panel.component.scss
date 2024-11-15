@@ -1,6 +1,6 @@
 @import "../../../../../styles.scss";
 
-.create-trip-panel{
+.create-trip-panel {
   position: absolute;
   top: 0;
   right: 10px;
@@ -16,12 +16,14 @@
 .panel-header {
   width: 100%;
   height: 30px;
+  border: 2px solid $primary-color;
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
+  border-top: 0px hidden;
   background-color: $secondary-color;
 }
 
-.panel-body {
+.city-list-panel {
   width: 90%;
   height: calc(100% - 30px);
   padding: 10px;
@@ -83,5 +85,87 @@
       font-size: 12px;
       color: $secondary-color;
     }
+  }
+}
+
+.add-city-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-row-section {
+  width: 75%;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-left: 10px;
+  margin-bottom: 5px;
+  font-family: $primary-font;
+  font-size: 12px;
+  font-weight: 600;
+  color: $secondary-color;
+}
+
+input {
+  width: 100%;
+  height: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: 1px solid $secondary-color;
+  border-radius: 10px;
+  background-color: $primary-color;
+  font-family: $primary-font;
+  font-weight: 500;
+  color: $secondary-color;
+}
+
+.buttons-section {
+  width: 75%;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.submit-button {
+  height: 30px;
+  width: 40%;
+  color: $primary-color;
+  background-color: $secondary-color;
+  border-radius: 20px;
+  font-family: $primary-font;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    transition: 0.2s;
+    background-color: $secondary-color-highlight;
+  }
+}
+
+.discard-button {
+  height: 30px;
+  width: 40%;
+  color: $primary-color;
+  background-color: $third-color;
+  border-radius: 20px;
+  font-family: $primary-font;
+  font-size: 1em;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    transition: 0.2s;
+    background-color: $third-color-highlight;
   }
 }
