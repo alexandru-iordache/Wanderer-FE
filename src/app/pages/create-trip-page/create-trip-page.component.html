@@ -1,12 +1,14 @@
 <div class="map-container">
-  <app-map [options]="mapOptions" (cityAdded)="onCityAdded($event)"></app-map>
+  <app-map [options]="mapOptions" (cityToAdd)="onCityToAdd($event)"></app-map>
   <app-create-trip-modal
     (viewChanged)="onViewChanged($event)"
-    (cityAdded)="onCityAdded($event)"
+    (cityAdded)="onCityToAdd($event)"
     *ngIf="modalClosed === false"
   ></app-create-trip-modal>
 </div>
 <app-city-list-panel
-  [cityAddedFromMap]="onCityAddedFromMap"
+  [cityToAdd]="cityToAdd"
+  [cityList]="cityList"
+  (citySubmitted)="onCitySubmitted($event)"
   *ngIf="modalClosed === true"
 ></app-city-list-panel>

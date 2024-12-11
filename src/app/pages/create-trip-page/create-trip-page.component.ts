@@ -4,6 +4,7 @@ import { GoogleMapsService } from '../../services/google-maps.service';
 import { environment } from '../../../environments/environment';
 import { ModalView } from '../helpers/modal-view.enum';
 import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
+import { AddCityDto } from '../../interfaces/dtos/add-city-dto';
 
 @Component({
   selector: 'app-create-trip-page',
@@ -21,19 +22,27 @@ export class CreateTripPageComponent {
     zoomControl: true,
     mapTypeControl: false,
   };
+  markers: google.maps.marker.AdvancedMarkerElement[] = [];
+
+  cityToAdd: CityTransferDto | undefined = undefined;
+  cityList: AddCityDto[] = [new AddCityDto('Barcelona', 'Spain', 40, 50)];
+  
   modalClosed: boolean = true;
-  onCityAddedFromMap: CityTransferDto | undefined = undefined;
 
-  cityList: CityTransferDto[] = [new CityTransferDto('Barcelona', 'Spain', 40, 50)];
-
-  constructor(private googleMapsService: GoogleMapsService,
+  constructor(
+    private googleMapsService: GoogleMapsService,
     private changeDetector: ChangeDetectorRef
-  ) { }
+  ) {}
 
-  onCityAdded(cityData: { city: CityTransferDto }): void {
-    this.cityList.push(cityData.city);
-    this.onCityAddedFromMap = cityData.city;
+  onCityToAdd(cityToAddData: { city: CityTransferDto }): void {
+    this.cityToAdd = cityToAddData.city;
     this.changeDetector.detectChanges();
+  }
+
+  onCitySubmitted(citySubmittedData: { city: AddCityDto }): void {
+    this.cityList.push(citySubmittedData.city);
+
+    console.log(this.cityList);
   }
 
   onViewChanged(viewData: { view: ModalView }): void {

@@ -10,7 +10,8 @@ import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
 })
 export class MapComponent implements AfterViewInit {
   @Input() options: google.maps.MapOptions = {};
-  @Output() cityAdded = new EventEmitter<{ city: CityTransferDto }>();
+  @Input() markers: google.maps.marker.AdvancedMarkerElement[] = [];
+  @Output() cityToAdd = new EventEmitter<{ city: CityTransferDto }>();
   @ViewChild('map') mapElement?: ElementRef<HTMLDivElement>;
 
   map: google.maps.Map | null = null;
@@ -91,7 +92,7 @@ export class MapComponent implements AfterViewInit {
       this.cityOverlay = this.overlayFactoryService.createCityOverlay(
         { lat: latitude, lng: longitude },
         cityObject,
-        this.cityAdded);
+        this.cityToAdd);
 
       this.cityOverlay.setMap(this.map);
     });

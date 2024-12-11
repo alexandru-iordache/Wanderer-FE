@@ -19,7 +19,8 @@
       <div class="form-row-section">
         <label class="form-label">City Name</label>
         <input
-          type="input"
+          #cityName
+          type="text"
           formControlName="cityName"
           placeholder="Enter the city name"
         />
@@ -59,10 +60,15 @@
             </small> -->
       </div>
       <div class="buttons-section">
-        <div class="discard-button" (click)="setCurrentView(PanelView.CitiesListView)">Discard</div>
+        <div
+          class="discard-button"
+          (click)="setCurrentView(PanelView.CitiesListView)"
+        >
+          Discard
+        </div>
         <button type="submit" class="submit-button">Add city</button>
       </div>
     </form>
-    } }
+    }}
   </div>
 </div>

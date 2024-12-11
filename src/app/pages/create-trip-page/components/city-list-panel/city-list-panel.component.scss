@@ -6,7 +6,7 @@
   right: 10px;
   min-width: 100px;
   width: 300px;
-  z-index: 9999;
+  z-index: 99;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -122,6 +122,11 @@ input {
   font-family: $primary-font;
   font-weight: 500;
   color: $secondary-color;
+}
+
+.pac-container {
+  z-index: 100;
+  position: absolute;
 }
 
 .buttons-section {

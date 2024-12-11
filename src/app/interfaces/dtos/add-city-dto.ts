@@ -3,16 +3,16 @@ export class AddCityDto {
     country: string;
     latitude: number;
     longitude: number;
-    startDate: Date;
-    endDate: Date;
+    startDate: Date | null;
+    endDate: Date | null;
 
     constructor(
         name: string,
         country: string,
         latitude: number,
         longitude: number,
-        startDate: Date,
-        endDate: Date) {
+        startDate: Date | null = null,
+        endDate: Date | null = null) {
             this.name = name;
             this.country = country;
             this.latitude = latitude;
