@@ -1,10 +1,11 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { CityTransferDto } from '../interfaces/dtos/city-transfer-dto';
+import { AddCityDto } from '../interfaces/dtos/add-city-dto';
 
 @Injectable({
   providedIn: 'root',
 })
-export class OverlayFactoryService {
+export class GoogleComponentsFactoryService {
   constructor() {}
 
   createCityOverlay(
@@ -60,7 +61,6 @@ export class OverlayFactoryService {
         button?.addEventListener('click', (event) => {
           event.stopPropagation();
           this.cityAdded.emit({ city: city });
-          console.log('City Added Event emitted.');
           this.setMap(null);
         });
 
@@ -70,7 +70,6 @@ export class OverlayFactoryService {
         closeButton.addEventListener('click', (event) => {
           event.stopPropagation();
           this.setMap(null);
-          console.log('Overlay closed.');
         });
       }
 
@@ -95,5 +94,69 @@ export class OverlayFactoryService {
     }
 
     return new CityOverlay(position, city, cityAdded);
+  }
+
+  createCityMarker(
+    map: google.maps.Map,
+    position: google.maps.LatLngLiteral,
+    city: AddCityDto,
+    iconUrl?: string,
+    clickHandler?: (city: AddCityDto) => void,
+    order?: number
+  ) {
+    const markerContent = document.createElement('div');
+    markerContent.style.position = 'relative';
+    markerContent.style.width = '30px';
+    markerContent.style.height = '40px';
+    markerContent.style.display = 'flex';
+    markerContent.style.flexDirection = "column";
+    markerContent.style.justifyContent = 'flex-start';
+    markerContent.style.alignItems = 'center';
+    markerContent.style.cursor = "pointer";
+    markerContent.style.zIndex = "99";
+    markerContent.innerHTML = `
+       <div style="
+      background-color: #B7B192;
+      border: 2px solid #283618;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      color: #FFF;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 1;
+    ">
+      ${order !== undefined ? order : ''}
+    </div>
+    <div style="
+      position: relative;
+      margin-top: 1px;
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 8px solid #283618;
+      border-top-radius: 40%;
+      z-index: 0;
+    "></div>
+    `;
+
+    const marker = new google.maps.marker.AdvancedMarkerElement({
+      position,
+      map,
+      title: city.name,
+      content: markerContent,
+    });
+
+    if (clickHandler) {
+      markerContent.addEventListener('click', () => clickHandler(city));
+    }
+
+    return marker;
   }
 }

@@ -6,11 +6,14 @@ Comms with IMPORTANT are TODO items
 TBD IMPORTANT:
    x - autocomplete in create-trip-modal
    x - interface for the google maps info window
-     - mechanism to add cities from the panel
-      - autocomplete for cityName
+   - mechanism to add cities from the panel
+    x - autocomplete for cityName
       - validations
-      - accomodation idea
+        - sort by endDate
+        - restrict date dropdown based on the other endDate 
+      - accomodation idea (later maybe)
       - waypoint list for city per day (mechansim to count the days and make multiple views for each day)
+    x - markers
 
    x - redirect from the info window to the panel with the city selected
    x - see the problem why only one city emitted by the map is shown

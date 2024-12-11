@@ -1,5 +1,9 @@
 <div class="map-container">
-  <app-map [options]="mapOptions" (cityToAdd)="onCityToAdd($event)"></app-map>
+  <app-map
+    [options]="mapOptions"
+    [cityList]="cityList"
+    (cityToAdd)="onCityToAdd($event)"
+  ></app-map>
   <app-create-trip-modal
     (viewChanged)="onViewChanged($event)"
     (cityAdded)="onCityToAdd($event)"

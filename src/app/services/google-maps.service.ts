@@ -30,6 +30,11 @@ export class GoogleMapsService {
     return mapsLib.OverlayView;
   }
 
+  async getMarkerAsync(): Promise<typeof google.maps.marker.AdvancedMarkerElement> {
+    const mapsLib = await google.maps.importLibrary('marker') as any;
+    return mapsLib.AdvancedMarkerElement;
+  }
+
   isScriptLoaded(): boolean {
     return GoogleMapsService.scriptLoadedFlag;
   }

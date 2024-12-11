@@ -25,7 +25,7 @@ export class CreateTripPageComponent {
   markers: google.maps.marker.AdvancedMarkerElement[] = [];
 
   cityToAdd: CityTransferDto | undefined = undefined;
-  cityList: AddCityDto[] = [new AddCityDto('Barcelona', 'Spain', 40, 50)];
+  cityList: AddCityDto[] = [new AddCityDto('Barcelona', 'Spain', 41.3873974, 2.168568)];
   
   modalClosed: boolean = true;
 
@@ -40,9 +40,10 @@ export class CreateTripPageComponent {
   }
 
   onCitySubmitted(citySubmittedData: { city: AddCityDto }): void {
-    this.cityList.push(citySubmittedData.city);
+    this.cityList = [...this.cityList, citySubmittedData.city];
 
     console.log(this.cityList);
+    this.changeDetector.detectChanges();
   }
 
   onViewChanged(viewData: { view: ModalView }): void {
