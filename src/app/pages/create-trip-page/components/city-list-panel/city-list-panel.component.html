@@ -2,13 +2,23 @@
   <div class="panel-header"></div>
   <div class="city-list-panel">
     @switch (currentView) { @case (PanelView.CitiesListView) {
-    <div *ngFor="let city of cityList" class="option-button">
-      <div class="button-icon" id="city-icon"></div>
-      <span class="button-text">{{ city.name }}</span>
+    <div *ngFor="let city of cityList" class="option-button" (click)="clickCity(city)">
+      <span class="button-text-container">
+        <div class="button-icon" id="city-icon"></div>
+        <span class="button-text">{{ city.name }}</span>
+      </span>
+      <div class="date-text">{{
+        city.startDate?.toLocaleDateString("en-US", {
+          day: "2-digit",
+          month: "short"
+        })
+      }} ({{city.numberOfDays}} {{city.numberOfDays === 1 ? "day" : "days"}})</div>
     </div>
     <div class="option-button" (click)="setCurrentView(PanelView.AddCityView)">
-      <div class="button-icon" id="add-icon"></div>
-      <span class="button-text">Add new city</span>
+      <span class="button-text-container">
+        <div class="button-icon" id="add-icon"></div>
+        <span class="button-text">Add new city</span>
+      </span>
     </div>
     } @case (PanelView.AddCityView) {
     <form
@@ -37,22 +47,21 @@
       <!-- IMPOTANT: Date Picker changes-->
       <div class="form-row-section">
         <label class="form-label">Arrival date</label>
-        <input
-          type="date"
-          formControlName="arrivalDate"
-          placeholder="Enter the city name"
-        />
+        <input type="date" formControlName="arrivalDate" />
         <!-- <small *ngIf="loginForm.get('email')?.invalid 
                     && loginForm.get('email')?.touched" class="text-danger">
                 Email is required!
             </small> -->
       </div>
-      <div class="form-row-section">
-        <label class="form-label">Departure date</label>
+      <div class="form-row-section number">
+        <label class="form-label number">No. of Days</label>
         <input
-          type="date"
-          formControlName="departureDate"
-          placeholder="Enter the city name"
+          class="number"
+          type="number"
+          formControlName="numberOfDays"
+          min="1"
+          max="100"
+          value="1"
         />
         <!-- <small *ngIf="loginForm.get('email')?.invalid 
                     && loginForm.get('email')?.touched" class="text-danger">

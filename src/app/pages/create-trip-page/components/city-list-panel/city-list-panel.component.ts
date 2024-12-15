@@ -17,6 +17,7 @@ import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
 import { AddCityDto } from '../../../../interfaces/dtos/add-city-dto';
 import { datePickerValidator } from '../../../../shared/helpers/validators';
 import { GoogleMapsService } from '../../../../services/google-maps.service';
+import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 
 @Component({
   selector: 'app-city-list-panel',
@@ -50,7 +51,7 @@ export class CityListPanelComponent
       {
         cityName: ['', [Validators.required]],
         arrivalDate: ['', [Validators.required]],
-        departureDate: ['', [Validators.required]],
+        numberOfDays: ['', [Validators.required]],
       },
       { validators: [datePickerValidator] }
     );
@@ -86,7 +87,11 @@ export class CityListPanelComponent
         cityTransferDto.name,
         cityTransferDto.country,
         cityTransferDto.latitude,
-        cityTransferDto.longitude
+        cityTransferDto.longitude,
+        null,
+        0,
+        cityTransferDto.northEastBound,
+        cityTransferDto.southWestBound
       );
 
       this.changeDetector.detectChanges();
@@ -96,20 +101,34 @@ export class CityListPanelComponent
   onAddCitySubmit() {
     if (this.addCityForm.valid) {
       const arrivalDate = this.addCityForm.get('arrivalDate')?.value;
-      const departureDate = this.addCityForm.get('departureDate')?.value;
+      const numberOfDays = this.addCityForm.get('numberOfDays')?.value;
 
       if (this.addCityDto === null) {
         // IMPORTANT: Error snackbar, unexepected error
         return;
       }
 
-      this.addCityDto!.startDate = arrivalDate;
-      this.addCityDto!.endDate = departureDate;
+      this.addCityDto!.startDate = new Date(arrivalDate);
+      this.addCityDto!.numberOfDays = numberOfDays;
 
       this.citySubmitted.emit({ city: this.addCityDto });
-      
+
       this.setCurrentView(PanelView.CitiesListView);
     }
+  }
+
+  clickCity(addCityDto: AddCityDto) {
+    console.log('City clicked: ' + addCityDto.name);
+    const cityBounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(
+        addCityDto.southWestBound.latitude,
+        addCityDto.southWestBound.longitude
+      ),
+      new google.maps.LatLng(
+        addCityDto.northEastBound.latitude,
+        addCityDto.northEastBound.latitude
+      )
+    );
   }
 
   setCurrentView(view: PanelView) {
@@ -159,7 +178,7 @@ export class CityListPanelComponent
       const shortName =
         place.address_components
           .filter((x) => x.types.includes('locality'))
-          .at(0)?.short_name ?? '';
+          .at(0)?.long_name ?? '';
       const countryName =
         place.address_components
           .filter((x) => x.types.includes('country'))
@@ -167,11 +186,23 @@ export class CityListPanelComponent
       const latitude = place.geometry?.location?.lat() ?? 0;
       const longitude = place.geometry?.location?.lng() ?? 0;
 
+      var northEastBound = place.geometry?.viewport?.getNorthEast();
+      var southWestBound = place.geometry?.viewport?.getSouthWest();
+
+      if (northEastBound === undefined || southWestBound === undefined) {
+        // IMPORTANT: See how to handle this type of problem
+        return;
+      }
+
       this.addCityDto = new AddCityDto(
         shortName,
         countryName,
         latitude,
-        longitude
+        longitude,
+        null,
+        0,
+        new LatLngBound(northEastBound!.lat(), northEastBound!.lng()),
+        new LatLngBound(southWestBound!.lat(), southWestBound!.lng())
       );
     });
   }

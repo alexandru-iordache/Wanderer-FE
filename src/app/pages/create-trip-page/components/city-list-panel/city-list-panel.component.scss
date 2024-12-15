@@ -39,13 +39,14 @@
     width: 95%;
     height: 40px;
     margin-top: 5px;
+    padding: 0px 5px;
     border-radius: 10px;
     background-color: $primary-color;
     border: 2px solid $primary-color;
     cursor: pointer;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
 
     &:first-of-type {
@@ -77,8 +78,22 @@
         background-image: url("../../../../../assets/icons/add-icon.svg");
       }
     }
+    
+    .button-text-container {
+      display: flex;
+      align-items: center;
+      max-width: 60%;
+    }
 
     .button-text {
+      margin-left: 5px;
+      font-family: $primary-font;
+      font-weight: 600;
+      font-size: 12px;
+      color: $secondary-color;
+    }
+
+    .date-text {
       margin-left: 5px;
       font-family: $primary-font;
       font-weight: 600;
@@ -100,6 +115,12 @@
   margin-bottom: 10px;
   display: flex;
   flex-direction: column;
+
+  &.number {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 label {
@@ -109,6 +130,10 @@ label {
   font-size: 12px;
   font-weight: 600;
   color: $secondary-color;
+
+  &.number {
+    margin-bottom: 0px;
+  }
 }
 
 input {
@@ -122,6 +147,12 @@ input {
   font-family: $primary-font;
   font-weight: 500;
   color: $secondary-color;
+
+  &.number {
+    padding-right: 0px;
+    width: 25%;
+    text-align: right;
+  }
 }
 
 .pac-container {

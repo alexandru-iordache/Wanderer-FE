@@ -14,6 +14,7 @@ import { GoogleMapsService } from '../../../../services/google-maps.service';
 import { GoogleComponentsFactoryService } from '../../../../services/google-componets-factory.service';
 import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
 import { AddCityDto } from '../../../../interfaces/dtos/add-city-dto';
+import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 
 @Component({
   selector: 'app-map',
@@ -111,18 +112,28 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
       const shortName = city.address_components
         .filter((x) => x.types.includes('locality'))
-        .at(0)?.short_name;
+        .at(0)?.long_name;
       const countryName = city.address_components
         .filter((x) => x.types.includes('country'))
         .at(0)?.long_name;
       const latitude = city.geometry?.location?.lat() ?? 0;
       const longitude = city.geometry?.location?.lng() ?? 0;
 
+      var northEastBound = city.geometry?.viewport?.getNorthEast();
+      var southWestBound = city.geometry?.viewport?.getSouthWest();
+
+      if (northEastBound === undefined || southWestBound === undefined) {
+        // IMPORTANT: See how to handle this type of problem
+        return;
+      }
+
       const cityObject = new CityTransferDto(
         shortName!,
         countryName!,
         latitude,
-        longitude
+        longitude,
+        new LatLngBound(northEastBound!.lat(), northEastBound!.lng()),
+        new LatLngBound(southWestBound!.lat(), southWestBound!.lng())
       );
 
       this.cityOverlay = this.googleComponentsFactoryService.createCityOverlay(

@@ -11,6 +11,8 @@ import {
 import { ModalView } from '../../../helpers/modal-view.enum';
 import { GoogleMapsService } from '../../../../services/google-maps.service';
 import { City } from '../../../../interfaces/city';
+import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
+import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 
 @Component({
   selector: 'app-create-trip-modal',
@@ -21,7 +23,7 @@ export class CreateTripModalComponent
   implements OnInit, AfterViewInit, AfterViewChecked
 {
   @Output() viewChanged = new EventEmitter<{ view: ModalView }>();
-  @Output() cityAdded = new EventEmitter<{ city: City }>();
+  @Output() cityAdded = new EventEmitter<{ city: CityTransferDto }>();
   @ViewChild('startingLocationInput')
   startingLocationInput?: ElementRef<HTMLInputElement>;
   @ViewChild('departureDate') departureDateInput?: ElementRef<HTMLInputElement>;
@@ -32,7 +34,7 @@ export class CreateTripModalComponent
   currentView: ModalView = ModalView.WelcomeView;
   autocompleteInitializationFlag: boolean = false;
   userHomeAddressFlag: boolean = false;
-  startingCity: City | undefined = undefined;
+  startingCity: CityTransferDto | undefined = undefined;
 
   constructor(private googleMapsService: GoogleMapsService) {}
 
@@ -120,13 +122,21 @@ export class CreateTripModalComponent
       const latitude = place.geometry?.location?.lat() ?? 0;
       const longitude = place.geometry?.location?.lng() ?? 0;
 
-      this.startingCity = new City(
+      var northEastBound = place.geometry?.viewport?.getNorthEast();
+      var southWestBound = place.geometry?.viewport?.getSouthWest();
+
+      if (northEastBound === undefined || southWestBound === undefined) {
+        // IMPORTANT: See how to handle this type of problem
+        return;
+      }
+
+      this.startingCity = new CityTransferDto(
         shortName,
         countryName,
         latitude,
         longitude,
-        new Date(),
-        new Date()
+        new LatLngBound(northEastBound!.lat(), northEastBound!.lng()),
+        new LatLngBound(southWestBound!.lat(), southWestBound!.lng())
       );
     });
     this.autocompleteInitializationFlag = true;

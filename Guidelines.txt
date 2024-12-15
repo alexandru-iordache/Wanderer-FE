@@ -27,5 +27,5 @@ TBD:
     - validation for add city component
     - refactor the create-trip-modal
   x - see the doouble click problem on the x Overlay 
-    - change font in overlay
+    - change font in overlay, marker
     - change maps cursor over a locality??

@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { ModalView } from '../helpers/modal-view.enum';
 import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
 import { AddCityDto } from '../../interfaces/dtos/add-city-dto';
+import { LatLngBound } from '../../interfaces/dtos/lat-lang-bound';
 
 @Component({
   selector: 'app-create-trip-page',
@@ -25,8 +26,19 @@ export class CreateTripPageComponent {
   markers: google.maps.marker.AdvancedMarkerElement[] = [];
 
   cityToAdd: CityTransferDto | undefined = undefined;
-  cityList: AddCityDto[] = [new AddCityDto('Barcelona', 'Spain', 41.3873974, 2.168568)];
-  
+  cityList: AddCityDto[] = [
+    new AddCityDto(
+      'Barcelona',
+      'Spain',
+      41.3873974,
+      2.168568,
+      new Date(),
+      1,
+      new LatLngBound(41.4682974272428, 2.22804492421789),
+      new LatLngBound(41.31703848925413, 2.052333262952554)
+    ),
+  ];
+
   modalClosed: boolean = true;
 
   constructor(
