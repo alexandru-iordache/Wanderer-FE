@@ -5,8 +5,8 @@ export class AddCityDto {
   country: string;
   latitude: number;
   longitude: number;
-  startDate: Date | null;
-  numberOfDays: number;
+  arrivalDate: Date | null;
+  numberOfNights: number;
   northEastBound: LatLngBound;
   southWestBound: LatLngBound;
 
@@ -24,8 +24,8 @@ export class AddCityDto {
     this.country = country;
     this.latitude = latitude;
     this.longitude = longitude;
-    this.startDate = startDate;
-    this.numberOfDays = numberOfDays;
+    this.arrivalDate = startDate;
+    this.numberOfNights = numberOfDays;
     this.northEastBound = northEastBound;
     this.southWestBound = southWestBound;
   }

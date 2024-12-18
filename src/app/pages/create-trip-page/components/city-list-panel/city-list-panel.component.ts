@@ -29,7 +29,11 @@ export class CityListPanelComponent
 {
   @Input() cityToAdd: CityTransferDto | undefined = undefined;
   @Input() cityList: AddCityDto[] = [];
+  @Input() startDate: Date | null = null;
   @Output() citySubmitted = new EventEmitter<{ city: AddCityDto }>();
+  @Output() citySelected = new EventEmitter<{
+    bounds: google.maps.LatLngBounds | null;
+  }>();
 
   @ViewChild('cityName') cityNameInput?: ElementRef<HTMLInputElement>;
 
@@ -47,14 +51,10 @@ export class CityListPanelComponent
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.addCityForm = this.formBuilder.group(
-      {
-        cityName: ['', [Validators.required]],
-        arrivalDate: ['', [Validators.required]],
-        numberOfDays: ['', [Validators.required]],
-      },
-      { validators: [datePickerValidator] }
-    );
+    this.addCityForm = this.formBuilder.group({
+      cityName: ['', [Validators.required]],
+      numberOfNights: ['', [Validators.required]],
+    });
 
     try {
       if (this.googleMapsService.isScriptLoaded() === false) {
@@ -96,20 +96,35 @@ export class CityListPanelComponent
 
       this.changeDetector.detectChanges();
     }
+
+    if (changes['startDate'] && (changes['startDate'].currentValue as Date)) {
+      this.startDate = new Date(changes['startDate'].currentValue);
+    }
   }
 
   onAddCitySubmit() {
     if (this.addCityForm.valid) {
-      const arrivalDate = this.addCityForm.get('arrivalDate')?.value;
-      const numberOfDays = this.addCityForm.get('numberOfDays')?.value;
+      const numberOfNights = this.addCityForm.get('numberOfNights')?.value;
 
       if (this.addCityDto === null) {
         // IMPORTANT: Error snackbar, unexepected error
         return;
       }
 
-      this.addCityDto!.startDate = new Date(arrivalDate);
-      this.addCityDto!.numberOfDays = numberOfDays;
+      let nights = this.cityList.reduce(
+        (sumOfNights, city) => sumOfNights + city.numberOfNights,
+        0
+      );
+
+      // console.log(nights);
+
+      let tempDate = new Date(this.startDate!);
+      tempDate.setDate(this.startDate!.getDate() + nights);
+
+      // console.log(tempDate);
+
+      this.addCityDto!.arrivalDate = tempDate;
+      this.addCityDto!.numberOfNights = numberOfNights;
 
       this.citySubmitted.emit({ city: this.addCityDto });
 
@@ -126,12 +141,18 @@ export class CityListPanelComponent
       ),
       new google.maps.LatLng(
         addCityDto.northEastBound.latitude,
-        addCityDto.northEastBound.latitude
+        addCityDto.northEastBound.longitude
       )
     );
+
+    this.citySelected.emit({ bounds: cityBounds });
   }
 
   setCurrentView(view: PanelView) {
+    if (this.currentView === PanelView.AddCityView) {
+      this.destroyAutocomplete();
+    }
+
     this.currentView = view;
     this.changeDetector.detectChanges();
 
@@ -141,10 +162,8 @@ export class CityListPanelComponent
         this.initializeAutocomplete();
         break;
       case PanelView.CitiesListView:
-        this.destroyAutocomplete();
         break;
       default:
-        this.destroyAutocomplete();
         break;
     }
   }
@@ -163,7 +182,7 @@ export class CityListPanelComponent
     this.autocomplete.addListener('place_changed', () => {
       let place = this.autocomplete!.getPlace();
 
-      this.cityNameInput!.nativeElement.value = place.formatted_address ?? '';
+      this.cityNameInput!.nativeElement.value = place.name ?? '';
       if (place === undefined) {
         // IMPORTANT: Modify drop down to show no result
         return;
@@ -175,7 +194,7 @@ export class CityListPanelComponent
       }
 
       // IMPORTANT: Show no result feedback, country filtering etc
-      const shortName =
+      const cityName =
         place.address_components
           .filter((x) => x.types.includes('locality'))
           .at(0)?.long_name ?? '';
@@ -191,11 +210,12 @@ export class CityListPanelComponent
 
       if (northEastBound === undefined || southWestBound === undefined) {
         // IMPORTANT: See how to handle this type of problem
+        console.error('Bounds of city cannot be found.');
         return;
       }
 
       this.addCityDto = new AddCityDto(
-        shortName,
+        cityName,
         countryName,
         latitude,
         longitude,

@@ -24,21 +24,24 @@ import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 export class MapComponent implements AfterViewInit, OnChanges {
   @Input() options: google.maps.MapOptions = {};
   @Input() cityList: AddCityDto[] = [];
+  @Input() selectedCityBounds: google.maps.LatLngBounds | null = null;
   @Output() cityToAdd = new EventEmitter<{ city: CityTransferDto }>();
   @ViewChild('map') mapElement?: ElementRef<HTMLDivElement>;
 
   map: google.maps.Map | null = null;
   private mapInitializationFlag: boolean = false;
   private cityOverlay: any | undefined = undefined;
+  private geocoder: google.maps.Geocoder;
 
-  private cityClickListener: google.maps.MapsEventListener | undefined =
-    undefined;
+  private cityClickListener: google.maps.MapsEventListener | null = null;
 
   constructor(
     private googleMapsService: GoogleMapsService,
     private googleComponentsFactoryService: GoogleComponentsFactoryService,
     private changeDetector: ChangeDetectorRef
-  ) {}
+  ) {
+    this.geocoder = new google.maps.Geocoder();
+  }
 
   async ngAfterViewInit(): Promise<void> {
     try {
@@ -46,6 +49,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
       await this.googleMapsService.getOverlayViewAsync();
       await this.googleMapsService.getMarkerAsync();
       this.initializeMap();
+      this.initializeCityClickListener();
       this.updateMarkers();
     } catch (error) {
       console.error('Error loading Google Maps script:', error);
@@ -55,6 +59,21 @@ export class MapComponent implements AfterViewInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['cityList']) {
       this.updateMarkers();
+      this.changeDetector.detectChanges();
+    }
+
+    if (changes['selectedCityBounds']) {
+      this.selectedCityBounds = changes['selectedCityBounds']
+        .currentValue as google.maps.LatLngBounds | null;
+
+      console.log(this.selectedCityBounds);
+
+      if (this.selectedCityBounds === null) {
+        this.unblockCityView();
+      } else {
+        this.blockCityView();
+      }
+
       this.changeDetector.detectChanges();
     }
   }
@@ -68,17 +87,18 @@ export class MapComponent implements AfterViewInit, OnChanges {
       this.mapElement!.nativeElement,
       this.options
     );
-    const geocoder = new google.maps.Geocoder();
 
-    this.cityClickListener = this.map.addListener(
+    this.mapInitializationFlag = true;
+  }
+
+  private initializeCityClickListener() {
+    this.cityClickListener = this.map!.addListener(
       'click',
       async (event: google.maps.MapMouseEvent) => {
         event.stop();
-        this.drawCityOverlayAsync(event, geocoder);
+        this.drawCityOverlayAsync(event, this.geocoder);
       }
     );
-
-    this.mapInitializationFlag = true;
   }
 
   private drawCityOverlayAsync(
@@ -160,6 +180,34 @@ export class MapComponent implements AfterViewInit, OnChanges {
           index + 1
         );
       });
+    }
+  }
+
+  private blockCityView() {
+    this.map?.fitBounds(this.selectedCityBounds!);
+    this.distroyListener();
+
+    this.map?.setOptions({
+      restriction: {
+        latLngBounds: this.selectedCityBounds!,
+        strictBounds: false,
+      },
+      minZoom: 5,
+    });
+  }
+
+  private unblockCityView() {
+    this.map?.setOptions(this.options);
+
+    if (this.cityClickListener !== null) {
+      this.initializeCityClickListener();
+    }
+  }
+
+  private distroyListener() {
+    if (this.cityClickListener) {
+      google.maps.event.removeListener(this.cityClickListener);
+      this.cityClickListener = null;
     }
   }
 }

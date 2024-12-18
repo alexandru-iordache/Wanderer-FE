@@ -5,7 +5,6 @@ import { environment } from '../../../environments/environment';
 import { ModalView } from '../helpers/modal-view.enum';
 import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
 import { AddCityDto } from '../../interfaces/dtos/add-city-dto';
-import { LatLngBound } from '../../interfaces/dtos/lat-lang-bound';
 
 @Component({
   selector: 'app-create-trip-page',
@@ -21,23 +20,13 @@ export class CreateTripPageComponent {
     streetViewControl: false,
     fullscreenControl: false,
     zoomControl: true,
-    mapTypeControl: false,
+    mapTypeControl: false
   };
-  markers: google.maps.marker.AdvancedMarkerElement[] = [];
 
   cityToAdd: CityTransferDto | undefined = undefined;
-  cityList: AddCityDto[] = [
-    new AddCityDto(
-      'Barcelona',
-      'Spain',
-      41.3873974,
-      2.168568,
-      new Date(),
-      1,
-      new LatLngBound(41.4682974272428, 2.22804492421789),
-      new LatLngBound(41.31703848925413, 2.052333262952554)
-    ),
-  ];
+  cityList: AddCityDto[] = [];
+  startDate: Date | null = new Date();
+  selectedCityBounds: google.maps.LatLngBounds | null = null;
 
   modalClosed: boolean = true;
 
@@ -51,10 +40,25 @@ export class CreateTripPageComponent {
     this.changeDetector.detectChanges();
   }
 
+  onTripStarted(tripStarted: { city: CityTransferDto; startDate: Date }) {
+    this.cityToAdd = tripStarted.city;
+    this.startDate = tripStarted.startDate;
+
+    this.changeDetector.detectChanges();
+  }
+
   onCitySubmitted(citySubmittedData: { city: AddCityDto }): void {
     this.cityList = [...this.cityList, citySubmittedData.city];
 
     console.log(this.cityList);
+    this.changeDetector.detectChanges();
+  }
+
+  onCitySelected(citySelectedData: { bounds: google.maps.LatLngBounds | null }) {
+    this.selectedCityBounds = citySelectedData.bounds;
+
+    console.log("here1");
+
     this.changeDetector.detectChanges();
   }
 

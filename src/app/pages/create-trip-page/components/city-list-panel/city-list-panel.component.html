@@ -8,11 +8,11 @@
         <span class="button-text">{{ city.name }}</span>
       </span>
       <div class="date-text">{{
-        city.startDate?.toLocaleDateString("en-US", {
+        city.arrivalDate?.toLocaleDateString("en-US", {
           day: "2-digit",
           month: "short"
         })
-      }} ({{city.numberOfDays}} {{city.numberOfDays === 1 ? "day" : "days"}})</div>
+      }} ({{city.numberOfNights}} {{city.numberOfNights === 1 ? "night" : "nights"}})</div>
     </div>
     <div class="option-button" (click)="setCurrentView(PanelView.AddCityView)">
       <span class="button-text-container">
@@ -44,24 +44,15 @@
           City name is required
         </small>
       </div>
-      <!-- IMPOTANT: Date Picker changes-->
-      <div class="form-row-section">
-        <label class="form-label">Arrival date</label>
-        <input type="date" formControlName="arrivalDate" />
-        <!-- <small *ngIf="loginForm.get('email')?.invalid 
-                    && loginForm.get('email')?.touched" class="text-danger">
-                Email is required!
-            </small> -->
-      </div>
       <div class="form-row-section number">
-        <label class="form-label number">No. of Days</label>
+        <label class="form-label number">No. of Nights</label>
         <input
           class="number"
           type="number"
-          formControlName="numberOfDays"
-          min="1"
+          formControlName="numberOfNights"
+          min="0"
           max="100"
-          value="1"
+          value="0"
         />
         <!-- <small *ngIf="loginForm.get('email')?.invalid 
                     && loginForm.get('email')?.touched" class="text-danger">

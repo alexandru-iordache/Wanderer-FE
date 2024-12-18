@@ -23,7 +23,10 @@ export class CreateTripModalComponent
   implements OnInit, AfterViewInit, AfterViewChecked
 {
   @Output() viewChanged = new EventEmitter<{ view: ModalView }>();
-  @Output() cityAdded = new EventEmitter<{ city: CityTransferDto }>();
+  @Output() tripStarted = new EventEmitter<{
+    city: CityTransferDto;
+    startDate: Date;
+  }>();
   @ViewChild('startingLocationInput')
   startingLocationInput?: ElementRef<HTMLInputElement>;
   @ViewChild('departureDate') departureDateInput?: ElementRef<HTMLInputElement>;
@@ -66,7 +69,15 @@ export class CreateTripModalComponent
 
   createTrip(): void {
     this.setCurrentView(ModalView.NoView);
-    this.cityAdded.emit({ city: this.startingCity! });
+
+    let startDateValue = new Date(
+      this.startingLocationInput?.nativeElement.value!
+    );
+
+    this.tripStarted.emit({
+      city: this.startingCity!,
+      startDate: startDateValue,
+    });
   }
 
   setCurrentView(view: ModalView): void {

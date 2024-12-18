@@ -2,17 +2,20 @@
   <app-map
     [options]="mapOptions"
     [cityList]="cityList"
+    [selectedCityBounds]="selectedCityBounds"
     (cityToAdd)="onCityToAdd($event)"
   ></app-map>
   <app-create-trip-modal
     (viewChanged)="onViewChanged($event)"
-    (cityAdded)="onCityToAdd($event)"
+    (tripStarted)="onTripStarted($event)"
     *ngIf="modalClosed === false"
   ></app-create-trip-modal>
 </div>
 <app-city-list-panel
   [cityToAdd]="cityToAdd"
   [cityList]="cityList"
+  [startDate]="startDate"
   (citySubmitted)="onCitySubmitted($event)"
+  (citySelected)="onCitySelected($event)"
   *ngIf="modalClosed === true"
 ></app-city-list-panel>

@@ -8,18 +8,19 @@ TBD IMPORTANT:
    x - interface for the google maps info window
    - mechanism to add cities from the panel
     x - autocomplete for cityName
-      - validations
-        - sort by endDate
-        - restrict date dropdown based on the other endDate 
-      - accomodation idea (later maybe)
+      - accomodation idea (later maybe) (when nigths > 0 show accomodation field ??)
       - waypoint list for city per day (mechansim to count the days and make multiple views for each day)
     x - markers
 
    x - redirect from the info window to the panel with the city selected
    x - see the problem why only one city emitted by the map is shown
-     - once the city is clicked from the panel or the city added is saved, block on the city view on maps(Google Maps Style Swap)
-     - city map lock
+   x - once the city is clicked from the panel or the city added is saved, block on the city view on maps(Google Maps Style Swap)
+        - on click done, remains to put it after the add
+        - create WayPoints structure
+        - stop infoWindows when the listener is disabled
+   x - city map lock
    x - Investigate City Panel and Page communication error
+     - drag and drop cities (rearrange the dates)
 
 TBD:
     - Enhance CreateTrip panel 
@@ -29,3 +30,4 @@ TBD:
   x - see the doouble click problem on the x Overlay 
     - change font in overlay, marker
     - change maps cursor over a locality??
+    - rename AddCityDto maybe??
