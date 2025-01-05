@@ -2,17 +2,25 @@
   <div class="panel-header"></div>
   <div class="city-list-panel">
     @switch (currentView) { @case (PanelView.CitiesListView) {
-    <div *ngFor="let city of cityList" class="option-button" (click)="clickCity(city)">
+    <div
+      *ngFor="let city of cityList"
+      class="option-button"
+      (click)="clickCity(city)"
+    >
       <span class="button-text-container">
         <div class="button-icon" id="city-icon"></div>
         <span class="button-text">{{ city.name }}</span>
       </span>
-      <div class="date-text">{{
-        city.arrivalDate?.toLocaleDateString("en-US", {
-          day: "2-digit",
-          month: "short"
-        })
-      }} ({{city.numberOfNights}} {{city.numberOfNights === 1 ? "night" : "nights"}})</div>
+      <div class="date-text">
+        {{
+          city.arrivalDate?.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short"
+          })
+        }}
+        ({{ city.numberOfNights }}
+        {{ city.numberOfNights === 1 ? "night" : "nights" }})
+      </div>
     </div>
     <div class="option-button" (click)="setCurrentView(PanelView.AddCityView)">
       <span class="button-text-container">
@@ -22,7 +30,7 @@
     </div>
     } @case (PanelView.AddCityView) {
     <form
-      class="add-city-form"
+      class="add-form"
       [formGroup]="addCityForm"
       (ngSubmit)="onAddCitySubmit()"
     >
@@ -54,10 +62,7 @@
           max="100"
           value="0"
         />
-        <!-- <small *ngIf="loginForm.get('email')?.invalid 
-                    && loginForm.get('email')?.touched" class="text-danger">
-                Email is required!
-            </small> -->
+        <!-- TODO: Add validations for the numbe rof nights and default 0 -->
       </div>
       <div class="buttons-section">
         <div
@@ -69,6 +74,92 @@
         <button type="submit" class="submit-button">Add city</button>
       </div>
     </form>
-    }}
+    } @case (PanelView.WaypointsListView) {
+    <div class="day-navigation">
+      <button
+        [class.hidden]="currentDayIndex === 0"
+        (click)="navigateToDay(currentDayIndex - 1)"
+        class="arrow"
+      >
+        &#9664;
+      </button>
+      <h3 class="day-header">
+        {{ getDateForDay(selectedCity!.arrivalDate!, currentDayIndex) }}
+      </h3>
+      <button
+        [class.hidden]="
+          currentDayIndex === (selectedCity?.waypoints)!.length - 1
+        "
+        (click)="navigateToDay(currentDayIndex + 1)"
+        class="arrow"
+      >
+        &#9654;
+      </button>
+    </div>
+    <div
+      *ngFor="let waypoint of selectedCity!.waypoints[currentDayIndex]"
+      class="option-button"
+    >
+      <span class="button-text-container">
+        <div class="button-icon" id="city-icon"></div>
+        <span class="button-text">{{ waypoint.name }}</span>
+      </span>
+      <div class="date-text">
+        {{ waypoint.startHour }}
+      </div>
+    </div>
+    <div class="option-button" (click)="setCurrentView(PanelView.AddWaypointView)">
+      <span class="button-text-container">
+        <div class="button-icon" id="add-icon"></div>
+        <span class="button-text">Add new waypoint</span>
+      </span>
+    </div>
+    }@case (PanelView.AddWaypointView) {
+      <form
+      class="add-form"
+      [formGroup]="addWaypointForm"
+      (ngSubmit)="onAddWaypointSubmit()"
+    >
+      <div class="form-row-section">
+        <label class="form-label">Waypoint Name</label>
+        <input
+          #waypointName
+          type="text"
+          formControlName="waypointName"
+          placeholder="Enter the waypoint name"
+        />
+        <small
+          *ngIf="
+            addCityForm.get('waypointName')?.invalid &&
+            addCityForm.get('waypointName')?.touched
+          "
+          class="text-danger"
+        >
+          Waypoint name is required
+        </small>
+      </div>
+      <div class="form-row-section number">
+        <label class="form-label number">No. of Hours</label>
+        <input
+          class="number"
+          type="number"
+          formControlName="numberOfHours"
+          min="0"
+          max="24"
+          value="0"
+        />
+        <!-- TODO: Add validations for the number of hours and default 1 -->
+      </div>
+      <div class="buttons-section">
+        <div
+          class="discard-button"
+          (click)="setCurrentView(PanelView.WaypointsListView)"
+        >
+          Discard
+        </div>
+        <button type="submit" class="submit-button">Add Waypoint</button>
+      </div>
+    </form>
+    } }
   </div>
 </div>

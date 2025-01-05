@@ -78,7 +78,7 @@
         background-image: url("../../../../../assets/icons/add-icon.svg");
       }
     }
-    
+
     .button-text-container {
       display: flex;
       align-items: center;
@@ -103,7 +103,7 @@
   }
 }
 
-.add-city-form {
+.add-form {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -203,5 +203,34 @@ input {
   &:hover {
     transition: 0.2s;
     background-color: $third-color-highlight;
+  }
+}
+
+.day-navigation {
+  width: 100%;
+  margin: 2px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .day-header {
+    margin: 0;
+    text-align: center;
+    color: $secondary-color;
+    font-family: $primary-font;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .arrow {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: $secondary-color;
+    cursor: pointer;
+  }
+
+  .arrow.hidden {
+    visibility: hidden;
   }
 }

@@ -1,4 +1,5 @@
-import { LatLngBound } from "./lat-lang-bound";
+import { AddWaypointDto } from './add-waypoint-dto';
+import { LatLngBound } from './lat-lang-bound';
 
 export class AddCityDto {
   name: string;
@@ -9,24 +10,34 @@ export class AddCityDto {
   numberOfNights: number;
   northEastBound: LatLngBound;
   southWestBound: LatLngBound;
+  waypoints: AddWaypointDto[][] = [];
 
   constructor(
     name: string,
     country: string,
     latitude: number,
     longitude: number,
-    startDate: Date | null,
-    numberOfDays: number,
+    arrivalDate: Date | null,
+    numberOfNights: number,
     northEastBound: LatLngBound,
-    southWestBound: LatLngBound
+    southWestBound: LatLngBound,
+    waypoints: AddWaypointDto[][]
   ) {
     this.name = name;
     this.country = country;
     this.latitude = latitude;
     this.longitude = longitude;
-    this.arrivalDate = startDate;
-    this.numberOfNights = numberOfDays;
+    this.arrivalDate = arrivalDate;
+    this.numberOfNights = numberOfNights;
     this.northEastBound = northEastBound;
     this.southWestBound = southWestBound;
+    this.waypoints = waypoints;
+  }
+
+  setNumberOfNights(numberOfNights: number) {
+    this.numberOfNights = numberOfNights;
+    this.waypoints = new Array(this.numberOfNights + 1)
+      .fill(undefined)
+      .map(() => []);
   }
 }

@@ -15,6 +15,8 @@ import { GoogleComponentsFactoryService } from '../../../../services/google-comp
 import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
 import { AddCityDto } from '../../../../interfaces/dtos/add-city-dto';
 import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
+import { SelectedCityDto } from '../../../../interfaces/dtos/selected-city-dto';
+import { AddWaypointDto } from '../../../../interfaces/dtos/add-waypoint-dto';
 
 @Component({
   selector: 'app-map',
@@ -24,13 +26,16 @@ import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 export class MapComponent implements AfterViewInit, OnChanges {
   @Input() options: google.maps.MapOptions = {};
   @Input() cityList: AddCityDto[] = [];
-  @Input() selectedCityBounds: google.maps.LatLngBounds | null = null;
+  @Input() selectedCity: SelectedCityDto | null = null;
   @Output() cityToAdd = new EventEmitter<{ city: CityTransferDto }>();
   @ViewChild('map') mapElement?: ElementRef<HTMLDivElement>;
 
+  currentDayIndex: number = 0;
   map: google.maps.Map | null = null;
   private mapInitializationFlag: boolean = false;
   private cityOverlay: any | undefined = undefined;
+  private cityMarkers: google.maps.marker.AdvancedMarkerElement[] = [];
+  private waypointMarkers: google.maps.marker.AdvancedMarkerElement[] = [];
   private geocoder: google.maps.Geocoder;
 
   private cityClickListener: google.maps.MapsEventListener | null = null;
@@ -50,7 +55,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
       await this.googleMapsService.getMarkerAsync();
       this.initializeMap();
       this.initializeCityClickListener();
-      this.updateMarkers();
+      this.renderCityMarkers();
     } catch (error) {
       console.error('Error loading Google Maps script:', error);
     }
@@ -58,17 +63,15 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['cityList']) {
-      this.updateMarkers();
+      this.renderCityMarkers();
       this.changeDetector.detectChanges();
     }
 
-    if (changes['selectedCityBounds']) {
-      this.selectedCityBounds = changes['selectedCityBounds']
-        .currentValue as google.maps.LatLngBounds | null;
+    if (changes['selectedCity']) {
+      this.selectedCity = changes['selectedCity']
+        .currentValue as SelectedCityDto | null;
 
-      console.log(this.selectedCityBounds);
-
-      if (this.selectedCityBounds === null) {
+      if (this.selectedCity === null) {
         this.unblockCityView();
       } else {
         this.blockCityView();
@@ -166,34 +169,61 @@ export class MapComponent implements AfterViewInit, OnChanges {
     });
   }
 
-  private updateMarkers(): void {
+  private renderCityMarkers(): void {
     if (this.map) {
       this.cityList.forEach((addCityDto, index) => {
-        this.googleComponentsFactoryService.createCityMarker(
+        let cityMarker = this.googleComponentsFactoryService.createMarker(
           this.map!,
           { lat: addCityDto.latitude, lng: addCityDto.longitude },
+          addCityDto.name,
           addCityDto,
           undefined,
           (city) => {
-            console.log(`Marker clicked for city: ${city.name}`);
+            console.log(`Marker clicked for city: ${(city as AddCityDto).name}`);
           },
           index + 1
         );
+
+        this.cityMarkers.push(cityMarker);
       });
     }
   }
 
+  private renderWaypointMarkers(): void {
+    if (this.map === null) {
+      return;
+    }
+
+    this.selectedCity!.selectedCity?.waypoints[this.currentDayIndex].forEach((waypointDto, index) => {
+      let cityMarker = this.googleComponentsFactoryService.createMarker(
+        this.map!,
+        { lat: waypointDto.latitude, lng: waypointDto.longitude },
+        waypointDto.name,
+        waypointDto,
+        undefined,
+        (waypoint) => {
+          console.log(`Marker clicked for waypoint: ${(waypoint as AddWaypointDto).name}`);
+        },
+        index + 1
+      );
+
+      this.cityMarkers.push(cityMarker);
+    });
+  }
+
   private blockCityView() {
-    this.map?.fitBounds(this.selectedCityBounds!);
-    this.distroyListener();
+    this.map?.fitBounds(this.selectedCity!.bounds!);
+    this.destroyListener();
 
     this.map?.setOptions({
       restriction: {
-        latLngBounds: this.selectedCityBounds!,
+        latLngBounds: this.selectedCity!.bounds!,
         strictBounds: false,
       },
       minZoom: 5,
     });
+
+    this.cityMarkers.forEach(marker => marker.map = null);
   }
 
   private unblockCityView() {
@@ -202,9 +232,11 @@ export class MapComponent implements AfterViewInit, OnChanges {
     if (this.cityClickListener !== null) {
       this.initializeCityClickListener();
     }
+
+    this.waypointMarkers.forEach(marker => marker.map = null);
   }
 
-  private distroyListener() {
+  private destroyListener() {
     if (this.cityClickListener) {
       google.maps.event.removeListener(this.cityClickListener);
       this.cityClickListener = null;

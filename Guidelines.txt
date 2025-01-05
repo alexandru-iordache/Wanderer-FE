@@ -9,23 +9,31 @@ TBD IMPORTANT:
    - mechanism to add cities from the panel
     x - autocomplete for cityName
       - accomodation idea (later maybe) (when nigths > 0 show accomodation field ??)
-      - waypoint list for city per day (mechansim to count the days and make multiple views for each day)
+    x - waypoint list for city per day (mechansim to count the days and make multiple views for each day)
     x - markers
 
    x - redirect from the info window to the panel with the city selected
    x - see the problem why only one city emitted by the map is shown
    x - once the city is clicked from the panel or the city added is saved, block on the city view on maps(Google Maps Style Swap)
-        - on click done, remains to put it after the add
-        - create WayPoints structure
+        - on click situation is done, remains to put it after the add situation
+      x - create WayPoints structure
         - stop infoWindows when the listener is disabled
    x - city map lock
    x - Investigate City Panel and Page communication error
      - drag and drop cities (rearrange the dates)
 
+     - add waypoint
+      x - restrict autocomplete
+        - come up with an hour/minutes idea (restrict to not begin before the last time entered in the past city/following city)
+        - render waypoint markers
+        - waypoint infoWindows
+        - close waypoint list view
+
 TBD:
     - Enhance CreateTrip panel 
     - DateTime picker solution
     - validation for add city component
+    - validaiton for add waypoint component
     - refactor the create-trip-modal
   x - see the doouble click problem on the x Overlay 
     - change font in overlay, marker

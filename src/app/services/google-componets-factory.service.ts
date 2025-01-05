@@ -96,12 +96,13 @@ export class GoogleComponentsFactoryService {
     return new CityOverlay(position, city, cityAdded);
   }
 
-  createCityMarker(
+  createMarker(
     map: google.maps.Map,
     position: google.maps.LatLngLiteral,
-    city: AddCityDto,
+    markerTitle: string,
+    relatedEntity: object,
     iconUrl?: string,
-    clickHandler?: (city: AddCityDto) => void,
+    clickHandler?: (relatedEntity: object) => void,
     order?: number
   ) {
     const markerContent = document.createElement('div');
@@ -149,12 +150,12 @@ export class GoogleComponentsFactoryService {
     const marker = new google.maps.marker.AdvancedMarkerElement({
       position,
       map,
-      title: city.name,
+      title: markerTitle,
       content: markerContent,
     });
 
     if (clickHandler) {
-      markerContent.addEventListener('click', () => clickHandler(city));
+      markerContent.addEventListener('click', () => clickHandler(relatedEntity));
     }
 
     return marker;

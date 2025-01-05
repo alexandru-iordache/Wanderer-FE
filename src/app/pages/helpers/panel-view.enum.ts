@@ -3,5 +3,5 @@ export enum PanelView {
   AddCityView = 1,
   AccomodationView = 2,
   WaypointsListView = 3,
-  WaypointView = 4
+  AddWaypointView = 4
 }

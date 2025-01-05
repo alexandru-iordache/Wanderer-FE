@@ -15,9 +15,9 @@ import { PanelView } from '../../../helpers/panel-view.enum';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
 import { AddCityDto } from '../../../../interfaces/dtos/add-city-dto';
-import { datePickerValidator } from '../../../../shared/helpers/validators';
 import { GoogleMapsService } from '../../../../services/google-maps.service';
 import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
+import { SelectedCityDto } from '../../../../interfaces/dtos/selected-city-dto';
 
 @Component({
   selector: 'app-city-list-panel',
@@ -32,17 +32,21 @@ export class CityListPanelComponent
   @Input() startDate: Date | null = null;
   @Output() citySubmitted = new EventEmitter<{ city: AddCityDto }>();
   @Output() citySelected = new EventEmitter<{
-    bounds: google.maps.LatLngBounds | null;
+    selectedCityDto: SelectedCityDto;
   }>();
 
   @ViewChild('cityName') cityNameInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('waypointName') waypointNameInput?: ElementRef<HTMLInputElement>;
 
-  public PanelView = PanelView;
-  private autocomplete: google.maps.places.Autocomplete | null = null;
+  PanelView = PanelView;
+  private cityAutocomplete: google.maps.places.Autocomplete | null = null;
+  private waypointAutocomplete: google.maps.places.Autocomplete | null = null;
   addCityForm: FormGroup = new FormGroup({});
+  addWaypointForm: FormGroup = new FormGroup({});
 
-  currentView: PanelView = PanelView.AddCityView; // change it
-  addCityDto: AddCityDto | null = null;
+  currentView: PanelView = PanelView.CitiesListView; // change it
+  selectedCity: AddCityDto | null = null;
+  currentDayIndex: number = 0;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -54,6 +58,11 @@ export class CityListPanelComponent
     this.addCityForm = this.formBuilder.group({
       cityName: ['', [Validators.required]],
       numberOfNights: ['', [Validators.required]],
+    });
+
+    this.addWaypointForm = this.formBuilder.group({
+      waypointName: ['', [Validators.required]],
+      numberOfHours: ['', [Validators.required]],
     });
 
     try {
@@ -68,7 +77,7 @@ export class CityListPanelComponent
   ngAfterViewInit(): void {
     if (this.currentView === PanelView.AddCityView) {
       this.addCityForm.reset();
-      this.initializeAutocomplete();
+      this.initializeCityAutocomplete();
     }
   }
 
@@ -83,7 +92,7 @@ export class CityListPanelComponent
       this.setCurrentView(PanelView.AddCityView);
 
       this.addCityForm.get('cityName')?.setValue(cityTransferDto.name);
-      this.addCityDto = new AddCityDto(
+      this.selectedCity = new AddCityDto(
         cityTransferDto.name,
         cityTransferDto.country,
         cityTransferDto.latitude,
@@ -91,7 +100,8 @@ export class CityListPanelComponent
         null,
         0,
         cityTransferDto.northEastBound,
-        cityTransferDto.southWestBound
+        cityTransferDto.southWestBound,
+        []
       );
 
       this.changeDetector.detectChanges();
@@ -106,7 +116,7 @@ export class CityListPanelComponent
     if (this.addCityForm.valid) {
       const numberOfNights = this.addCityForm.get('numberOfNights')?.value;
 
-      if (this.addCityDto === null) {
+      if (this.selectedCity === null) {
         // IMPORTANT: Error snackbar, unexepected error
         return;
       }
@@ -116,41 +126,72 @@ export class CityListPanelComponent
         0
       );
 
-      // console.log(nights);
-
       let tempDate = new Date(this.startDate!);
       tempDate.setDate(this.startDate!.getDate() + nights);
 
-      // console.log(tempDate);
+      this.selectedCity!.arrivalDate = tempDate;
+      this.selectedCity!.setNumberOfNights(numberOfNights);
 
-      this.addCityDto!.arrivalDate = tempDate;
-      this.addCityDto!.numberOfNights = numberOfNights;
-
-      this.citySubmitted.emit({ city: this.addCityDto });
+      this.citySubmitted.emit({ city: this.selectedCity });
 
       this.setCurrentView(PanelView.CitiesListView);
     }
   }
 
-  clickCity(addCityDto: AddCityDto) {
-    console.log('City clicked: ' + addCityDto.name);
+  onAddWaypointSubmit() {
+    if (this.addWaypointForm.valid) {
+      const numberOfHours = this.addWaypointForm.get('numberOfHours')?.value;
+
+      if (this.selectedCity === null) {
+        // IMPORTANT: Error snackbar, unexepected error
+        return;
+      }
+
+      let nights = this.cityList.reduce(
+        (sumOfNights, city) => sumOfNights + city.numberOfNights,
+        0
+      );
+
+      let tempDate = new Date(this.startDate!);
+      tempDate.setDate(this.startDate!.getDate() + nights);
+
+      this.selectedCity!.arrivalDate = tempDate;
+      this.selectedCity!.setNumberOfNights(numberOfHours);
+
+      this.citySubmitted.emit({ city: this.selectedCity });
+
+      this.setCurrentView(PanelView.CitiesListView);
+    }
+  }
+
+  clickCity(selectedCity: AddCityDto) {
+    console.log('City clicked: ' + selectedCity.name);
     const cityBounds = new google.maps.LatLngBounds(
       new google.maps.LatLng(
-        addCityDto.southWestBound.latitude,
-        addCityDto.southWestBound.longitude
+        selectedCity.southWestBound.latitude,
+        selectedCity.southWestBound.longitude
       ),
       new google.maps.LatLng(
-        addCityDto.northEastBound.latitude,
-        addCityDto.northEastBound.longitude
+        selectedCity.northEastBound.latitude,
+        selectedCity.northEastBound.longitude
       )
     );
 
-    this.citySelected.emit({ bounds: cityBounds });
+    this.selectedCity = selectedCity;
+    this.setCurrentView(PanelView.WaypointsListView);
+
+    this.citySelected.emit({
+      selectedCityDto: new SelectedCityDto(selectedCity, cityBounds),
+    });
   }
 
   setCurrentView(view: PanelView) {
-    if (this.currentView === PanelView.AddCityView) {
-      this.destroyAutocomplete();
+    if (this.currentView !== PanelView.AddCityView) {
+      this.destroyAutocomplete(this.cityAutocomplete);
+    }
+
+    if (this.currentView !== PanelView.AddWaypointView) {
+      this.destroyAutocomplete(this.waypointAutocomplete);
     }
 
     this.currentView = view;
@@ -159,28 +200,50 @@ export class CityListPanelComponent
     switch (view) {
       case PanelView.AddCityView:
         this.addCityForm.reset();
-        this.initializeAutocomplete();
+        this.initializeCityAutocomplete();
         break;
       case PanelView.CitiesListView:
+        break;
+      case PanelView.AddWaypointView:
+        this.addWaypointForm.reset();
+        this.initializeWaypointAutocomplete();
+        break;
+      case PanelView.WaypointsListView:
         break;
       default:
         break;
     }
   }
 
-  private initializeAutocomplete() {
+  navigateToDay(dayIndex: number): void {
+    this.currentDayIndex = dayIndex;
+  }
+
+  getDateForDay(startDate: Date, dayIndex: number): string {
+    const result = new Date(startDate);
+    result.setDate(startDate.getDate() + dayIndex);
+    return result.toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'long',
+    });
+  }
+
+  private initializeCityAutocomplete() {
     if (this.cityNameInput?.nativeElement === undefined) {
+      console.error(
+        'City Name Input is not rendered. The autocomplete cannot be initialized.'
+      );
       return;
     }
 
-    this.autocomplete = new google.maps.places.Autocomplete(
+    this.cityAutocomplete = new google.maps.places.Autocomplete(
       this.cityNameInput!.nativeElement,
       {
         types: ['(cities)'],
       }
     );
-    this.autocomplete.addListener('place_changed', () => {
-      let place = this.autocomplete!.getPlace();
+    this.cityAutocomplete.addListener('place_changed', () => {
+      let place = this.cityAutocomplete!.getPlace();
 
       this.cityNameInput!.nativeElement.value = place.name ?? '';
       if (place === undefined) {
@@ -214,7 +277,7 @@ export class CityListPanelComponent
         return;
       }
 
-      this.addCityDto = new AddCityDto(
+      this.selectedCity = new AddCityDto(
         cityName,
         countryName,
         latitude,
@@ -222,15 +285,95 @@ export class CityListPanelComponent
         null,
         0,
         new LatLngBound(northEastBound!.lat(), northEastBound!.lng()),
-        new LatLngBound(southWestBound!.lat(), southWestBound!.lng())
+        new LatLngBound(southWestBound!.lat(), southWestBound!.lng()),
+        []
       );
     });
   }
 
-  private destroyAutocomplete() {
-    if (this.autocomplete) {
-      google.maps.event.clearInstanceListeners(this.autocomplete);
-      this.autocomplete = null;
+  private initializeWaypointAutocomplete() {
+    if (this.waypointNameInput?.nativeElement === undefined) {
+      console.error(
+        'Waypoint Name Input is not rendered. The autocomplete cannot be initialized.'
+      );
+      return;
+    }
+
+    if (this.selectedCity === null) {
+      console.error(
+        'No city is selected. The autocomplete cannot be initialized.'
+      );
+      return;
+    }
+
+    this.waypointAutocomplete = new google.maps.places.Autocomplete(
+      this.waypointNameInput!.nativeElement,
+      {
+        types: ['establishment'],
+        fields: ['name', 'latitude', 'longitude', 'types', 'place_id'],
+        bounds: new google.maps.LatLngBounds(
+          new google.maps.LatLng(this.selectedCity.southWestBound.latitude, this.selectedCity.southWestBound.longitude),
+          new google.maps.LatLng(this.selectedCity.northEastBound.latitude, this.selectedCity.northEastBound.longitude) 
+        ),
+        strictBounds: true
+      }
+    );
+
+    this.waypointAutocomplete.addListener('place_changed', () => {
+      let place = this.waypointAutocomplete!.getPlace();
+
+      this.waypointNameInput!.nativeElement.value = place.name ?? '';
+      if (place === undefined) {
+        // IMPORTANT: Modify drop down to show no result
+        return;
+      }
+
+      if (place.address_components === undefined) {
+        // IMPORTANT: See how to handle this type of problem
+        return;
+      }
+
+      // IMPORTANT: Show no result feedback, country filtering etc
+      const cityName =
+        place.address_components
+          .filter((x) => x.types.includes('locality'))
+          .at(0)?.long_name ?? '';
+      const countryName =
+        place.address_components
+          .filter((x) => x.types.includes('country'))
+          .at(0)?.long_name ?? '';
+      const latitude = place.geometry?.location?.lat() ?? 0;
+      const longitude = place.geometry?.location?.lng() ?? 0;
+
+      var northEastBound = place.geometry?.viewport?.getNorthEast();
+      var southWestBound = place.geometry?.viewport?.getSouthWest();
+
+      if (northEastBound === undefined || southWestBound === undefined) {
+        // IMPORTANT: See how to handle this type of problem
+        console.error('Bounds of city cannot be found.');
+        return;
+      }
+
+      // this.selectedCity = new AddCityDto(
+      //   cityName,
+      //   countryName,
+      //   latitude,
+      //   longitude,
+      //   null,
+      //   0,
+      //   new LatLngBound(northEastBound!.lat(), northEastBound!.lng()),
+      //   new LatLngBound(southWestBound!.lat(), southWestBound!.lng()),
+      //   []
+      // );
+    });
+  }
+
+  private destroyAutocomplete(
+    autocomplete: google.maps.places.Autocomplete | null
+  ) {
+    if (autocomplete) {
+      google.maps.event.clearInstanceListeners(autocomplete);
+      autocomplete = null;
     }
   }
 }

@@ -5,6 +5,8 @@ import { environment } from '../../../environments/environment';
 import { ModalView } from '../helpers/modal-view.enum';
 import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
 import { AddCityDto } from '../../interfaces/dtos/add-city-dto';
+import { SelectedCityDto } from '../../interfaces/dtos/selected-city-dto';
+import { LatLngBound } from '../../interfaces/dtos/lat-lang-bound';
 
 @Component({
   selector: 'app-create-trip-page',
@@ -20,13 +22,25 @@ export class CreateTripPageComponent {
     streetViewControl: false,
     fullscreenControl: false,
     zoomControl: true,
-    mapTypeControl: false
+    mapTypeControl: false,
   };
 
-  cityToAdd: CityTransferDto | undefined = undefined;
-  cityList: AddCityDto[] = [];
+  cityToAdd: CityTransferDto | undefined = undefined; // to be changed
+  cityList: AddCityDto[] = [
+    new AddCityDto(
+      'Bârlad',
+      'Romania',
+      46.2276613,
+      27.6692265,
+      new Date('2025-01-05T14:00:05.444Z'),
+      3,
+      new LatLngBound(46.26240424613476, 27.69721986114218),
+      new LatLngBound(46.19940878412697, 27.63958457457981),
+      [[], [], [], []]
+    ),
+  ]; // to be changed
   startDate: Date | null = new Date();
-  selectedCityBounds: google.maps.LatLngBounds | null = null;
+  selectedCity: SelectedCityDto | null = null;
 
   modalClosed: boolean = true;
 
@@ -54,10 +68,10 @@ export class CreateTripPageComponent {
     this.changeDetector.detectChanges();
   }
 
-  onCitySelected(citySelectedData: { bounds: google.maps.LatLngBounds | null }) {
-    this.selectedCityBounds = citySelectedData.bounds;
-
-    console.log("here1");
+  onCitySelected(citySelectedData: {
+    selectedCityDto: SelectedCityDto | null;
+  }) {
+    this.selectedCity = citySelectedData.selectedCityDto;
 
     this.changeDetector.detectChanges();
   }
