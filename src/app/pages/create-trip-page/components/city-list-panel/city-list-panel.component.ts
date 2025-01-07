@@ -18,6 +18,14 @@ import { AddCityDto } from '../../../../interfaces/dtos/add-city-dto';
 import { GoogleMapsService } from '../../../../services/google-maps.service';
 import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 import { SelectedCityDto } from '../../../../interfaces/dtos/selected-city-dto';
+import { AddWaypointDto } from '../../../../interfaces/dtos/add-waypoint-dto';
+import { WaypointTransferDto } from '../../../../interfaces/dtos/waypoint-transfer-dto';
+import {
+  ATTRACTIONS_WAYPOINT_TYPES,
+  FOOD_WAYPOINT_TYPES,
+  RECREATIONAL_WAYPOINT_TYPES,
+} from '../../../../shared/helpers/preferred-waypoint-types';
+import { WaypointType } from '../../../helpers/waypoint-type.enum';
 
 @Component({
   selector: 'app-city-list-panel',
@@ -30,9 +38,16 @@ export class CityListPanelComponent
   @Input() cityToAdd: CityTransferDto | undefined = undefined;
   @Input() cityList: AddCityDto[] = [];
   @Input() startDate: Date | null = null;
+  @Input() viewChanged: PanelView | null = null;
   @Output() citySubmitted = new EventEmitter<{ city: AddCityDto }>();
+  @Output() waypointSubmitted = new EventEmitter<{
+    waypoint: AddWaypointDto;
+  }>();
   @Output() citySelected = new EventEmitter<{
     selectedCityDto: SelectedCityDto;
+  }>();
+  @Output() dayChanged = new EventEmitter<{
+    dayIndex: number;
   }>();
 
   @ViewChild('cityName') cityNameInput?: ElementRef<HTMLInputElement>;
@@ -45,6 +60,8 @@ export class CityListPanelComponent
   addWaypointForm: FormGroup = new FormGroup({});
 
   currentView: PanelView = PanelView.CitiesListView; // change it
+  cityInAddProcess: AddCityDto | null = null;
+  waypointInAddProcess: AddWaypointDto | null = null;
   selectedCity: AddCityDto | null = null;
   currentDayIndex: number = 0;
 
@@ -62,7 +79,10 @@ export class CityListPanelComponent
 
     this.addWaypointForm = this.formBuilder.group({
       waypointName: ['', [Validators.required]],
-      numberOfHours: ['', [Validators.required]],
+      startHour: ['', [Validators.required]],
+      startMinutes: ['', [Validators.required]],
+      endHour: ['', [Validators.required]],
+      endMinutes: ['', [Validators.required]],
     });
 
     try {
@@ -92,7 +112,7 @@ export class CityListPanelComponent
       this.setCurrentView(PanelView.AddCityView);
 
       this.addCityForm.get('cityName')?.setValue(cityTransferDto.name);
-      this.selectedCity = new AddCityDto(
+      this.cityInAddProcess = new AddCityDto(
         cityTransferDto.name,
         cityTransferDto.country,
         cityTransferDto.latitude,
@@ -103,20 +123,55 @@ export class CityListPanelComponent
         cityTransferDto.southWestBound,
         []
       );
+    }
 
-      this.changeDetector.detectChanges();
+    if (
+      changes['waypointToAdd'] &&
+      (changes['waypointToAdd'].currentValue as WaypointTransferDto)
+    ) {
+      let waypointTransferDto = changes['waypointToAdd']
+        .currentValue as WaypointTransferDto;
+
+      this.setCurrentView(PanelView.AddWaypointView);
+
+      this.addWaypointForm
+        .get('waypointName')
+        ?.setValue(waypointTransferDto.name);
+      this.waypointInAddProcess = new AddWaypointDto(
+        waypointTransferDto.name,
+        waypointTransferDto.type,
+        waypointTransferDto.placeId,
+        waypointTransferDto.latitude,
+        waypointTransferDto.longitude,
+        '',
+        ''
+      );
     }
 
     if (changes['startDate'] && (changes['startDate'].currentValue as Date)) {
       this.startDate = new Date(changes['startDate'].currentValue);
     }
+
+    if (
+      changes['viewChanged'] &&
+      changes['viewChanged'].currentValue !== null
+    ) {
+      const view = changes['viewChanged'].currentValue as PanelView;
+      this.setCurrentView(view);
+
+      if(view === PanelView.CitiesListView){
+        this.currentDayIndex = 0;
+      }
+    }
+
+    this.changeDetector.detectChanges();
   }
 
   onAddCitySubmit() {
     if (this.addCityForm.valid) {
       const numberOfNights = this.addCityForm.get('numberOfNights')?.value;
 
-      if (this.selectedCity === null) {
+      if (this.cityInAddProcess === null) {
         // IMPORTANT: Error snackbar, unexepected error
         return;
       }
@@ -129,10 +184,10 @@ export class CityListPanelComponent
       let tempDate = new Date(this.startDate!);
       tempDate.setDate(this.startDate!.getDate() + nights);
 
-      this.selectedCity!.arrivalDate = tempDate;
-      this.selectedCity!.setNumberOfNights(numberOfNights);
+      this.cityInAddProcess.arrivalDate = tempDate;
+      this.cityInAddProcess.setNumberOfNights(numberOfNights);
 
-      this.citySubmitted.emit({ city: this.selectedCity });
+      this.citySubmitted.emit({ city: this.cityInAddProcess });
 
       this.setCurrentView(PanelView.CitiesListView);
     }
@@ -140,31 +195,29 @@ export class CityListPanelComponent
 
   onAddWaypointSubmit() {
     if (this.addWaypointForm.valid) {
-      const numberOfHours = this.addWaypointForm.get('numberOfHours')?.value;
+      const startHour = this.addWaypointForm.get('startHour')?.value;
+      const startMinutes = this.addWaypointForm.get('startMinutes')?.value;
 
-      if (this.selectedCity === null) {
+      const endHour = this.addWaypointForm.get('endHour')?.value;
+      const endMinutes = this.addWaypointForm.get('endMinutes')?.value;
+
+      if (this.waypointInAddProcess === null) {
         // IMPORTANT: Error snackbar, unexepected error
         return;
       }
 
-      let nights = this.cityList.reduce(
-        (sumOfNights, city) => sumOfNights + city.numberOfNights,
-        0
-      );
+      this.waypointInAddProcess!.startTime = `${startHour}:${startMinutes}`;
+      this.waypointInAddProcess!.endTime = `${endHour}:${endMinutes}`;
 
-      let tempDate = new Date(this.startDate!);
-      tempDate.setDate(this.startDate!.getDate() + nights);
+      this.waypointSubmitted.emit({ waypoint: this.waypointInAddProcess });
+      this.waypointInAddProcess = null;
+      this.setCurrentView(PanelView.WaypointsListView);
 
-      this.selectedCity!.arrivalDate = tempDate;
-      this.selectedCity!.setNumberOfNights(numberOfHours);
-
-      this.citySubmitted.emit({ city: this.selectedCity });
-
-      this.setCurrentView(PanelView.CitiesListView);
+      this.changeDetector.detectChanges();
     }
   }
 
-  clickCity(selectedCity: AddCityDto) {
+  onCityClick(selectedCity: AddCityDto) {
     console.log('City clicked: ' + selectedCity.name);
     const cityBounds = new google.maps.LatLngBounds(
       new google.maps.LatLng(
@@ -217,6 +270,8 @@ export class CityListPanelComponent
 
   navigateToDay(dayIndex: number): void {
     this.currentDayIndex = dayIndex;
+
+    this.dayChanged.emit({ dayIndex: this.currentDayIndex });
   }
 
   getDateForDay(startDate: Date, dayIndex: number): string {
@@ -277,7 +332,7 @@ export class CityListPanelComponent
         return;
       }
 
-      this.selectedCity = new AddCityDto(
+      this.cityInAddProcess = new AddCityDto(
         cityName,
         countryName,
         latitude,
@@ -310,61 +365,57 @@ export class CityListPanelComponent
       this.waypointNameInput!.nativeElement,
       {
         types: ['establishment'],
-        fields: ['name', 'latitude', 'longitude', 'types', 'place_id'],
+        fields: ['name', 'types', 'place_id', 'geometry'],
         bounds: new google.maps.LatLngBounds(
-          new google.maps.LatLng(this.selectedCity.southWestBound.latitude, this.selectedCity.southWestBound.longitude),
-          new google.maps.LatLng(this.selectedCity.northEastBound.latitude, this.selectedCity.northEastBound.longitude) 
+          new google.maps.LatLng(
+            this.selectedCity.southWestBound.latitude,
+            this.selectedCity.southWestBound.longitude
+          ),
+          new google.maps.LatLng(
+            this.selectedCity.northEastBound.latitude,
+            this.selectedCity.northEastBound.longitude
+          )
         ),
-        strictBounds: true
+        strictBounds: true,
       }
     );
 
     this.waypointAutocomplete.addListener('place_changed', () => {
       let place = this.waypointAutocomplete!.getPlace();
-
-      this.waypointNameInput!.nativeElement.value = place.name ?? '';
       if (place === undefined) {
         // IMPORTANT: Modify drop down to show no result
+        console.error('No results found.');
         return;
       }
 
-      if (place.address_components === undefined) {
-        // IMPORTANT: See how to handle this type of problem
+      const waypointName = place.name?.split(',')[0] ?? '';
+      const waypointType = this.getWaypointType(place.types!);
+
+      if (waypointType === WaypointType.Unkwnown) {
+        // IMPORTANT: Add snackbar to indicate that type is not permitted
+        console.error('Waypoint type is not supported.');
+        this.waypointNameInput!.nativeElement.value = '';
         return;
       }
+
+      this.waypointNameInput!.nativeElement.value = waypointName;
 
       // IMPORTANT: Show no result feedback, country filtering etc
-      const cityName =
-        place.address_components
-          .filter((x) => x.types.includes('locality'))
-          .at(0)?.long_name ?? '';
-      const countryName =
-        place.address_components
-          .filter((x) => x.types.includes('country'))
-          .at(0)?.long_name ?? '';
+      const placeId = place.place_id ?? '';
       const latitude = place.geometry?.location?.lat() ?? 0;
       const longitude = place.geometry?.location?.lng() ?? 0;
 
-      var northEastBound = place.geometry?.viewport?.getNorthEast();
-      var southWestBound = place.geometry?.viewport?.getSouthWest();
+      this.waypointInAddProcess = new AddWaypointDto(
+        waypointName,
+        waypointType.toString(),
+        placeId,
+        latitude,
+        longitude,
+        '',
+        ''
+      );
 
-      if (northEastBound === undefined || southWestBound === undefined) {
-        // IMPORTANT: See how to handle this type of problem
-        console.error('Bounds of city cannot be found.');
-        return;
-      }
-
-      // this.selectedCity = new AddCityDto(
-      //   cityName,
-      //   countryName,
-      //   latitude,
-      //   longitude,
-      //   null,
-      //   0,
-      //   new LatLngBound(northEastBound!.lat(), northEastBound!.lng()),
-      //   new LatLngBound(southWestBound!.lat(), southWestBound!.lng()),
-      //   []
-      // );
+      console.log(this.waypointInAddProcess);
     });
   }
 
@@ -375,5 +426,30 @@ export class CityListPanelComponent
       google.maps.event.clearInstanceListeners(autocomplete);
       autocomplete = null;
     }
+  }
+
+  private getWaypointType(types: string[]): WaypointType {
+    const foodMatch = types.find((type) =>
+      FOOD_WAYPOINT_TYPES.find((knownType) => knownType === type)
+    );
+    if (foodMatch) {
+      return WaypointType.Food;
+    }
+
+    const recreationalMatch = types.find((type) =>
+      RECREATIONAL_WAYPOINT_TYPES.find((knownType) => knownType === type)
+    );
+    if (recreationalMatch) {
+      return WaypointType.Recreational;
+    }
+
+    const attractionMatch = types.find((type) =>
+      ATTRACTIONS_WAYPOINT_TYPES.find((knownType) => knownType === type)
+    );
+    if (attractionMatch) {
+      return WaypointType.Attraction;
+    }
+
+    return WaypointType.Unkwnown;
   }
 }

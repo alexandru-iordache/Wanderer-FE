@@ -2,7 +2,8 @@
   <app-map
     [options]="mapOptions"
     [cityList]="cityList"
-    [selectedCity]="selectedCity"
+    [selectedCity]="selectedCityDto"
+    [currentDayIndex]="currentDayIndex"
     (cityToAdd)="onCityToAdd($event)"
   ></app-map>
   <app-create-trip-modal
@@ -15,7 +16,13 @@
   [cityToAdd]="cityToAdd"
   [cityList]="cityList"
   [startDate]="startDate"
+  [viewChanged]="panelViewToSet"
   (citySubmitted)="onCitySubmitted($event)"
+  (waypointSubmitted)="onWaypointSubmitted($event)"
   (citySelected)="onCitySelected($event)"
+  (dayChanged)="onDayChanged($event)"
   *ngIf="modalClosed === true"
 ></app-city-list-panel>
+<div class="exit-city-button-container" *ngIf="selectedCityDto">
+  <button class="exit-city-button" (click)="onExitCityView()">Exit City View</button>
+</div>

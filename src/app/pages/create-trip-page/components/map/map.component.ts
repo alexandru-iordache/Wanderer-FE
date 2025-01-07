@@ -27,10 +27,10 @@ export class MapComponent implements AfterViewInit, OnChanges {
   @Input() options: google.maps.MapOptions = {};
   @Input() cityList: AddCityDto[] = [];
   @Input() selectedCity: SelectedCityDto | null = null;
+  @Input() currentDayIndex: number = 0;
   @Output() cityToAdd = new EventEmitter<{ city: CityTransferDto }>();
   @ViewChild('map') mapElement?: ElementRef<HTMLDivElement>;
 
-  currentDayIndex: number = 0;
   map: google.maps.Map | null = null;
   private mapInitializationFlag: boolean = false;
   private cityOverlay: any | undefined = undefined;
@@ -63,8 +63,12 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['cityList']) {
-      this.renderCityMarkers();
-      this.changeDetector.detectChanges();
+      if (this.selectedCity !== null) {
+        this.removeMarkers(this.waypointMarkers);
+        this.renderWaypointMarkers();
+      } else {
+        this.renderCityMarkers();
+      }
     }
 
     if (changes['selectedCity']) {
@@ -72,13 +76,24 @@ export class MapComponent implements AfterViewInit, OnChanges {
         .currentValue as SelectedCityDto | null;
 
       if (this.selectedCity === null) {
+        this.removeMarkers(this.waypointMarkers);
         this.unblockCityView();
       } else {
+        this.removeMarkers(this.cityMarkers);
         this.blockCityView();
       }
-
-      this.changeDetector.detectChanges();
     }
+
+    if (changes['currentDayIndex']) {
+      this.currentDayIndex = changes['currentDayIndex'].currentValue as number;
+
+      if (this.selectedCity !== null) {
+        this.removeMarkers(this.waypointMarkers);
+        this.renderWaypointMarkers();
+      }
+    }
+
+    this.changeDetector.detectChanges();
   }
 
   private initializeMap(): void {
@@ -179,7 +194,9 @@ export class MapComponent implements AfterViewInit, OnChanges {
           addCityDto,
           undefined,
           (city) => {
-            console.log(`Marker clicked for city: ${(city as AddCityDto).name}`);
+            console.log(
+              `Marker clicked for city: ${(city as AddCityDto).name}`
+            );
           },
           index + 1
         );
@@ -194,25 +211,30 @@ export class MapComponent implements AfterViewInit, OnChanges {
       return;
     }
 
-    this.selectedCity!.selectedCity?.waypoints[this.currentDayIndex].forEach((waypointDto, index) => {
-      let cityMarker = this.googleComponentsFactoryService.createMarker(
-        this.map!,
-        { lat: waypointDto.latitude, lng: waypointDto.longitude },
-        waypointDto.name,
-        waypointDto,
-        undefined,
-        (waypoint) => {
-          console.log(`Marker clicked for waypoint: ${(waypoint as AddWaypointDto).name}`);
-        },
-        index + 1
-      );
+    this.selectedCity!.selectedCity?.waypoints[this.currentDayIndex].forEach(
+      (waypointDto, index) => {
+        let cityMarker = this.googleComponentsFactoryService.createMarker(
+          this.map!,
+          { lat: waypointDto.latitude, lng: waypointDto.longitude },
+          waypointDto.name,
+          waypointDto,
+          undefined,
+          (waypoint) => {
+            console.log(
+              `Marker clicked for waypoint: ${
+                (waypoint as AddWaypointDto).name
+              }`
+            );
+          },
+          index + 1
+        );
 
-      this.cityMarkers.push(cityMarker);
-    });
+        this.waypointMarkers.push(cityMarker);
+      }
+    );
   }
 
   private blockCityView() {
-    this.map?.fitBounds(this.selectedCity!.bounds!);
     this.destroyListener();
 
     this.map?.setOptions({
@@ -223,7 +245,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
       minZoom: 5,
     });
 
-    this.cityMarkers.forEach(marker => marker.map = null);
+    this.renderWaypointMarkers();
   }
 
   private unblockCityView() {
@@ -233,7 +255,11 @@ export class MapComponent implements AfterViewInit, OnChanges {
       this.initializeCityClickListener();
     }
 
-    this.waypointMarkers.forEach(marker => marker.map = null);
+    this.renderCityMarkers();
+  }
+
+  private removeMarkers(markers: google.maps.marker.AdvancedMarkerElement[]) {
+    markers.forEach((marker) => (marker.map = null));
   }
 
   private destroyListener() {

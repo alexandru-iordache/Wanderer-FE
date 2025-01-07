@@ -5,7 +5,7 @@
     <div
       *ngFor="let city of cityList"
       class="option-button"
-      (click)="clickCity(city)"
+      (click)="onCityClick(city)"
     >
       <span class="button-text-container">
         <div class="button-icon" id="city-icon"></div>
@@ -105,17 +105,20 @@
         <span class="button-text">{{ waypoint.name }}</span>
       </span>
       <div class="date-text">
-        {{ waypoint.startHour }}
+        {{ waypoint.startTime }}
       </div>
     </div>
-    <div class="option-button" (click)="setCurrentView(PanelView.AddWaypointView)">
+    <div
+      class="option-button"
+      (click)="setCurrentView(PanelView.AddWaypointView)"
+    >
       <span class="button-text-container">
         <div class="button-icon" id="add-icon"></div>
         <span class="button-text">Add new waypoint</span>
       </span>
     </div>
     }@case (PanelView.AddWaypointView) {
-      <form
+    <form
       class="add-form"
       [formGroup]="addWaypointForm"
       (ngSubmit)="onAddWaypointSubmit()"
@@ -139,15 +142,51 @@
         </small>
       </div>
       <div class="form-row-section number">
-        <label class="form-label number">No. of Hours</label>
-        <input
-          class="number"
-          type="number"
-          formControlName="numberOfHours"
-          min="0"
-          max="24"
-          value="0"
-        />
+        <label class="form-label number">Start Time</label>
+        <span class="time-counter">
+          <input
+            class="number"
+            type="number"
+            formControlName="startHour"
+            min="0"
+            max="24"
+            value="0"
+          />
+          h
+          <input
+            class="number"
+            type="number"
+            formControlName="startMinutes"
+            min="0"
+            max="60"
+            value="0"
+          />
+          m
+        </span>
+        <!-- TODO: Add validations for the number of hours and default 1 -->
+      </div>
+      <div class="form-row-section number">
+        <label class="form-label number">End Time</label>
+        <span class="time-counter">
+          <input
+            class="number"
+            type="number"
+            formControlName="endHour"
+            min="0"
+            max="24"
+            value="0"
+          />
+          h
+          <input
+            class="number"
+            type="number"
+            formControlName="endMinutes"
+            min="0"
+            max="60"
+            value="0"
+          />
+          m
+        </span>
         <!-- TODO: Add validations for the number of hours and default 1 -->
       </div>
       <div class="buttons-section">
@@ -157,7 +196,7 @@
         >
           Discard
         </div>
-        <button type="submit" class="submit-button">Add Waypoint</button>
+        <button type="submit" class="submit-button">Add</button>
       </div>
     </form>
     } }

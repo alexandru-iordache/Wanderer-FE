@@ -7,6 +7,8 @@ import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
 import { AddCityDto } from '../../interfaces/dtos/add-city-dto';
 import { SelectedCityDto } from '../../interfaces/dtos/selected-city-dto';
 import { LatLngBound } from '../../interfaces/dtos/lat-lang-bound';
+import { PanelView } from '../helpers/panel-view.enum';
+import { AddWaypointDto } from '../../interfaces/dtos/add-waypoint-dto';
 
 @Component({
   selector: 'app-create-trip-page',
@@ -14,6 +16,7 @@ import { LatLngBound } from '../../interfaces/dtos/lat-lang-bound';
   styleUrl: './create-trip-page.component.scss',
 })
 export class CreateTripPageComponent {
+  // Map Shared Properties
   mapOptions: google.maps.MapOptions = {
     mapId: environment.googleMapId,
     center: { lat: 20, lng: 20 },
@@ -23,9 +26,19 @@ export class CreateTripPageComponent {
     fullscreenControl: false,
     zoomControl: true,
     mapTypeControl: false,
+    restriction: null,
   };
+  currentDayIndex: number = 0;
 
-  cityToAdd: CityTransferDto | undefined = undefined; // to be changed
+  // Panel Shared Properties
+  cityToAdd: CityTransferDto | undefined = undefined;
+  startDate: Date | null = new Date();
+  panelViewToSet: PanelView | null = null;
+
+  //Modal Shared Properties
+  modalClosed: boolean = true;
+
+  // Multiple Dependendants Properties
   cityList: AddCityDto[] = [
     new AddCityDto(
       'Bârlad',
@@ -39,10 +52,7 @@ export class CreateTripPageComponent {
       [[], [], [], []]
     ),
   ]; // to be changed
-  startDate: Date | null = new Date();
-  selectedCity: SelectedCityDto | null = null;
-
-  modalClosed: boolean = true;
+  selectedCityDto: SelectedCityDto | null = null;
 
   constructor(
     private googleMapsService: GoogleMapsService,
@@ -68,10 +78,34 @@ export class CreateTripPageComponent {
     this.changeDetector.detectChanges();
   }
 
+  onWaypointSubmitted(waypointSubmittedData: {
+    waypoint: AddWaypointDto;
+  }): void {
+
+    console.log(this.cityList);
+
+    let city = this.cityList.find(
+      (city) => city === this.selectedCityDto?.selectedCity
+    );
+
+    city?.waypoints[this.currentDayIndex].push(waypointSubmittedData.waypoint);
+    this.cityList = [...this.cityList];
+    console.log(this.cityList);
+
+    this.changeDetector.detectChanges();
+  }
+
   onCitySelected(citySelectedData: {
     selectedCityDto: SelectedCityDto | null;
   }) {
-    this.selectedCity = citySelectedData.selectedCityDto;
+    this.panelViewToSet = null;
+    this.selectedCityDto = citySelectedData.selectedCityDto;
+
+    this.changeDetector.detectChanges();
+  }
+
+  onDayChanged(dayChangedData: { dayIndex: number }): void {
+    this.currentDayIndex = dayChangedData.dayIndex;
 
     this.changeDetector.detectChanges();
   }
@@ -80,5 +114,13 @@ export class CreateTripPageComponent {
     if (viewData.view === ModalView.NoView) {
       this.modalClosed = true;
     }
+  }
+
+  onExitCityView() {
+    this.panelViewToSet = PanelView.CitiesListView;
+    this.currentDayIndex = 0;
+    this.selectedCityDto = null;
+
+    this.changeDetector.detectChanges();
   }
 }

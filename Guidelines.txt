@@ -17,7 +17,7 @@ TBD IMPORTANT:
    x - once the city is clicked from the panel or the city added is saved, block on the city view on maps(Google Maps Style Swap)
         - on click situation is done, remains to put it after the add situation
       x - create WayPoints structure
-        - stop infoWindows when the listener is disabled
+        - stop default infoWindows when the listener is disabled
    x - city map lock
    x - Investigate City Panel and Page communication error
      - drag and drop cities (rearrange the dates)
@@ -25,9 +25,13 @@ TBD IMPORTANT:
      - add waypoint
       x - restrict autocomplete
         - come up with an hour/minutes idea (restrict to not begin before the last time entered in the past city/following city)
-        - render waypoint markers
+          - validations needed
+          - little redesign to minutes/hour
+        - icons rendering for the 3 waypoint types
+      x - render waypoint markers
         - waypoint infoWindows
-        - close waypoint list view
+      x - close waypoint list view
+        - custom overlay not showing up after closing the city view
 
 TBD:
     - Enhance CreateTrip panel 
