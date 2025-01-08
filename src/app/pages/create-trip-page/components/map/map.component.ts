@@ -71,7 +71,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
       }
     }
 
-    if (changes['selectedCity']) {
+    if (changes['selectedCity'] && !changes['selectedCity'].isFirstChange()) {
       this.selectedCity = changes['selectedCity']
         .currentValue as SelectedCityDto | null;
 
@@ -250,8 +250,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
   private unblockCityView() {
     this.map?.setOptions(this.options);
-
-    if (this.cityClickListener !== null) {
+    if (this.cityClickListener === null) {
       this.initializeCityClickListener();
     }
 

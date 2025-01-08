@@ -31,15 +31,16 @@ TBD IMPORTANT:
       x - render waypoint markers
         - waypoint infoWindows
       x - close waypoint list view
-        - custom overlay not showing up after closing the city view
+      x - custom overlay not showing up after closing the city view
 
 TBD:
     - Enhance CreateTrip panel 
     - DateTime picker solution
     - validation for add city component
-    - validaiton for add waypoint component
+    - validation for add waypoint component
     - refactor the create-trip-modal
   x - see the doouble click problem on the x Overlay 
     - change font in overlay, marker
     - change maps cursor over a locality??
     - rename AddCityDto maybe??
+    - refactor ngOnChanges (every change should come with its method)

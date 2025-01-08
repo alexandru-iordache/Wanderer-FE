@@ -74,15 +74,15 @@ export class CityListPanelComponent
   async ngOnInit(): Promise<void> {
     this.addCityForm = this.formBuilder.group({
       cityName: ['', [Validators.required]],
-      numberOfNights: ['', [Validators.required]],
+      numberOfNights: ['0', [Validators.required]],
     });
 
     this.addWaypointForm = this.formBuilder.group({
       waypointName: ['', [Validators.required]],
-      startHour: ['', [Validators.required]],
-      startMinutes: ['', [Validators.required]],
-      endHour: ['', [Validators.required]],
-      endMinutes: ['', [Validators.required]],
+      startHour: ['00', [Validators.required]],
+      startMinutes: ['00', [Validators.required]],
+      endHour: ['00', [Validators.required]],
+      endMinutes: ['01', [Validators.required]],
     });
 
     try {
@@ -206,8 +206,8 @@ export class CityListPanelComponent
         return;
       }
 
-      this.waypointInAddProcess!.startTime = `${startHour}:${startMinutes}`;
-      this.waypointInAddProcess!.endTime = `${endHour}:${endMinutes}`;
+      this.waypointInAddProcess!.startTime = `${this.formatTwoDigits(startHour, 'hour')}:${this.formatTwoDigits(startMinutes, 'minutes')}`;
+      this.waypointInAddProcess!.endTime = `${this.formatTwoDigits(endHour, 'hour')}:${this.formatTwoDigits(endMinutes, 'minutes')}`;
 
       this.waypointSubmitted.emit({ waypoint: this.waypointInAddProcess });
       this.waypointInAddProcess = null;
@@ -239,11 +239,11 @@ export class CityListPanelComponent
   }
 
   setCurrentView(view: PanelView) {
-    if (this.currentView !== PanelView.AddCityView) {
+    if (this.currentView === PanelView.AddCityView) {
       this.destroyAutocomplete(this.cityAutocomplete);
     }
 
-    if (this.currentView !== PanelView.AddWaypointView) {
+    if (this.currentView === PanelView.AddWaypointView) {
       this.destroyAutocomplete(this.waypointAutocomplete);
     }
 
@@ -252,13 +252,20 @@ export class CityListPanelComponent
 
     switch (view) {
       case PanelView.AddCityView:
-        this.addCityForm.reset();
+        this.addCityForm.reset({
+          'numberOfNights': '0'
+        });
         this.initializeCityAutocomplete();
         break;
       case PanelView.CitiesListView:
         break;
       case PanelView.AddWaypointView:
-        this.addWaypointForm.reset();
+        this.addWaypointForm.reset({
+          startHour: '00',
+          startMinutes: '00',       
+          endHour: '00',          
+          endMinutes: '01'
+        });
         this.initializeWaypointAutocomplete();
         break;
       case PanelView.WaypointsListView:
@@ -281,6 +288,24 @@ export class CityListPanelComponent
       day: 'numeric',
       month: 'long',
     });
+  }
+
+  formatTwoDigitsInput(event: Event, type: 'hour' | 'minutes'): void {
+    const inputElement = event.target as HTMLInputElement;
+  
+    inputElement.value = this.formatTwoDigits(inputElement.value, type);
+  }
+
+  formatTwoDigits(text: string,  type: 'hour' | 'minutes'): string {
+    let value = parseInt(text, 10);
+
+    if (type === 'hour') {
+      value = Math.min(Math.max(value, 0), 23);
+    } else {
+      value = Math.min(Math.max(value, 0), 59);
+    }
+  
+    return value.toString().padStart(2, '0');
   }
 
   private initializeCityAutocomplete() {
