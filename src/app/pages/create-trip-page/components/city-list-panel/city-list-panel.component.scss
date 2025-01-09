@@ -191,6 +191,14 @@ input {
   justify-content: space-between;
 }
 
+.text-danger {
+  margin-top: 5px;
+  font-family: $primary-font;
+  font-size: 12px;
+  font-weight: 600;
+  color:  $third-color;
+}
+
 .submit-button {
   all: unset;
   height: 30px;

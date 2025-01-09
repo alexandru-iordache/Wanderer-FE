@@ -24,19 +24,24 @@ TBD IMPORTANT:
 
      - add waypoint
       x - restrict autocomplete
-        - come up with an hour/minutes idea (restrict to not begin before the last time entered in the past city/following city)
-          - validations needed
+      x - come up with an hour/minutes idea (restrict to not begin before the last time entered in the past city/following city)
+        x - validations needed
           - little redesign to minutes/hour
         - icons rendering for the 3 waypoint types
+        - mechanism to attentionate the overlapping intervals (maybe also in the add waypoint)
       x - render waypoint markers
         - waypoint infoWindows
       x - close waypoint list view
       x - custom overlay not showing up after closing the city view
 
+    - tweaks and improvements
+      - danger-text in validations
+      -  
+
 TBD:
     - Enhance CreateTrip panel 
     - DateTime picker solution
-    - validation for add city component
+  x - validation for add city component
     - validation for add waypoint component
     - refactor the create-trip-modal
   x - see the doouble click problem on the x Overlay 

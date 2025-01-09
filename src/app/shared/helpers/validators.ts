@@ -85,3 +85,43 @@ export function datePickerValidator(): ValidatorFn {
     }
   };
 }
+
+export function endTimeValidator(): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const formGroup = control as FormGroup;
+
+    const startHourControl = formGroup.get('startHour');
+    const startMinutesControl = formGroup.get('startMinutes');
+    const endHourControl = formGroup.get('endHour');
+    const endMinutesControl = formGroup.get('endMinutes');
+
+    if (
+      !startHourControl?.value ||
+      !startMinutesControl?.value ||
+      !endHourControl?.value ||
+      !endMinutesControl?.value
+    ) {
+      return null;
+    }
+
+    const startHour = parseInt(startHourControl!.value, 10);
+    const endHour = parseInt(endHourControl!.value, 10);
+
+    if (endHour < startHour) {
+      endHourControl.setErrors({ endTimeEarlier: true });
+      return { endTimeEarlier: true };
+    }
+
+    if (endHour == startHour) {
+      const startMinutes = parseInt(startMinutesControl.value, 10);
+      const endMinutes = parseInt(endMinutesControl.value, 10);
+
+      if (startMinutes >= endMinutes) {
+        endMinutesControl.setErrors({ endTimeEarlier: true });
+        return { endTimeEarlier: true };
+      }
+    }
+
+    return null;
+  };
+}

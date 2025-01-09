@@ -26,6 +26,7 @@ import {
   RECREATIONAL_WAYPOINT_TYPES,
 } from '../../../../shared/helpers/preferred-waypoint-types';
 import { WaypointType } from '../../../helpers/waypoint-type.enum';
+import { endTimeValidator } from '../../../../shared/helpers/validators';
 
 @Component({
   selector: 'app-city-list-panel',
@@ -77,13 +78,16 @@ export class CityListPanelComponent
       numberOfNights: ['0', [Validators.required]],
     });
 
-    this.addWaypointForm = this.formBuilder.group({
-      waypointName: ['', [Validators.required]],
-      startHour: ['00', [Validators.required]],
-      startMinutes: ['00', [Validators.required]],
-      endHour: ['00', [Validators.required]],
-      endMinutes: ['01', [Validators.required]],
-    });
+    this.addWaypointForm = this.formBuilder.group(
+      {
+        waypointName: ['', [Validators.required]],
+        startHour: ['00', [Validators.required]],
+        startMinutes: ['00', [Validators.required]],
+        endHour: ['00', [Validators.required]],
+        endMinutes: ['01', [Validators.required]],
+      },
+      { validators: endTimeValidator() }
+    );
 
     try {
       if (this.googleMapsService.isScriptLoaded() === false) {
@@ -159,7 +163,7 @@ export class CityListPanelComponent
       const view = changes['viewChanged'].currentValue as PanelView;
       this.setCurrentView(view);
 
-      if(view === PanelView.CitiesListView){
+      if (view === PanelView.CitiesListView) {
         this.currentDayIndex = 0;
       }
     }
@@ -206,8 +210,14 @@ export class CityListPanelComponent
         return;
       }
 
-      this.waypointInAddProcess!.startTime = `${this.formatTwoDigits(startHour, 'hour')}:${this.formatTwoDigits(startMinutes, 'minutes')}`;
-      this.waypointInAddProcess!.endTime = `${this.formatTwoDigits(endHour, 'hour')}:${this.formatTwoDigits(endMinutes, 'minutes')}`;
+      this.waypointInAddProcess!.startTime = `${this.formatTwoDigits(
+        startHour,
+        'hour'
+      )}:${this.formatTwoDigits(startMinutes, 'minutes')}`;
+      this.waypointInAddProcess!.endTime = `${this.formatTwoDigits(
+        endHour,
+        'hour'
+      )}:${this.formatTwoDigits(endMinutes, 'minutes')}`;
 
       this.waypointSubmitted.emit({ waypoint: this.waypointInAddProcess });
       this.waypointInAddProcess = null;
@@ -253,7 +263,7 @@ export class CityListPanelComponent
     switch (view) {
       case PanelView.AddCityView:
         this.addCityForm.reset({
-          'numberOfNights': '0'
+          numberOfNights: '0',
         });
         this.initializeCityAutocomplete();
         break;
@@ -262,8 +272,8 @@ export class CityListPanelComponent
       case PanelView.AddWaypointView:
         this.addWaypointForm.reset({
           startHour: '00',
-          startMinutes: '00',       
-          endHour: '00',          
+          startMinutes: '00',
+          endHour: '00',
           endMinutes: '01'
         });
         this.initializeWaypointAutocomplete();
@@ -292,19 +302,13 @@ export class CityListPanelComponent
 
   formatTwoDigitsInput(event: Event, type: 'hour' | 'minutes'): void {
     const inputElement = event.target as HTMLInputElement;
-  
+
     inputElement.value = this.formatTwoDigits(inputElement.value, type);
   }
 
-  formatTwoDigits(text: string,  type: 'hour' | 'minutes'): string {
+  formatTwoDigits(text: string, type: 'hour' | 'minutes'): string {
     let value = parseInt(text, 10);
 
-    if (type === 'hour') {
-      value = Math.min(Math.max(value, 0), 23);
-    } else {
-      value = Math.min(Math.max(value, 0), 59);
-    }
-  
     return value.toString().padStart(2, '0');
   }
 
