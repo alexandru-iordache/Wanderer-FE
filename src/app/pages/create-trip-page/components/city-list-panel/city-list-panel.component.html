@@ -41,15 +41,16 @@
           type="text"
           formControlName="cityName"
           placeholder="Enter the city name"
+          (blur)="validateCityInput()"
         />
         <small
           *ngIf="
-            addCityForm.get('cityName')?.invalid &&
+            addCityForm.get('cityName')?.hasError('noResult') &&
             addCityForm.get('cityName')?.touched
           "
           class="text-danger"
         >
-          City name is required
+          No results found. Please select a valid city from the list.
         </small>
       </div>
       <div class="form-row-section number">
@@ -129,15 +130,25 @@
           type="text"
           formControlName="waypointName"
           placeholder="Enter the waypoint name"
+          (blur)="validateWaypointInput()"
         />
         <small
           *ngIf="
-            addCityForm.get('waypointName')?.invalid &&
-            addCityForm.get('waypointName')?.touched
+            addWaypointForm.get('waypointName')?.hasError('noResult') &&
+            addWaypointForm.get('waypointName')?.touched
           "
           class="text-danger"
         >
-          Waypoint name is required
+          No results found. Please select a valid waypoint from the list.
+        </small>
+        <small
+          *ngIf="
+            addWaypointForm.get('waypointName')?.hasError('unsupportedType') &&
+            addWaypointForm.get('waypointName')?.touched
+          "
+          class="text-danger"
+        >
+          The waypoint selected is not a food location, an attraction or a recreational place.
         </small>
       </div>
       <div class="form-row-section number">
@@ -190,10 +201,7 @@
       </div>
       <div class="form-row-section">
         <small
-          *ngIf="
-            addWaypointForm.get('endHour')?.invalid ||
-            addWaypointForm.get('endMinutes')?.invalid
-          "
+          *ngIf="addWaypointForm.hasError('endTimeEarlier')"
           class="text-danger"
         >
           End time must be later than the start time.

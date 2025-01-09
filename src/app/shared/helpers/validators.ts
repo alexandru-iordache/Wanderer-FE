@@ -104,6 +104,9 @@ export function endTimeValidator(): ValidatorFn {
       return null;
     }
 
+    endHourControl.setErrors(null);
+    endMinutesControl.setErrors(null);
+
     const startHour = parseInt(startHourControl!.value, 10);
     const endHour = parseInt(endHourControl!.value, 10);
 

@@ -274,7 +274,7 @@ export class CityListPanelComponent
           startHour: '00',
           startMinutes: '00',
           endHour: '00',
-          endMinutes: '01'
+          endMinutes: '01',
         });
         this.initializeWaypointAutocomplete();
         break;
@@ -306,10 +306,34 @@ export class CityListPanelComponent
     inputElement.value = this.formatTwoDigits(inputElement.value, type);
   }
 
-  formatTwoDigits(text: string, type: 'hour' | 'minutes'): string {
-    let value = parseInt(text, 10);
+  validateCityInput() {
+    const enteredValue = this.cityNameInput?.nativeElement.value.trim();
 
-    return value.toString().padStart(2, '0');
+    if (
+      !enteredValue ||
+      !this.cityInAddProcess ||
+      this.cityInAddProcess.name !== enteredValue
+    ) {
+      this.addCityForm.get('cityName')?.setErrors({ noResult: true });
+      return;
+    }
+
+    this.addCityForm.get('cityName')?.setErrors(null);
+  }
+
+  validateWaypointInput() {
+    const enteredValue = this.waypointNameInput?.nativeElement.value.trim();
+
+    if (
+      !enteredValue ||
+      !this.waypointInAddProcess ||
+      this.waypointInAddProcess.name !== enteredValue
+    ) {
+      this.addWaypointForm.get('waypointName')?.setErrors({ noResult: true });
+      return;
+    }
+
+    this.addWaypointForm.get('waypointName')?.setErrors(null);
   }
 
   private initializeCityAutocomplete() {
@@ -326,12 +350,11 @@ export class CityListPanelComponent
         types: ['(cities)'],
       }
     );
+
     this.cityAutocomplete.addListener('place_changed', () => {
       let place = this.cityAutocomplete!.getPlace();
 
-      this.cityNameInput!.nativeElement.value = place.name ?? '';
-      if (place === undefined) {
-        // IMPORTANT: Modify drop down to show no result
+      if (!place.place_id || !place.name) {
         return;
       }
 
@@ -340,11 +363,12 @@ export class CityListPanelComponent
         return;
       }
 
+      const cityName = place.name;
+      this.cityNameInput!.nativeElement.value = cityName;
+
+      this.addCityForm.get('cityName')?.setErrors(null);
+
       // IMPORTANT: Show no result feedback, country filtering etc
-      const cityName =
-        place.address_components
-          .filter((x) => x.types.includes('locality'))
-          .at(0)?.long_name ?? '';
       const countryName =
         place.address_components
           .filter((x) => x.types.includes('country'))
@@ -411,23 +435,23 @@ export class CityListPanelComponent
 
     this.waypointAutocomplete.addListener('place_changed', () => {
       let place = this.waypointAutocomplete!.getPlace();
-      if (place === undefined) {
-        // IMPORTANT: Modify drop down to show no result
-        console.error('No results found.');
-        return;
-      }
 
       const waypointName = place.name?.split(',')[0] ?? '';
-      const waypointType = this.getWaypointType(place.types!);
+      this.waypointNameInput!.nativeElement.value = waypointName;
 
-      if (waypointType === WaypointType.Unkwnown) {
-        // IMPORTANT: Add snackbar to indicate that type is not permitted
-        console.error('Waypoint type is not supported.');
-        this.waypointNameInput!.nativeElement.value = '';
+      if (!place.place_id || !place.name) {
         return;
       }
 
-      this.waypointNameInput!.nativeElement.value = waypointName;
+      const waypointType = this.getWaypointType(place.types!);
+      if (waypointType === WaypointType.Unkwnown) {
+        this.addWaypointForm.get('waypointName')?.setErrors({
+          unsupportedType: true,
+        });
+        return;
+      }
+
+      this.addWaypointForm.get('waypointName')?.setErrors(null);
 
       // IMPORTANT: Show no result feedback, country filtering etc
       const placeId = place.place_id ?? '';
@@ -443,8 +467,6 @@ export class CityListPanelComponent
         '',
         ''
       );
-
-      console.log(this.waypointInAddProcess);
     });
   }
 
@@ -480,5 +502,11 @@ export class CityListPanelComponent
     }
 
     return WaypointType.Unkwnown;
+  }
+
+  private formatTwoDigits(text: string, type: 'hour' | 'minutes'): string {
+    let value = parseInt(text, 10);
+
+    return value.toString().padStart(2, '0');
   }
 }
