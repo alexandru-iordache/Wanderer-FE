@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnChanges,
   OnInit,
@@ -57,14 +58,16 @@ export class CityListPanelComponent
   PanelView = PanelView;
   private cityAutocomplete: google.maps.places.Autocomplete | null = null;
   private waypointAutocomplete: google.maps.places.Autocomplete | null = null;
+ 
   addCityForm: FormGroup = new FormGroup({});
   addWaypointForm: FormGroup = new FormGroup({});
+  activeMenuIndex: number | null = null;
 
   currentView: PanelView = PanelView.CitiesListView; // change it
+  currentDayIndex: number = 0;
   cityInAddProcess: AddCityDto | null = null;
   waypointInAddProcess: AddWaypointDto | null = null;
   selectedCity: AddCityDto | null = null;
-  currentDayIndex: number = 0;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -172,59 +175,83 @@ export class CityListPanelComponent
   }
 
   onAddCitySubmit() {
-    if (this.addCityForm.valid) {
-      const numberOfNights = this.addCityForm.get('numberOfNights')?.value;
-
-      if (this.cityInAddProcess === null) {
-        // IMPORTANT: Error snackbar, unexepected error
-        return;
-      }
-
-      let nights = this.cityList.reduce(
-        (sumOfNights, city) => sumOfNights + city.numberOfNights,
-        0
-      );
-
-      let tempDate = new Date(this.startDate!);
-      tempDate.setDate(this.startDate!.getDate() + nights);
-
-      this.cityInAddProcess.arrivalDate = tempDate;
-      this.cityInAddProcess.setNumberOfNights(numberOfNights);
-
-      this.citySubmitted.emit({ city: this.cityInAddProcess });
-
-      this.setCurrentView(PanelView.CitiesListView);
+    if (!this.addCityForm.valid) {
+      return;
     }
+
+    const enteredValue = this.cityNameInput?.nativeElement.value.trim();
+    if (
+      !enteredValue ||
+      !this.cityInAddProcess ||
+      this.cityInAddProcess.name !== enteredValue
+    ) {
+      this.addCityForm.get('cityName')?.setErrors({ noResult: true });
+      return;
+    }
+
+    const numberOfNights = this.addCityForm.get('numberOfNights')?.value;
+
+    if (this.cityInAddProcess === null) {
+      // IMPORTANT: Error snackbar, unexepected error
+      return;
+    }
+
+    let nights = this.cityList.reduce(
+      (sumOfNights, city) => sumOfNights + city.numberOfNights,
+      0
+    );
+
+    let tempDate = new Date(this.startDate!);
+    tempDate.setDate(this.startDate!.getDate() + nights);
+
+    this.cityInAddProcess.arrivalDate = tempDate;
+    this.cityInAddProcess.setNumberOfNights(numberOfNights);
+
+    this.citySubmitted.emit({ city: this.cityInAddProcess });
+
+    this.setCurrentView(PanelView.CitiesListView);
   }
 
   onAddWaypointSubmit() {
-    if (this.addWaypointForm.valid) {
-      const startHour = this.addWaypointForm.get('startHour')?.value;
-      const startMinutes = this.addWaypointForm.get('startMinutes')?.value;
-
-      const endHour = this.addWaypointForm.get('endHour')?.value;
-      const endMinutes = this.addWaypointForm.get('endMinutes')?.value;
-
-      if (this.waypointInAddProcess === null) {
-        // IMPORTANT: Error snackbar, unexepected error
-        return;
-      }
-
-      this.waypointInAddProcess!.startTime = `${this.formatTwoDigits(
-        startHour,
-        'hour'
-      )}:${this.formatTwoDigits(startMinutes, 'minutes')}`;
-      this.waypointInAddProcess!.endTime = `${this.formatTwoDigits(
-        endHour,
-        'hour'
-      )}:${this.formatTwoDigits(endMinutes, 'minutes')}`;
-
-      this.waypointSubmitted.emit({ waypoint: this.waypointInAddProcess });
-      this.waypointInAddProcess = null;
-      this.setCurrentView(PanelView.WaypointsListView);
-
-      this.changeDetector.detectChanges();
+    if (!this.addWaypointForm.valid) {
+      return;
     }
+
+    const enteredValue = this.waypointNameInput?.nativeElement.value.trim();
+    if (
+      !enteredValue ||
+      !this.waypointInAddProcess ||
+      this.waypointInAddProcess.name !== enteredValue
+    ) {
+      this.addWaypointForm.get('waypointName')?.setErrors({ noResult: true });
+      return;
+    }
+
+    const startHour = this.addWaypointForm.get('startHour')?.value;
+    const startMinutes = this.addWaypointForm.get('startMinutes')?.value;
+
+    const endHour = this.addWaypointForm.get('endHour')?.value;
+    const endMinutes = this.addWaypointForm.get('endMinutes')?.value;
+
+    if (this.waypointInAddProcess === null) {
+      // IMPORTANT: Error snackbar, unexepected error
+      return;
+    }
+
+    this.waypointInAddProcess!.startTime = `${this.formatTwoDigits(
+      startHour,
+      'hour'
+    )}:${this.formatTwoDigits(startMinutes, 'minutes')}`;
+    this.waypointInAddProcess!.endTime = `${this.formatTwoDigits(
+      endHour,
+      'hour'
+    )}:${this.formatTwoDigits(endMinutes, 'minutes')}`;
+
+    this.waypointSubmitted.emit({ waypoint: this.waypointInAddProcess });
+    this.waypointInAddProcess = null;
+    this.setCurrentView(PanelView.WaypointsListView);
+
+    this.changeDetector.detectChanges();
   }
 
   onCityClick(selectedCity: AddCityDto) {
@@ -285,6 +312,19 @@ export class CityListPanelComponent
     }
   }
 
+  toggleMenu(index: number) {
+    this.activeMenuIndex = this.activeMenuIndex === index ? null : index;
+  }
+
+  @HostListener('document:click')
+  closeMenu() {
+    this.activeMenuIndex = null;
+  }
+
+  onMenuClick(event: Event){
+    event.stopPropagation();
+  }
+
   navigateToDay(dayIndex: number): void {
     this.currentDayIndex = dayIndex;
 
@@ -304,36 +344,6 @@ export class CityListPanelComponent
     const inputElement = event.target as HTMLInputElement;
 
     inputElement.value = this.formatTwoDigits(inputElement.value, type);
-  }
-
-  validateCityInput() {
-    const enteredValue = this.cityNameInput?.nativeElement.value.trim();
-
-    if (
-      !enteredValue ||
-      !this.cityInAddProcess ||
-      this.cityInAddProcess.name !== enteredValue
-    ) {
-      this.addCityForm.get('cityName')?.setErrors({ noResult: true });
-      return;
-    }
-
-    this.addCityForm.get('cityName')?.setErrors(null);
-  }
-
-  validateWaypointInput() {
-    const enteredValue = this.waypointNameInput?.nativeElement.value.trim();
-
-    if (
-      !enteredValue ||
-      !this.waypointInAddProcess ||
-      this.waypointInAddProcess.name !== enteredValue
-    ) {
-      this.addWaypointForm.get('waypointName')?.setErrors({ noResult: true });
-      return;
-    }
-
-    this.addWaypointForm.get('waypointName')?.setErrors(null);
   }
 
   private initializeCityAutocomplete() {

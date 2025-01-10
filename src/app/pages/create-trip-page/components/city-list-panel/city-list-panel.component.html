@@ -1,9 +1,13 @@
 <div class="create-trip-panel">
   <div class="panel-header"></div>
   <div class="city-list-panel">
-    @switch (currentView) { @case (PanelView.CitiesListView) {
+    @switch (currentView) {
+
+    <!-- Cities List View -->
+
+    @case (PanelView.CitiesListView) {
     <div
-      *ngFor="let city of cityList"
+      *ngFor="let city of cityList; let i = index"
       class="option-button"
       (click)="onCityClick(city)"
     >
@@ -21,14 +25,35 @@
         ({{ city.numberOfNights }}
         {{ city.numberOfNights === 1 ? "night" : "nights" }})
       </div>
+      <div class="menu-container">
+        <div
+          class="menu-dots"
+          (click)="toggleMenu(i); $event.stopPropagation()"
+        >
+          •••
+        </div>
+        <div
+          class="dropdown-menu"
+          *ngIf="activeMenuIndex === i"
+          (click)="onMenuClick($event)"
+        >
+          <div class="dropdown-item">Edit</div>
+          <div class="dropdown-item">Delete</div>
+        </div>
+      </div>
     </div>
+
     <div class="option-button" (click)="setCurrentView(PanelView.AddCityView)">
       <span class="button-text-container">
         <div class="button-icon" id="add-icon"></div>
         <span class="button-text">Add new city</span>
       </span>
     </div>
-    } @case (PanelView.AddCityView) {
+    }
+
+    <!-- Add City View -->
+
+    @case (PanelView.AddCityView) {
     <form
       class="add-form"
       [formGroup]="addCityForm"
@@ -41,8 +66,16 @@
           type="text"
           formControlName="cityName"
           placeholder="Enter the city name"
-          (blur)="validateCityInput()"
         />
+        <small
+          *ngIf="
+            addCityForm.get('cityName')?.hasError('required') &&
+            addCityForm.get('cityName')?.touched
+          "
+          class="text-danger"
+        >
+          City Name cannot be empty.
+        </small>
         <small
           *ngIf="
             addCityForm.get('cityName')?.hasError('noResult') &&
@@ -74,7 +107,11 @@
         <button type="submit" class="submit-button">Add city</button>
       </div>
     </form>
-    } @case (PanelView.WaypointsListView) {
+    }
+
+    <!-- Waypoints List View -->
+
+    @case (PanelView.WaypointsListView) {
     <div class="day-navigation">
       <button
         [class.hidden]="currentDayIndex === 0"
@@ -117,7 +154,11 @@
         <span class="button-text">Add new waypoint</span>
       </span>
     </div>
-    }@case (PanelView.AddWaypointView) {
+    }
+
+    <!-- Add Waypoint View -->
+
+    @case (PanelView.AddWaypointView) {
     <form
       class="add-form"
       [formGroup]="addWaypointForm"
@@ -130,13 +171,18 @@
           type="text"
           formControlName="waypointName"
           placeholder="Enter the waypoint name"
-          (blur)="validateWaypointInput()"
         />
         <small
           *ngIf="
-            addWaypointForm.get('waypointName')?.hasError('noResult') &&
+            addWaypointForm.get('waypointName')?.hasError('required') &&
             addWaypointForm.get('waypointName')?.touched
           "
+          class="text-danger"
+        >
+          Waypoint Name cannot be empty.
+        </small>
+        <small
+          *ngIf="addWaypointForm.get('waypointName')?.hasError('noResult')"
           class="text-danger"
         >
           No results found. Please select a valid waypoint from the list.
@@ -148,7 +194,8 @@
           "
           class="text-danger"
         >
-          The waypoint selected is not a food location, an attraction or a recreational place.
+          The waypoint selected is not a food location, an attraction or a
+          recreational place.
         </small>
       </div>
       <div class="form-row-section number">
