@@ -53,6 +53,10 @@ export class CreateTripPageComponent {
     ),
   ]; // to be changed
   selectedCityDto: SelectedCityDto | null = null;
+  selectedEntity: {
+    type: 'city' | 'waypoint';
+    data: AddCityDto | AddWaypointDto;
+  } | null = null;
 
   constructor(
     private googleMapsService: GoogleMapsService,
@@ -81,7 +85,6 @@ export class CreateTripPageComponent {
   onWaypointSubmitted(waypointSubmittedData: {
     waypoint: AddWaypointDto;
   }): void {
-
     console.log(this.cityList);
 
     let city = this.cityList.find(
@@ -122,5 +125,45 @@ export class CreateTripPageComponent {
     this.selectedCityDto = null;
 
     this.changeDetector.detectChanges();
+  }
+
+  openDeleteModal(
+    type: 'city' | 'waypoint',
+    data: AddCityDto | AddWaypointDto
+  ) {
+    this.selectedEntity = { type, data };
+  }
+
+  confirmDelete() {
+    if (this.selectedEntity?.type === 'city') {
+      this.cityList = this.cityList.filter(
+        (city) => city !== this.selectedEntity?.data
+      );
+
+      this.changeDetector.detectChanges();
+    }
+
+    if (this.selectedEntity?.type === 'waypoint') {
+      let city = this.cityList.find(
+        (city) => city === this.selectedCityDto!.selectedCity
+      );
+
+      const waypointIndex = city!.waypoints[this.currentDayIndex].indexOf(
+        this.selectedEntity?.data as AddWaypointDto
+      );
+      if (waypointIndex > -1) {
+        city!.waypoints[this.currentDayIndex].splice(waypointIndex, 1);
+      }
+
+      this.cityList = [...this.cityList];
+      console.log(this.cityList);
+
+      this.changeDetector.detectChanges();
+    }
+    this.closeDeleteModal();
+  }
+
+  closeDeleteModal() {
+    this.selectedEntity = null;
   }
 }

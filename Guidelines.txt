@@ -22,11 +22,11 @@ TBD IMPORTANT:
    x - Investigate City Panel and Page communication error
      - drag and drop cities (rearrange the dates)
 
-     - add waypoint
+    - add waypoint
       x - restrict autocomplete
       x - come up with an hour/minutes idea (restrict to not begin before the last time entered in the past city/following city)
         x - validations needed
-          - little redesign to minutes/hour
+        x - little redesign to minutes/hour
         - icons rendering for the 3 waypoint types
         - mechanism to attentionate the overlapping intervals (maybe also in the add waypoint)
       x - render waypoint markers
@@ -37,6 +37,12 @@ TBD IMPORTANT:
     - tweaks and improvements
       - danger-text in validations
       -  
+    
+    - edit/delete
+      - style the delete confirmation modal
+      - stop click event on the button when you click delete/edit
+      - edit flow
+      
 
 TBD:
     - Enhance CreateTrip panel 

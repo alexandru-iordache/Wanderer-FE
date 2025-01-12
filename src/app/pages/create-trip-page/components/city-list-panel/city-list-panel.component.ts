@@ -41,6 +41,8 @@ export class CityListPanelComponent
   @Input() cityList: AddCityDto[] = [];
   @Input() startDate: Date | null = null;
   @Input() viewChanged: PanelView | null = null;
+  @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
+
   @Output() citySubmitted = new EventEmitter<{ city: AddCityDto }>();
   @Output() waypointSubmitted = new EventEmitter<{
     waypoint: AddWaypointDto;
@@ -58,7 +60,7 @@ export class CityListPanelComponent
   PanelView = PanelView;
   private cityAutocomplete: google.maps.places.Autocomplete | null = null;
   private waypointAutocomplete: google.maps.places.Autocomplete | null = null;
- 
+
   addCityForm: FormGroup = new FormGroup({});
   addWaypointForm: FormGroup = new FormGroup({});
 
@@ -101,7 +103,7 @@ export class CityListPanelComponent
   }
 
   ngAfterViewInit(): void {
-    if (this.currentView === PanelView.AddCityView) {
+    if (this.currentView === PanelView.CityView) {
       this.addCityForm.reset();
       this.initializeCityAutocomplete();
     }
@@ -115,7 +117,7 @@ export class CityListPanelComponent
       let cityTransferDto = changes['cityToAdd']
         .currentValue as CityTransferDto;
 
-      this.setCurrentView(PanelView.AddCityView);
+      this.setCurrentView(PanelView.CityView);
 
       this.addCityForm.get('cityName')?.setValue(cityTransferDto.name);
       this.cityInAddProcess = new AddCityDto(
@@ -138,7 +140,7 @@ export class CityListPanelComponent
       let waypointTransferDto = changes['waypointToAdd']
         .currentValue as WaypointTransferDto;
 
-      this.setCurrentView(PanelView.AddWaypointView);
+      this.setCurrentView(PanelView.WaypointView);
 
       this.addWaypointForm
         .get('waypointName')
@@ -274,12 +276,19 @@ export class CityListPanelComponent
     });
   }
 
+  onDeleteClick(
+    entity: AddCityDto | AddWaypointDto,
+    type: 'city' | 'waypoint'
+  ) {
+    this.openDeleteModal(type, entity);
+  }
+
   setCurrentView(view: PanelView) {
-    if (this.currentView === PanelView.AddCityView) {
+    if (this.currentView === PanelView.CityView) {
       this.destroyAutocomplete(this.cityAutocomplete);
     }
 
-    if (this.currentView === PanelView.AddWaypointView) {
+    if (this.currentView === PanelView.WaypointView) {
       this.destroyAutocomplete(this.waypointAutocomplete);
     }
 
@@ -287,7 +296,7 @@ export class CityListPanelComponent
     this.changeDetector.detectChanges();
 
     switch (view) {
-      case PanelView.AddCityView:
+      case PanelView.CityView:
         this.addCityForm.reset({
           numberOfNights: '0',
         });
@@ -295,7 +304,7 @@ export class CityListPanelComponent
         break;
       case PanelView.CitiesListView:
         break;
-      case PanelView.AddWaypointView:
+      case PanelView.WaypointView:
         this.addWaypointForm.reset({
           startHour: '00',
           startMinutes: '00',

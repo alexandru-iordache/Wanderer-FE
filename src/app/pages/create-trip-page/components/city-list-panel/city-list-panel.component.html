@@ -11,38 +11,34 @@
       class="option-button"
       (click)="onCityClick(city)"
     >
-    <div class="button-info-container">
-      <span class="button-text-container">
-        <div class="button-icon" id="city-icon"></div>
-        <span class="button-text name">{{ city.name }}</span>
-      </span>
-      <div class="date-text">
-        {{
-          city.arrivalDate?.toLocaleDateString("en-US", {
-            day: "numeric",
-            month: "short"
-          })
-        }}
-        ({{ city.numberOfNights }}
-        {{ city.numberOfNights === 1 ? "night" : "nights" }})
-      </div>
-    </div>
-      <div class="menu-container">
-        <div
-          class="menu-dots"
-        >
-          •••
+      <div class="button-info-container">
+        <span class="button-text-container">
+          <div class="button-icon" id="city-icon"></div>
+          <span class="button-text name">{{ city.name }}</span>
+        </span>
+        <div class="date-text">
+          {{
+            city.arrivalDate?.toLocaleDateString("en-US", {
+              day: "numeric",
+              month: "short"
+            })
+          }}
+          ({{ city.numberOfNights }}
+          {{ city.numberOfNights === 1 ? "night" : "nights" }})
         </div>
-        <div
-          class="dropdown-menu"
-        >
+      </div>
+      <div class="menu-container">
+        <div class="menu-dots">•••</div>
+        <div class="dropdown-menu">
           <div class="dropdown-item" id="edit">Edit</div>
-          <div class="dropdown-item" id="delete">Delete</div>
+          <div class="dropdown-item" id="delete" (click)="onDeleteClick(city, 'city')">
+            Delete
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="option-button" (click)="setCurrentView(PanelView.AddCityView)">
+    <div class="option-button" (click)="setCurrentView(PanelView.CityView)">
       <span class="button-text-container">
         <div class="button-icon" id="add-icon"></div>
         <span class="button-text">Add new city</span>
@@ -50,9 +46,9 @@
     </div>
     }
 
-    <!-- Add City View -->
+    <!-- City View -->
 
-    @case (PanelView.AddCityView) {
+    @case (PanelView.CityView) {
     <form
       class="add-form"
       [formGroup]="addCityForm"
@@ -143,10 +139,7 @@
         {{ waypoint.startTime }} - {{ waypoint.endTime }}
       </div>
     </div>
-    <div
-      class="option-button"
-      (click)="setCurrentView(PanelView.AddWaypointView)"
-    >
+    <div class="option-button" (click)="setCurrentView(PanelView.WaypointView)">
       <span class="button-text-container">
         <div class="button-icon" id="add-icon"></div>
         <span class="button-text">Add new waypoint</span>
@@ -154,9 +147,9 @@
     </div>
     }
 
-    <!-- Add Waypoint View -->
+    <!-- Waypoint View -->
 
-    @case (PanelView.AddWaypointView) {
+    @case (PanelView.WaypointView) {
     <form
       class="add-form"
       [formGroup]="addWaypointForm"
