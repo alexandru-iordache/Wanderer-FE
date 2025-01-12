@@ -11,6 +11,7 @@
       class="option-button"
       (click)="onCityClick(city)"
     >
+    <div class="button-info-container">
       <span class="button-text-container">
         <div class="button-icon" id="city-icon"></div>
         <span class="button-text name">{{ city.name }}</span>
@@ -25,20 +26,18 @@
         ({{ city.numberOfNights }}
         {{ city.numberOfNights === 1 ? "night" : "nights" }})
       </div>
+    </div>
       <div class="menu-container">
         <div
           class="menu-dots"
-          (click)="toggleMenu(i); $event.stopPropagation()"
         >
           •••
         </div>
         <div
           class="dropdown-menu"
-          *ngIf="activeMenuIndex === i"
-          (click)="onMenuClick($event)"
         >
-          <div class="dropdown-item">Edit</div>
-          <div class="dropdown-item">Delete</div>
+          <div class="dropdown-item" id="edit">Edit</div>
+          <div class="dropdown-item" id="delete">Delete</div>
         </div>
       </div>
     </div>
@@ -95,7 +94,6 @@
           min="0"
           max="100"
         />
-        <!-- TODO: Add validations for the number of nights and default 0 -->
       </div>
       <div class="buttons-section">
         <div

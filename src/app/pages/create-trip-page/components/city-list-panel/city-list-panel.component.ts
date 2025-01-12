@@ -61,7 +61,6 @@ export class CityListPanelComponent
  
   addCityForm: FormGroup = new FormGroup({});
   addWaypointForm: FormGroup = new FormGroup({});
-  activeMenuIndex: number | null = null;
 
   currentView: PanelView = PanelView.CitiesListView; // change it
   currentDayIndex: number = 0;
@@ -310,19 +309,6 @@ export class CityListPanelComponent
       default:
         break;
     }
-  }
-
-  toggleMenu(index: number) {
-    this.activeMenuIndex = this.activeMenuIndex === index ? null : index;
-  }
-
-  @HostListener('document:click')
-  closeMenu() {
-    this.activeMenuIndex = null;
-  }
-
-  onMenuClick(event: Event){
-    event.stopPropagation();
   }
 
   navigateToDay(dayIndex: number): void {
