@@ -39,8 +39,8 @@ TBD IMPORTANT:
       -  
     
     - edit/delete
-      - style the delete confirmation modal
-      - stop click event on the button when you click delete/edit
+    x - style the delete confirmation modal
+    x - stop click event on the button when you click delete/edit
       - edit flow
       
 

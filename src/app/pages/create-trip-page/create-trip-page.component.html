@@ -25,15 +25,26 @@
   *ngIf="modalClosed === true"
 ></app-city-list-panel>
 <div class="exit-city-button-container" *ngIf="selectedCityDto">
-  <button class="exit-city-button" (click)="onExitCityView()">Exit City View</button>
+  <button class="exit-city-button" (click)="onExitCityView()">
+    Exit City View
+  </button>
 </div>
 
 <div class="modal-backdrop" *ngIf="selectedEntity">
-  <div class="modal-content">
-    <h3>Are you sure you want to delete this {{ selectedEntity.type }}?</h3>
-    <div class="modal-buttons">
-      <button class="discard-button" (click)="closeDeleteModal()">Discard</button>
-      <button class="confirm-button" (click)="confirmDelete()">Confirm</button>
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-text">Delete {{ selectedEntity.data.name }}</div>
+    </div>
+    <div class="modal-content">
+      <h3>Are you sure you want to delete this {{ selectedEntity.type }}?</h3>
+      <div class="modal-buttons">
+        <button class="discard-button" (click)="closeDeleteModal()">
+          Discard
+        </button>
+        <button class="confirm-button" (click)="confirmDelete()">
+          Confirm
+        </button>
+      </div>
     </div>
   </div>
 </div>

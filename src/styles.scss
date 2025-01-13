@@ -1,7 +1,6 @@
-
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -20,61 +19,107 @@ $wanderer-fe-warn: mat.define-palette(mat.$red-palette);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$wanderer-fe-theme: mat.define-light-theme((
-  color: (
-    primary: $wanderer-fe-primary,
-    accent: $wanderer-fe-accent,
-    warn: $wanderer-fe-warn,
-  ),
-  typography: mat.define-typography-config(),
-  density: 0
-));
+$wanderer-fe-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $wanderer-fe-primary,
+      accent: $wanderer-fe-accent,
+      warn: $wanderer-fe-warn,
+    ),
+    typography: mat.define-typography-config(),
+    density: 0,
+  )
+);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes($wanderer-fe-theme);
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@418&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@418&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-$primary-color: #FFFDF3;
-$primary-color-highlight: #D8D8D7;
+$primary-color: #fffdf3;
+$primary-color-highlight: #d8d8d7;
 $secondary-color: #283618;
-$secondary-color-highlight: #12170C;
-$third-color: #BC6C25;
-$third-color-highlight: #8D5D33;
-$forth-color: #B7B192;
-$primary-font: 'Montserrat', sans-serif;
+$secondary-color-highlight: #12170c;
+$third-color: #bc6c25;
+$third-color-highlight: #8d5d33;
+$forth-color: #b7b192;
+$primary-font: "Montserrat", sans-serif;
 
 // Generic Classes
 
 .generic-heading {
-    font-family: $primary-font;
-    font-weight: 400;
-    font-size: 30px;
+  font-family: $primary-font;
+  font-weight: 400;
+  font-size: 30px;
 }
 
 .generic-button {
-    font-family: $primary-font;
-    font-weight: 500;
-    font-size: 15px;
-    padding: 10px;
+  font-family: $primary-font;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 10px;
 }
 
-html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
+.negative-feedback-button {
+  all: unset;
+
+  padding: 5px;
+  border-radius: 20px;
+  background-color: $third-color;
+  color: $primary-color;
+  font-family: $primary-font;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    transition: 0.2s;
+    background-color: $third-color-highlight;
+  }
+}
+
+.positive-feedback-button {
+  all: unset;
+  
+  padding: 5px;
+  border-radius: 20px;
+  background-color: $secondary-color;
+  text-align: center;
+  color: $primary-color;
+  font-family: $primary-font;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    transition: 0.2s;
+    background-color: $secondary-color-highlight;
+  }
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    background-color: $primary-color;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: $primary-color;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
 * {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
 }

@@ -67,6 +67,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
         this.removeMarkers(this.waypointMarkers);
         this.renderWaypointMarkers();
       } else {
+        this.removeMarkers(this.cityMarkers);
         this.renderCityMarkers();
       }
     }

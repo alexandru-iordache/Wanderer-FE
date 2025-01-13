@@ -27,7 +27,7 @@
           {{ city.numberOfNights === 1 ? "night" : "nights" }})
         </div>
       </div>
-      <div class="menu-container">
+      <div class="menu-container" (click)="$event.stopPropagation()">
         <div class="menu-dots">•••</div>
         <div class="dropdown-menu">
           <div class="dropdown-item" id="edit">Edit</div>
