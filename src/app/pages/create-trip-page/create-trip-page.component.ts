@@ -63,6 +63,25 @@ export class CreateTripPageComponent {
     private changeDetector: ChangeDetectorRef
   ) {}
 
+  handlePanelAction(event: { type: string; payload?: any }) {
+    switch (event.type) {
+      case 'citySubmitted':
+        this.onCitySubmitted(event.payload);
+        break;
+      case 'waypointSubmitted':
+        this.onWaypointSubmitted(event.payload);
+        break;
+      case 'citySelected':
+        this.onCitySelected(event.payload);
+        break;
+      case 'dayChanged':
+        this.onDayChanged(event.payload.dayIndex);
+        break;
+      default:
+        console.error('Unhandled event type:', event.type);
+    }
+  }
+
   onCityToAdd(cityToAddData: { city: CityTransferDto }): void {
     this.cityToAdd = cityToAddData.city;
     this.changeDetector.detectChanges();
@@ -75,40 +94,36 @@ export class CreateTripPageComponent {
     this.changeDetector.detectChanges();
   }
 
-  onCitySubmitted(citySubmittedData: { city: AddCityDto }): void {
-    this.cityList = [...this.cityList, citySubmittedData.city];
+  onCitySubmitted(city: AddCityDto): void {
+    this.cityList = [...this.cityList, city];
 
     console.log(this.cityList);
     this.changeDetector.detectChanges();
   }
 
-  onWaypointSubmitted(waypointSubmittedData: {
-    waypoint: AddWaypointDto;
-  }): void {
+  onWaypointSubmitted(waypoint: AddWaypointDto): void {
     console.log(this.cityList);
 
     let city = this.cityList.find(
       (city) => city === this.selectedCityDto?.selectedCity
     );
 
-    city?.waypoints[this.currentDayIndex].push(waypointSubmittedData.waypoint);
+    city?.waypoints[this.currentDayIndex].push(waypoint);
     this.cityList = [...this.cityList];
     console.log(this.cityList);
 
     this.changeDetector.detectChanges();
   }
 
-  onCitySelected(citySelectedData: {
-    selectedCityDto: SelectedCityDto | null;
-  }) {
+  onCitySelected(selectedCityDto: SelectedCityDto | null) {
     this.panelViewToSet = null;
-    this.selectedCityDto = citySelectedData.selectedCityDto;
+    this.selectedCityDto = selectedCityDto;
 
     this.changeDetector.detectChanges();
   }
 
-  onDayChanged(dayChangedData: { dayIndex: number }): void {
-    this.currentDayIndex = dayChangedData.dayIndex;
+  onDayChanged(dayIndex: number ): void {
+    this.currentDayIndex = dayIndex;
 
     this.changeDetector.detectChanges();
   }

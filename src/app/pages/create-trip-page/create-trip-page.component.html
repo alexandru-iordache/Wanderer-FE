@@ -17,10 +17,7 @@
   [cityList]="cityList"
   [startDate]="startDate"
   [viewChanged]="panelViewToSet"
-  (citySubmitted)="onCitySubmitted($event)"
-  (waypointSubmitted)="onWaypointSubmitted($event)"
-  (citySelected)="onCitySelected($event)"
-  (dayChanged)="onDayChanged($event)"
+  (action)="handlePanelAction($event)"
   [openDeleteModal]="openDeleteModal.bind(this)"
   *ngIf="modalClosed === true"
 ></app-city-list-panel>

@@ -43,16 +43,10 @@ export class CityListPanelComponent
   @Input() viewChanged: PanelView | null = null;
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
 
-  @Output() citySubmitted = new EventEmitter<{ city: AddCityDto }>();
-  @Output() waypointSubmitted = new EventEmitter<{
-    waypoint: AddWaypointDto;
-  }>();
-  @Output() citySelected = new EventEmitter<{
-    selectedCityDto: SelectedCityDto;
-  }>();
-  @Output() dayChanged = new EventEmitter<{
-    dayIndex: number;
-  }>();
+  @Output() action = new EventEmitter<{
+    type: 'citySubmitted' | 'waypointSubmitted' | 'citySelected' | 'dayChanged';
+    payload?: any;
+  }>
 
   @ViewChild('cityName') cityNameInput?: ElementRef<HTMLInputElement>;
   @ViewChild('waypointName') waypointNameInput?: ElementRef<HTMLInputElement>;
@@ -208,7 +202,7 @@ export class CityListPanelComponent
     this.cityInAddProcess.arrivalDate = tempDate;
     this.cityInAddProcess.setNumberOfNights(numberOfNights);
 
-    this.citySubmitted.emit({ city: this.cityInAddProcess });
+    this.action.emit({ type: 'citySubmitted', payload: this.cityInAddProcess });
 
     this.setCurrentView(PanelView.CitiesListView);
   }
@@ -248,7 +242,8 @@ export class CityListPanelComponent
       'hour'
     )}:${this.formatTwoDigits(endMinutes, 'minutes')}`;
 
-    this.waypointSubmitted.emit({ waypoint: this.waypointInAddProcess });
+    this.action.emit({ type: 'waypointSubmitted', payload: this.waypointInAddProcess });
+
     this.waypointInAddProcess = null;
     this.setCurrentView(PanelView.WaypointsListView);
 
@@ -271,8 +266,9 @@ export class CityListPanelComponent
     this.selectedCity = selectedCity;
     this.setCurrentView(PanelView.WaypointsListView);
 
-    this.citySelected.emit({
-      selectedCityDto: new SelectedCityDto(selectedCity, cityBounds),
+    this.action.emit({
+      type: 'citySelected',
+      payload: new SelectedCityDto(selectedCity, cityBounds),
     });
   }
 
@@ -323,7 +319,10 @@ export class CityListPanelComponent
   navigateToDay(dayIndex: number): void {
     this.currentDayIndex = dayIndex;
 
-    this.dayChanged.emit({ dayIndex: this.currentDayIndex });
+    this.action.emit({
+      type: 'dayChanged',
+      payload: { dayIndex: this.currentDayIndex },
+    });
   }
 
   getDateForDay(startDate: Date, dayIndex: number): string {
