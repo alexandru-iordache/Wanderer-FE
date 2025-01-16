@@ -30,8 +30,18 @@
       <div class="menu-container" (click)="$event.stopPropagation()">
         <div class="menu-dots">•••</div>
         <div class="dropdown-menu">
-          <div class="dropdown-item" id="edit">Edit</div>
-          <div class="dropdown-item" id="delete" (click)="onDeleteClick(city, 'city')">
+          <div
+            class="dropdown-item"
+            id="edit"
+            (click)="onEditClick(city, 'city')"
+          >
+            Edit
+          </div>
+          <div
+            class="dropdown-item"
+            id="delete"
+            (click)="onDeleteClick(city, 'city')"
+          >
             Delete
           </div>
         </div>
@@ -51,7 +61,7 @@
     @case (PanelView.CityView) {
     <form
       class="add-form"
-      [formGroup]="addCityForm"
+      [formGroup]="cityForm"
       (ngSubmit)="onAddCitySubmit()"
     >
       <div class="form-row-section">
@@ -61,11 +71,12 @@
           type="text"
           formControlName="cityName"
           placeholder="Enter the city name"
+          [class.disabled-input]="cityForm.get('cityName')?.disabled"
         />
         <small
           *ngIf="
-            addCityForm.get('cityName')?.hasError('required') &&
-            addCityForm.get('cityName')?.touched
+            cityForm.get('cityName')?.hasError('required') &&
+            cityForm.get('cityName')?.touched
           "
           class="text-danger"
         >
@@ -73,8 +84,8 @@
         </small>
         <small
           *ngIf="
-            addCityForm.get('cityName')?.hasError('noResult') &&
-            addCityForm.get('cityName')?.touched
+            cityForm.get('cityName')?.hasError('noResult') &&
+            cityForm.get('cityName')?.touched
           "
           class="text-danger"
         >
@@ -98,7 +109,9 @@
         >
           Discard
         </div>
-        <button type="submit" class="submit-button">Add city</button>
+        <button type="submit" class="submit-button">
+          {{ isEditFlow === false ? "Add" : "Edit" }}
+        </button>
       </div>
     </form>
     }
@@ -131,12 +144,33 @@
       *ngFor="let waypoint of selectedCity!.waypoints[currentDayIndex]"
       class="option-button"
     >
-      <span class="button-text-container">
-        <div class="button-icon" id="city-icon"></div>
-        <span class="button-text name">{{ waypoint.name }}</span>
-      </span>
-      <div class="date-text">
-        {{ waypoint.startTime }} - {{ waypoint.endTime }}
+      <div class="button-info-container">
+        <span class="button-text-container">
+          <div class="button-icon" id="city-icon"></div>
+          <span class="button-text name">{{ waypoint.name }}</span>
+        </span>
+        <div class="date-text">
+          {{ waypoint.startTime }} - {{ waypoint.endTime }}
+        </div>
+      </div>
+      <div class="menu-container" (click)="$event.stopPropagation()">
+        <div class="menu-dots">•••</div>
+        <div class="dropdown-menu">
+          <div
+            class="dropdown-item"
+            id="edit"
+            (click)="onEditClick(waypoint, 'waypoint')"
+          >
+            Edit
+          </div>
+          <div
+            class="dropdown-item"
+            id="delete"
+            (click)="onDeleteClick(waypoint, 'waypoint')"
+          >
+            Delete
+          </div>
+        </div>
       </div>
     </div>
     <div class="option-button" (click)="setCurrentView(PanelView.WaypointView)">
@@ -152,7 +186,7 @@
     @case (PanelView.WaypointView) {
     <form
       class="add-form"
-      [formGroup]="addWaypointForm"
+      [formGroup]="waypointForm"
       (ngSubmit)="onAddWaypointSubmit()"
     >
       <div class="form-row-section">
@@ -162,26 +196,27 @@
           type="text"
           formControlName="waypointName"
           placeholder="Enter the waypoint name"
+          [class.disabled-input]="waypointForm.get('waypointName')?.disabled"
         />
         <small
           *ngIf="
-            addWaypointForm.get('waypointName')?.hasError('required') &&
-            addWaypointForm.get('waypointName')?.touched
+            waypointForm.get('waypointName')?.hasError('required') &&
+            waypointForm.get('waypointName')?.touched
           "
           class="text-danger"
         >
           Waypoint Name cannot be empty.
         </small>
         <small
-          *ngIf="addWaypointForm.get('waypointName')?.hasError('noResult')"
+          *ngIf="waypointForm.get('waypointName')?.hasError('noResult')"
           class="text-danger"
         >
           No results found. Please select a valid waypoint from the list.
         </small>
         <small
           *ngIf="
-            addWaypointForm.get('waypointName')?.hasError('unsupportedType') &&
-            addWaypointForm.get('waypointName')?.touched
+            waypointForm.get('waypointName')?.hasError('unsupportedType') &&
+            waypointForm.get('waypointName')?.touched
           "
           class="text-danger"
         >
@@ -211,7 +246,6 @@
           />
           m
         </span>
-        <!-- TODO: Add validations for the number of hours and default 1 -->
       </div>
       <div class="form-row-section number">
         <label class="form-label number">End Time</label>
@@ -235,11 +269,10 @@
           />
           m
         </span>
-        <!-- TODO: Add validations for the number of hours and default 1 -->
       </div>
       <div class="form-row-section">
         <small
-          *ngIf="addWaypointForm.hasError('endTimeEarlier')"
+          *ngIf="waypointForm.hasError('endTimeEarlier')"
           class="text-danger"
         >
           End time must be later than the start time.
@@ -252,7 +285,9 @@
         >
           Discard
         </div>
-        <button type="submit" class="submit-button">Add</button>
+        <button type="submit" class="submit-button">
+          {{ isEditFlow === false ? "Add" : "Edit" }}
+        </button>
       </div>
     </form>
     } }

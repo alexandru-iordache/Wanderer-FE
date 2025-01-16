@@ -152,6 +152,7 @@ export class GoogleComponentsFactoryService {
       map,
       title: markerTitle,
       content: markerContent,
+      zIndex: 1000
     });
 
     if (clickHandler) {

@@ -263,6 +263,11 @@ input {
     width: 30%;
     text-align: right;
   }
+
+  &.disabled-input {
+    background-color: $primary-color-highlight;
+    cursor: not-allowed;
+  }
 }
 
 .time-counter {
@@ -300,12 +305,12 @@ input {
   font-family: $primary-font;
   font-size: 12px;
   font-weight: 600;
-  color:  $third-color;
+  color: $third-color;
 }
 
 .submit-button {
   @extend .positive-feedback-button;
-  
+
   min-width: 40%;
 }
 
