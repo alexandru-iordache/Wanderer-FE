@@ -10,6 +10,7 @@ export class AddCityDto {
   numberOfNights: number;
   northEastBound: LatLngBound;
   southWestBound: LatLngBound;
+  order: number;
   waypoints: AddWaypointDto[][] = [];
 
   constructor(
@@ -21,6 +22,7 @@ export class AddCityDto {
     numberOfNights: number,
     northEastBound: LatLngBound,
     southWestBound: LatLngBound,
+    order: number,
     waypoints: AddWaypointDto[][]
   ) {
     this.name = name;
@@ -31,6 +33,7 @@ export class AddCityDto {
     this.numberOfNights = numberOfNights;
     this.northEastBound = northEastBound;
     this.southWestBound = southWestBound;
+    this.order = order;
     this.waypoints = waypoints;
   }
 

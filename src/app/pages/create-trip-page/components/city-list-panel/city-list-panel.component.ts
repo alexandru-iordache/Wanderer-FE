@@ -44,7 +44,13 @@ export class CityListPanelComponent
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
 
   @Output() action = new EventEmitter<{
-    type: 'citySubmitted' | 'waypointSubmitted' | 'citySelected' | 'dayChanged';
+    type:
+      | 'citySubmitted'
+      | 'cityEdited'
+      | 'waypointSubmitted'
+      | 'waypointEdited'
+      | 'citySelected'
+      | 'dayChanged';
     payload?: any;
   }>();
 
@@ -60,8 +66,8 @@ export class CityListPanelComponent
 
   currentView: PanelView = PanelView.CitiesListView; // change it
   currentDayIndex: number = 0;
-  cityInAddProcess: AddCityDto | null = null;
-  waypointInAddProcess: AddWaypointDto | null = null;
+  cityInProcess: AddCityDto | null = null;
+  waypointInProcess: AddWaypointDto | null = null;
   selectedCity: AddCityDto | null = null;
   isEditFlow: boolean = false;
 
@@ -115,7 +121,7 @@ export class CityListPanelComponent
       this.setCurrentView(PanelView.CityView);
 
       this.cityForm.get('cityName')?.setValue(cityTransferDto.name);
-      this.cityInAddProcess = new AddCityDto(
+      this.cityInProcess = new AddCityDto(
         cityTransferDto.name,
         cityTransferDto.country,
         cityTransferDto.latitude,
@@ -124,6 +130,9 @@ export class CityListPanelComponent
         0,
         cityTransferDto.northEastBound,
         cityTransferDto.southWestBound,
+        this.cityList.length > 0
+          ? Math.max(...this.cityList.map((x) => x.order)) + 1
+          : 0,
         []
       );
     }
@@ -138,7 +147,7 @@ export class CityListPanelComponent
       this.setCurrentView(PanelView.WaypointView);
 
       this.waypointForm.get('waypointName')?.setValue(waypointTransferDto.name);
-      this.waypointInAddProcess = new AddWaypointDto(
+      this.waypointInProcess = new AddWaypointDto(
         waypointTransferDto.name,
         waypointTransferDto.type,
         waypointTransferDto.placeId,
@@ -168,55 +177,39 @@ export class CityListPanelComponent
     this.changeDetector.detectChanges();
   }
 
-  onAddCitySubmit() {
+  onCityFormSubmit() {
     if (!this.cityForm.valid) {
       return;
     }
 
-    const enteredValue = this.cityNameInput?.nativeElement.value.trim();
-    if (
-      !enteredValue ||
-      !this.cityInAddProcess ||
-      this.cityInAddProcess.name !== enteredValue
-    ) {
+    if (this.cityInProcess === null) {
       this.cityForm.get('cityName')?.setErrors({ noResult: true });
       return;
     }
 
     const numberOfNights = this.cityForm.get('numberOfNights')?.value;
 
-    if (this.cityInAddProcess === null) {
-      // IMPORTANT: Error snackbar, unexepected error
-      return;
+    let response: boolean;
+    if (this.isEditFlow) {
+      response = this.HandleCityEdit(numberOfNights);
+      this.isEditFlow = false;
+    } else {
+      response = this.HandleCityAdd(numberOfNights);
     }
 
-    let nights = this.cityList.reduce(
-      (sumOfNights, city) => sumOfNights + city.numberOfNights,
-      0
-    );
-
-    let tempDate = new Date(this.startDate!);
-    tempDate.setDate(this.startDate!.getDate() + nights);
-
-    this.cityInAddProcess.arrivalDate = tempDate;
-    this.cityInAddProcess.setNumberOfNights(numberOfNights);
-
-    this.action.emit({ type: 'citySubmitted', payload: this.cityInAddProcess });
-
-    this.setCurrentView(PanelView.CitiesListView);
+    if (response) {
+      this.cityForm.get('cityName')?.enable();
+      this.setCurrentView(PanelView.CitiesListView);
+      this.cityInProcess = null;
+    }
   }
 
-  onAddWaypointSubmit() {
+  onWaypointFormSubmit() {
     if (!this.waypointForm.valid) {
       return;
     }
 
-    const enteredValue = this.waypointNameInput?.nativeElement.value.trim();
-    if (
-      !enteredValue ||
-      !this.waypointInAddProcess ||
-      this.waypointInAddProcess.name !== enteredValue
-    ) {
+    if (this.waypointInProcess === null) {
       this.waypointForm.get('waypointName')?.setErrors({ noResult: true });
       return;
     }
@@ -227,29 +220,28 @@ export class CityListPanelComponent
     const endHour = this.waypointForm.get('endHour')?.value;
     const endMinutes = this.waypointForm.get('endMinutes')?.value;
 
-    if (this.waypointInAddProcess === null) {
-      // IMPORTANT: Error snackbar, unexepected error
-      return;
-    }
-
-    this.waypointInAddProcess!.startTime = `${this.formatTwoDigits(
+    this.waypointInProcess!.startTime = `${this.formatTwoDigits(
       startHour,
       'hour'
     )}:${this.formatTwoDigits(startMinutes, 'minutes')}`;
-    this.waypointInAddProcess!.endTime = `${this.formatTwoDigits(
+    this.waypointInProcess!.endTime = `${this.formatTwoDigits(
       endHour,
       'hour'
     )}:${this.formatTwoDigits(endMinutes, 'minutes')}`;
 
-    this.action.emit({
-      type: 'waypointSubmitted',
-      payload: this.waypointInAddProcess,
-    });
+    let response: boolean;
+    if (this.isEditFlow) {
+      response = this.HandleWaypointEdit();
+      this.isEditFlow = false;
+    } else {
+      response = this.HandleWaypointAdd();
+    }
 
-    this.waypointInAddProcess = null;
-    this.setCurrentView(PanelView.WaypointsListView);
-
-    this.changeDetector.detectChanges();
+    if (response) {
+      this.waypointForm.get('waypointName')?.enable();
+      this.setCurrentView(PanelView.WaypointsListView);
+      this.waypointInProcess = null;
+    }
   }
 
   onCityClick(selectedCity: AddCityDto) {
@@ -277,44 +269,12 @@ export class CityListPanelComponent
   onEditClick(entity: AddCityDto | AddWaypointDto, type: 'city' | 'waypoint') {
     this.isEditFlow = true;
 
-    console.log(this.isEditFlow);
-
     if (type === 'city') {
-      this.cityForm.get('cityName')?.disable();
-
-      const cityToEdit = entity as AddCityDto;
       this.setCurrentView(PanelView.CityView);
-      this.cityForm.patchValue({
-        cityName: cityToEdit.name,
-        numberOfNights: cityToEdit.numberOfNights,
-      });
-      this.cityInAddProcess = new AddCityDto(
-        cityToEdit.name,
-        cityToEdit.country,
-        cityToEdit.latitude,
-        cityToEdit.longitude,
-        cityToEdit.arrivalDate,
-        cityToEdit.numberOfNights,
-        cityToEdit.northEastBound,
-        cityToEdit.southWestBound,
-        cityToEdit.waypoints
-      );
+      this.setCityForm(entity as AddCityDto);
     } else if (type === 'waypoint') {
-      this.waypointForm.get('waypointName')?.disable();
-
-      const waypointToEdit = entity as AddWaypointDto;
       this.setCurrentView(PanelView.WaypointView);
-
-      const [startHour, startMinutes] = waypointToEdit.startTime.split(':');
-      const [endHour, endMinutes] = waypointToEdit.endTime.split(':');
-      this.waypointForm.patchValue({
-        waypointName: waypointToEdit.name,
-        startHour: startHour,
-        startMinutes: startMinutes,
-        endHour: endHour,
-        endMinutes: endMinutes,
-      });
-      this.waypointInAddProcess = { ...waypointToEdit };
+      this.setWaypointForm(entity as AddWaypointDto);
     }
 
     this.changeDetector.detectChanges();
@@ -325,6 +285,20 @@ export class CityListPanelComponent
     type: 'city' | 'waypoint'
   ) {
     this.openDeleteModal(type, entity);
+  }
+
+  onDiscardClick(view: PanelView, type: 'city' | 'waypoint') {
+    if (this.isEditFlow) {
+      this.isEditFlow = false;
+
+      if (type === 'city') {
+        this.cityForm.get('cityName')?.enable();
+      } else {
+        this.waypointForm.get('waypointName')?.enable();
+      }
+    }
+
+    this.setCurrentView(view);
   }
 
   setCurrentView(view: PanelView) {
@@ -388,6 +362,132 @@ export class CityListPanelComponent
     inputElement.value = this.formatTwoDigits(inputElement.value, type);
   }
 
+  private HandleCityAdd(numberOfNights: number): boolean {
+    const enteredValue = this.cityNameInput?.nativeElement.value.trim();
+    if (
+      !enteredValue ||
+      this.cityInProcess!.name !== enteredValue
+    ) {
+      this.cityForm.get('cityName')?.setErrors({ noResult: true });
+      return false;
+    }
+
+    let nights = this.cityList.reduce(
+      (sumOfNights, city) => sumOfNights + city.numberOfNights,
+      0
+    );
+
+    let tempDate = new Date(this.startDate!);
+    tempDate.setDate(this.startDate!.getDate() + nights);
+
+    this.cityInProcess!.arrivalDate = tempDate;
+    this.cityInProcess!.setNumberOfNights(numberOfNights);
+
+    this.action.emit({ type: 'citySubmitted', payload: this.cityInProcess });
+    return true;
+  }
+
+  private HandleCityEdit(numberOfNights: number): boolean {
+    if (this.cityInProcess!.numberOfNights < numberOfNights) {
+      // TO DO: Ask for confirmation
+    }
+
+    if (this.cityInProcess!.numberOfNights === numberOfNights) {
+      return true;
+    }
+
+    this.cityList
+      .filter((x) => x.order >= this.cityInProcess!.order)
+      .forEach((x) => {
+        let previousArrivalDate;
+
+        if (x.order === this.cityInProcess!.order) {
+          x.setNumberOfNights(numberOfNights);
+        }
+
+        if (this.cityList.indexOf(x) == 0) {
+          x.arrivalDate = this.startDate;
+          return;
+        } else {
+          previousArrivalDate =
+            this.cityList[this.cityList.indexOf(x) - 1].arrivalDate;
+        }
+
+        let tempDate = new Date(previousArrivalDate!);
+        tempDate.setDate(
+          previousArrivalDate!.getDate() +
+            this.cityList[this.cityList.indexOf(x) - 1].numberOfNights
+        );
+
+        x.arrivalDate = tempDate;
+      });
+
+    this.action.emit({ type: 'cityEdited', payload: this.cityList });
+
+    return true;
+  }
+
+  private HandleWaypointAdd(): boolean {
+    const enteredValue = this.waypointNameInput?.nativeElement.value.trim();
+    if (
+      !enteredValue ||
+      this.waypointInProcess!.name !== enteredValue
+    ) {
+      this.waypointForm.get('waypointName')?.setErrors({ noResult: true });
+      return false;
+    }
+
+    this.action.emit({
+      type: 'waypointSubmitted',
+      payload: this.waypointInProcess,
+    });
+    return true;
+  }
+
+  private HandleWaypointEdit(): boolean {
+    this.action.emit({
+      type: 'waypointEdited',
+      payload: this.waypointInProcess,
+    });
+    return true;
+  }
+
+  private setCityForm(cityToEdit: AddCityDto) {
+    this.cityForm.get('cityName')?.disable();
+    this.cityForm.patchValue({
+      cityName: cityToEdit.name,
+      numberOfNights: cityToEdit.numberOfNights,
+    });
+
+    this.cityInProcess = new AddCityDto(
+      cityToEdit.name,
+      cityToEdit.country,
+      cityToEdit.latitude,
+      cityToEdit.longitude,
+      cityToEdit.arrivalDate,
+      cityToEdit.numberOfNights,
+      cityToEdit.northEastBound,
+      cityToEdit.southWestBound,
+      cityToEdit.order,
+      cityToEdit.waypoints
+    );
+  }
+
+  private setWaypointForm(waypointToEdit: AddWaypointDto) {
+    this.waypointForm.get('waypointName')?.disable();
+    const [startHour, startMinutes] = waypointToEdit.startTime.split(':');
+    const [endHour, endMinutes] = waypointToEdit.endTime.split(':');
+    this.waypointForm.patchValue({
+      waypointName: waypointToEdit.name,
+      startHour: startHour,
+      startMinutes: startMinutes,
+      endHour: endHour,
+      endMinutes: endMinutes,
+    });
+
+    this.waypointInProcess = { ...waypointToEdit };
+  }
+
   private initializeCityAutocomplete() {
     if (this.cityNameInput?.nativeElement === undefined) {
       console.error(
@@ -437,7 +537,7 @@ export class CityListPanelComponent
         return;
       }
 
-      this.cityInAddProcess = new AddCityDto(
+      this.cityInProcess = new AddCityDto(
         cityName,
         countryName,
         latitude,
@@ -446,6 +546,9 @@ export class CityListPanelComponent
         0,
         new LatLngBound(northEastBound!.lat(), northEastBound!.lng()),
         new LatLngBound(southWestBound!.lat(), southWestBound!.lng()),
+        this.cityList.length > 0
+          ? Math.max(...this.cityList.map((x) => x.order)) + 1
+          : 0,
         []
       );
     });
@@ -510,7 +613,7 @@ export class CityListPanelComponent
       const latitude = place.geometry?.location?.lat() ?? 0;
       const longitude = place.geometry?.location?.lng() ?? 0;
 
-      this.waypointInAddProcess = new AddWaypointDto(
+      this.waypointInProcess = new AddWaypointDto(
         waypointName,
         waypointType.toString(),
         placeId,

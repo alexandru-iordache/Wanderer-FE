@@ -40,17 +40,18 @@ export class CreateTripPageComponent {
 
   // Multiple Dependendants Properties
   cityList: AddCityDto[] = [
-    new AddCityDto(
-      'Bârlad',
-      'Romania',
-      46.2276613,
-      27.6692265,
-      new Date('2025-01-05T14:00:05.444Z'),
-      3,
-      new LatLngBound(46.26240424613476, 27.69721986114218),
-      new LatLngBound(46.19940878412697, 27.63958457457981),
-      [[], [], [], []]
-    ),
+    // new AddCityDto(
+    //   'Bârlad',
+    //   'Romania',
+    //   46.2276613,
+    //   27.6692265,
+    //   new Date('2025-01-05T14:00:05.444Z'),
+    //   3,
+    //   new LatLngBound(46.26240424613476, 27.69721986114218),
+    //   new LatLngBound(46.19940878412697, 27.63958457457981),
+    //   0,
+    //   [[], [], [], []]
+    // ),
   ]; // to be changed
   selectedCityDto: SelectedCityDto | null = null;
   selectedEntity: {
@@ -68,8 +69,14 @@ export class CreateTripPageComponent {
       case 'citySubmitted':
         this.onCitySubmitted(event.payload);
         break;
+      case 'cityEdited':
+        this.onCityEdited(event.payload);
+        break;
       case 'waypointSubmitted':
         this.onWaypointSubmitted(event.payload);
+        break;
+      case 'waypointEdited':
+        this.onWaypointEdited(event.payload);
         break;
       case 'citySelected':
         this.onCitySelected(event.payload);
@@ -101,6 +108,12 @@ export class CreateTripPageComponent {
     this.changeDetector.detectChanges();
   }
 
+  onCityEdited(cityList: AddCityDto[]): void {
+    this.cityList = [...cityList];
+
+    this.changeDetector.detectChanges();
+  }
+
   onWaypointSubmitted(waypoint: AddWaypointDto): void {
     console.log(this.cityList);
 
@@ -115,6 +128,24 @@ export class CreateTripPageComponent {
     this.changeDetector.detectChanges();
   }
 
+  onWaypointEdited(waypoint: AddWaypointDto): void {
+    let city = this.cityList.find(
+      (city) => city === this.selectedCityDto?.selectedCity
+    );
+
+    let waypointInList = city?.waypoints[this.currentDayIndex].find(
+      (cityWaypoint) => cityWaypoint.placeId === waypoint.placeId
+    );
+
+    waypointInList!.startTime = waypoint.startTime;
+    waypointInList!.endTime = waypoint.endTime;
+
+    this.cityList = [...this.cityList];
+    console.log(this.cityList);
+
+    this.changeDetector.detectChanges();
+  }
+
   onCitySelected(selectedCityDto: SelectedCityDto | null) {
     this.panelViewToSet = null;
     this.selectedCityDto = selectedCityDto;
@@ -122,7 +153,7 @@ export class CreateTripPageComponent {
     this.changeDetector.detectChanges();
   }
 
-  onDayChanged(dayIndex: number ): void {
+  onDayChanged(dayIndex: number): void {
     this.currentDayIndex = dayIndex;
 
     this.changeDetector.detectChanges();

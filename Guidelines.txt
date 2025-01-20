@@ -28,7 +28,7 @@ TBD IMPORTANT:
         x - validations needed
         x - little redesign to minutes/hour
         - icons rendering for the 3 waypoint types
-        - mechanism to attentionate the overlapping intervals (maybe also in the add waypoint)
+        - mechanism to attentionate the overlapping intervals (maybe also in the edit waypoint)
       x - render waypoint markers
         - waypoint infoWindows
       x - close waypoint list view
@@ -42,6 +42,10 @@ TBD IMPORTANT:
     x - style the delete confirmation modal
     x - stop click event on the button when you click delete/edit
       - edit flow
+        x - see new validation bug (no result does not show for city that is not from autocomplete)
+        x - waypoint edit
+        x - discard -> change edit flow
+        - snackbar error for waypoints that will be deleted
       
 
 TBD:

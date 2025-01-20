@@ -62,7 +62,7 @@
     <form
       class="add-form"
       [formGroup]="cityForm"
-      (ngSubmit)="onAddCitySubmit()"
+      (ngSubmit)="onCityFormSubmit()"
     >
       <div class="form-row-section">
         <label class="form-label">City Name</label>
@@ -105,7 +105,7 @@
       <div class="buttons-section">
         <div
           class="discard-button"
-          (click)="setCurrentView(PanelView.CitiesListView)"
+          (click)="onDiscardClick(PanelView.CitiesListView, 'city')"
         >
           Discard
         </div>
@@ -187,7 +187,7 @@
     <form
       class="add-form"
       [formGroup]="waypointForm"
-      (ngSubmit)="onAddWaypointSubmit()"
+      (ngSubmit)="onWaypointFormSubmit()"
     >
       <div class="form-row-section">
         <label class="form-label">Waypoint Name</label>
@@ -281,7 +281,7 @@
       <div class="buttons-section">
         <div
           class="discard-button"
-          (click)="setCurrentView(PanelView.WaypointsListView)"
+          (click)="onDiscardClick(PanelView.WaypointsListView, 'waypoint')"
         >
           Discard
         </div>
