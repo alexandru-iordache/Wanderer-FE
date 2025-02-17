@@ -63,6 +63,7 @@
       class="add-form"
       [formGroup]="cityForm"
       (ngSubmit)="onCityFormSubmit()"
+      (keydown.enter)="preventEnterSubmit($event)"
     >
       <div class="form-row-section">
         <label class="form-label">City Name</label>
@@ -188,6 +189,7 @@
       class="add-form"
       [formGroup]="waypointForm"
       (ngSubmit)="onWaypointFormSubmit()"
+      (keydown.enter)="preventEnterSubmit($event)"
     >
       <div class="form-row-section">
         <label class="form-label">Waypoint Name</label>
@@ -276,6 +278,12 @@
           class="text-danger"
         >
           End time must be later than the start time.
+        </small>
+        <small
+          *ngIf="waypointForm.hasError('overlap')"
+          class="text-danger"
+        >
+          Current interval is overlapping with one of the existing ones.
         </small>
       </div>
       <div class="buttons-section">

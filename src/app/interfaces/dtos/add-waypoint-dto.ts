@@ -9,6 +9,7 @@ export class AddWaypointDto
     longitude: number;
     startTime: string;
     endTime: string;
+    order: number;
 
     constructor(
         name: string,
@@ -17,7 +18,8 @@ export class AddWaypointDto
         latitude: number,
         longitude: number,
         startTime: string,
-        endTime: string
+        endTime: string,
+        order: number
     ){
         this.name = name;
         this.type = type;
@@ -26,5 +28,6 @@ export class AddWaypointDto
         this.longitude = longitude;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.order = order;
     }
 }

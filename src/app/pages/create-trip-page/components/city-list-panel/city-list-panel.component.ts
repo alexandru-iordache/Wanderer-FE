@@ -27,7 +27,7 @@ import {
   RECREATIONAL_WAYPOINT_TYPES,
 } from '../../../../shared/helpers/preferred-waypoint-types';
 import { WaypointType } from '../../../helpers/waypoint-type.enum';
-import { endTimeValidator } from '../../../../shared/helpers/validators';
+import { timeValidator as timeValidator } from '../../../../shared/helpers/validators';
 
 @Component({
   selector: 'app-city-list-panel',
@@ -60,6 +60,12 @@ export class CityListPanelComponent
   PanelView = PanelView;
   private cityAutocomplete: google.maps.places.Autocomplete | null = null;
   private waypointAutocomplete: google.maps.places.Autocomplete | null = null;
+  private getWaypoints = () =>
+    this.selectedCity?.waypoints[this.currentDayIndex] ?? undefined;
+  private getIsEditFlag = () => ({
+    isEditFlow: this.isEditFlow ?? false,
+    waypointInProcess: this.waypointInProcess ?? undefined,
+  });
 
   cityForm: FormGroup = new FormGroup({});
   waypointForm: FormGroup = new FormGroup({});
@@ -91,7 +97,9 @@ export class CityListPanelComponent
         endHour: ['00', [Validators.required]],
         endMinutes: ['01', [Validators.required]],
       },
-      { validators: endTimeValidator() }
+      {
+        validators: timeValidator(this.getWaypoints, this.getIsEditFlag),
+      }
     );
 
     try {
@@ -154,7 +162,8 @@ export class CityListPanelComponent
         waypointTransferDto.latitude,
         waypointTransferDto.longitude,
         '',
-        ''
+        '',
+        0
       );
     }
 
@@ -179,6 +188,7 @@ export class CityListPanelComponent
 
   onCityFormSubmit() {
     if (!this.cityForm.valid) {
+      console.log('Invalid Form: ' + this.cityForm.errors);
       return;
     }
 
@@ -206,6 +216,7 @@ export class CityListPanelComponent
 
   onWaypointFormSubmit() {
     if (!this.waypointForm.valid) {
+      console.log('Invalid Form: ' + this.waypointForm.errors);
       return;
     }
 
@@ -362,12 +373,35 @@ export class CityListPanelComponent
     inputElement.value = this.formatTwoDigits(inputElement.value, type);
   }
 
+  preventEnterSubmit(event: Event) {
+    const activeElement = document.activeElement as HTMLElement;
+    if (activeElement.tagName.toLowerCase() === 'button') {
+      return;
+    }
+
+    const keyboardEvent = event as KeyboardEvent;
+    keyboardEvent.preventDefault();
+    this.focusNextElement(keyboardEvent);
+  }
+
+  focusNextElement(event: KeyboardEvent) {
+    const form = event.target as HTMLElement;
+  
+    const focusableElements = Array.from(
+      form.closest('form')?.querySelectorAll(
+        'input, button, select, textarea, [tabindex]:not([tabindex="-1"])'
+      ) || []
+    ) as HTMLElement[];
+  
+    const index = focusableElements.indexOf(event.target as HTMLElement);
+    if (index > -1 && index < focusableElements.length - 1) {
+      focusableElements[index + 1].focus();
+    }
+  }
+
   private HandleCityAdd(numberOfNights: number): boolean {
     const enteredValue = this.cityNameInput?.nativeElement.value.trim();
-    if (
-      !enteredValue ||
-      this.cityInProcess!.name !== enteredValue
-    ) {
+    if (!enteredValue || this.cityInProcess!.name !== enteredValue) {
       this.cityForm.get('cityName')?.setErrors({ noResult: true });
       return false;
     }
@@ -429,10 +463,7 @@ export class CityListPanelComponent
 
   private HandleWaypointAdd(): boolean {
     const enteredValue = this.waypointNameInput?.nativeElement.value.trim();
-    if (
-      !enteredValue ||
-      this.waypointInProcess!.name !== enteredValue
-    ) {
+    if (!enteredValue || this.waypointInProcess!.name !== enteredValue) {
       this.waypointForm.get('waypointName')?.setErrors({ noResult: true });
       return false;
     }
@@ -453,27 +484,18 @@ export class CityListPanelComponent
   }
 
   private setCityForm(cityToEdit: AddCityDto) {
+    this.cityInProcess = cityToEdit;
+
     this.cityForm.get('cityName')?.disable();
     this.cityForm.patchValue({
       cityName: cityToEdit.name,
       numberOfNights: cityToEdit.numberOfNights,
     });
-
-    this.cityInProcess = new AddCityDto(
-      cityToEdit.name,
-      cityToEdit.country,
-      cityToEdit.latitude,
-      cityToEdit.longitude,
-      cityToEdit.arrivalDate,
-      cityToEdit.numberOfNights,
-      cityToEdit.northEastBound,
-      cityToEdit.southWestBound,
-      cityToEdit.order,
-      cityToEdit.waypoints
-    );
   }
 
   private setWaypointForm(waypointToEdit: AddWaypointDto) {
+    this.waypointInProcess = waypointToEdit;
+    
     this.waypointForm.get('waypointName')?.disable();
     const [startHour, startMinutes] = waypointToEdit.startTime.split(':');
     const [endHour, endMinutes] = waypointToEdit.endTime.split(':');
@@ -484,8 +506,6 @@ export class CityListPanelComponent
       endHour: endHour,
       endMinutes: endMinutes,
     });
-
-    this.waypointInProcess = { ...waypointToEdit };
   }
 
   private initializeCityAutocomplete() {
@@ -518,7 +538,7 @@ export class CityListPanelComponent
       const cityName = place.name;
       this.cityNameInput!.nativeElement.value = cityName;
 
-      this.cityForm.get('cityName')?.setErrors(null);
+      // this.cityForm.get('cityName')?.setErrors(null);
 
       // IMPORTANT: Show no result feedback, country filtering etc
       const countryName =
@@ -606,7 +626,7 @@ export class CityListPanelComponent
         return;
       }
 
-      this.waypointForm.get('waypointName')?.setErrors(null);
+      // this.waypointForm.get('waypointName')?.setErrors(null);
 
       // IMPORTANT: Show no result feedback, country filtering etc
       const placeId = place.place_id ?? '';
@@ -620,7 +640,8 @@ export class CityListPanelComponent
         latitude,
         longitude,
         '',
-        ''
+        '',
+        0
       );
     });
   }

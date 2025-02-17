@@ -121,7 +121,15 @@ export class CreateTripPageComponent {
       (city) => city === this.selectedCityDto?.selectedCity
     );
 
+    this.setWaypointsOrder(
+      waypoint,
+      this.selectedCityDto!.selectedCity!.waypoints[this.currentDayIndex]
+        .length,
+      city!
+    );
+
     city?.waypoints[this.currentDayIndex].push(waypoint);
+    city?.waypoints[this.currentDayIndex].sort((a, b) => a.order - b.order);
     this.cityList = [...this.cityList];
     console.log(this.cityList);
 
@@ -140,6 +148,9 @@ export class CreateTripPageComponent {
     waypointInList!.startTime = waypoint.startTime;
     waypointInList!.endTime = waypoint.endTime;
 
+    this.setWaypointsOrder(waypointInList!, waypointInList!.order, city!);
+
+    city?.waypoints[this.currentDayIndex].sort((a, b) => a.order - b.order);
     this.cityList = [...this.cityList];
     console.log(this.cityList);
 
@@ -182,34 +193,129 @@ export class CreateTripPageComponent {
 
   confirmDelete() {
     if (this.selectedEntity?.type === 'city') {
-      this.cityList = this.cityList.filter(
-        (city) => city !== this.selectedEntity?.data
-      );
-
-      this.changeDetector.detectChanges();
+      this.deleteCity();
     }
 
     if (this.selectedEntity?.type === 'waypoint') {
-      let city = this.cityList.find(
-        (city) => city === this.selectedCityDto!.selectedCity
-      );
-
-      const waypointIndex = city!.waypoints[this.currentDayIndex].indexOf(
-        this.selectedEntity?.data as AddWaypointDto
-      );
-      if (waypointIndex > -1) {
-        city!.waypoints[this.currentDayIndex].splice(waypointIndex, 1);
-      }
-
-      this.cityList = [...this.cityList];
-      console.log(this.cityList);
-
-      this.changeDetector.detectChanges();
+      this.deleteWaypoint();
     }
+
+    this.changeDetector.detectChanges();
     this.closeDeleteModal();
   }
 
   closeDeleteModal() {
     this.selectedEntity = null;
+  }
+
+  private deleteCity() {
+    const cityIndex = this.cityList.indexOf(
+      this.selectedEntity?.data as AddCityDto
+    );
+    if (cityIndex > -1) {
+      this.cityList.splice(cityIndex, 1);
+    }
+
+    this.cityList
+      .sort((x) => x.order)
+      .forEach((city, index) => {
+        city.order = index;
+
+        if (index == 0) {
+          city.arrivalDate = this.startDate;
+        } else {
+          let tempDate = new Date(this.cityList[index - 1].arrivalDate!);
+          tempDate.setDate(
+            this.cityList[index - 1].arrivalDate!.getDate() +
+              this.cityList[index - 1].numberOfNights
+          );
+          city.arrivalDate = tempDate;
+        }
+      });
+    this.cityList = [...this.cityList];
+
+    console.log(
+      'City: ' + this.selectedEntity?.data.name + ' deleted succesfully.'
+    );
+  }
+
+  private deleteWaypoint() {
+    let city = this.cityList.find(
+      (city) => city === this.selectedCityDto!.selectedCity
+    );
+
+    if (city === undefined) {
+      console.error('No city found.');
+      return;
+    }
+
+    const waypointIndex = city.waypoints[this.currentDayIndex].indexOf(
+      this.selectedEntity?.data as AddWaypointDto
+    );
+    if (waypointIndex > -1) {
+      city.waypoints[this.currentDayIndex].splice(waypointIndex, 1);
+    }
+
+    city.waypoints[this.currentDayIndex]
+      .sort((x) => x.order)
+      .forEach((waypoint, index) => {
+        waypoint.order = index;
+      });
+
+    this.cityList = [...this.cityList];
+    console.log(
+      'Waypoint: ' + this.selectedEntity?.data.name + ' deleted succesfully.'
+    );
+  }
+
+  private setWaypointsOrder(
+    waypoint: AddWaypointDto,
+    initialOrder: number,
+    city: AddCityDto
+  ) {
+    const waypointSplitStartTime = waypoint.startTime.split(':');
+    const waypointStartTime =
+      parseInt(waypointSplitStartTime[0], 10) * 60 +
+      parseInt(waypointSplitStartTime[1], 10);
+
+    let currentDayWaypoints = city.waypoints[this.currentDayIndex];
+
+    let order = initialOrder;
+    let index = 0;
+    let isLast = true;
+    while (index < currentDayWaypoints.length) {
+      const splitStartTime = currentDayWaypoints[index].startTime.split(':');
+      const currentWaypointStartTime =
+        parseInt(splitStartTime[0], 10) * 60 + parseInt(splitStartTime[1], 10);
+
+      if (waypointStartTime < currentWaypointStartTime) {
+        isLast = false;
+        break;
+      }
+
+      const currentPlaceId = currentDayWaypoints[index].placeId;
+      if (
+        waypointStartTime === currentWaypointStartTime &&
+        waypoint.placeId === currentPlaceId
+      ) {
+        break;
+      }
+
+      index++;
+    }
+
+    if (isLast === false) {
+      order = currentDayWaypoints[index].order;
+      for (
+        let secondIndex = index;
+        secondIndex < currentDayWaypoints.length;
+        secondIndex++
+      ) {
+        currentDayWaypoints[secondIndex].order =
+          currentDayWaypoints[secondIndex].order + 1;
+      }
+    }
+
+    waypoint.order = order;
   }
 }

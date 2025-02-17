@@ -4,6 +4,8 @@ import {
   ValidationErrors,
   ValidatorFn,
 } from '@angular/forms';
+import { AddWaypointDto } from '../../interfaces/dtos/add-waypoint-dto';
+import { TimeInterval } from 'rxjs/internal/operators/timeInterval';
 
 export function minimumAgeValidator(minAge: number): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
@@ -86,45 +88,74 @@ export function datePickerValidator(): ValidatorFn {
   };
 }
 
-export function endTimeValidator(): ValidatorFn {
+export function timeValidator(
+  getWaypoints: () => AddWaypointDto[] | undefined,
+  getIsEditFlag: () => {
+    isEditFlow: boolean;
+    waypointInProcess: AddWaypointDto | undefined;
+  }
+): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
     const formGroup = control as FormGroup;
 
-    const startHourControl = formGroup.get('startHour');
-    const startMinutesControl = formGroup.get('startMinutes');
-    const endHourControl = formGroup.get('endHour');
-    const endMinutesControl = formGroup.get('endMinutes');
+    const startHourControl = formGroup.get('startHour')!;
+    const startMinutesControl = formGroup.get('startMinutes')!;
+    const endHourControl = formGroup.get('endHour')!;
+    const endMinutesControl = formGroup.get('endMinutes')!;
 
-    if (
-      !startHourControl?.value ||
-      !startMinutesControl?.value ||
-      !endHourControl?.value ||
-      !endMinutesControl?.value
-    ) {
-      return null;
-    }
+    const startHour = parseInt(startHourControl.value, 10);
+    const endHour = parseInt(endHourControl.value, 10);
+    const startMinutes = parseInt(startMinutesControl.value, 10);
+    const endMinutes = parseInt(endMinutesControl.value, 10);
 
-    endHourControl.setErrors(null);
-    endMinutesControl.setErrors(null);
+    const newStartTime = startHour * 60 + startMinutes;
+    const newEndTime = endHour * 60 + endMinutes;
 
-    const startHour = parseInt(startHourControl!.value, 10);
-    const endHour = parseInt(endHourControl!.value, 10);
-
-    if (endHour < startHour) {
-      endHourControl.setErrors({ endTimeEarlier: true });
+    if (newEndTime <= newStartTime) {
       return { endTimeEarlier: true };
     }
 
-    if (endHour == startHour) {
-      const startMinutes = parseInt(startMinutesControl.value, 10);
-      const endMinutes = parseInt(endMinutesControl.value, 10);
+    let waypoints = getWaypoints();
+    if (waypoints === undefined) {
+      waypoints = [];
+    }
 
-      if (startMinutes >= endMinutes) {
-        endMinutesControl.setErrors({ endTimeEarlier: true });
-        return { endTimeEarlier: true };
-      }
+    const editPayload = getIsEditFlag();
+    if (editPayload.isEditFlow === true) {
+      waypoints = waypoints.filter(
+        (waypoint) => waypoint.order !== editPayload.waypointInProcess?.order
+      );
+    }
+
+    if (isOverlapping(waypoints, newStartTime, newEndTime)) {
+      return { overlap: true };
     }
 
     return null;
   };
+}
+
+function isOverlapping(
+  waypoints: AddWaypointDto[],
+  newStartTime: number,
+  newEndTime: number
+): boolean {
+  for (const waypoint of waypoints) {
+    const startTimeSplit = waypoint.startTime.split(':');
+    const endTimeSplit = waypoint.endTime.split(':');
+
+    const existingStartTime =
+      parseInt(startTimeSplit[0], 10) * 60 + parseInt(startTimeSplit[1], 10);
+    const existingEndTime =
+      parseInt(endTimeSplit[0], 10) * 60 + parseInt(endTimeSplit[1], 10);
+    if (
+      (newStartTime <= existingEndTime && newStartTime >= existingStartTime) ||
+      (newEndTime >= existingStartTime && newEndTime <= existingEndTime) ||
+      (newStartTime <= existingStartTime && newEndTime >= existingEndTime)
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 }

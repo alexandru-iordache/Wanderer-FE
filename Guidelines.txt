@@ -46,7 +46,8 @@ TBD IMPORTANT:
         x - waypoint edit
         x - discard -> change edit flow
         - snackbar error for waypoints that will be deleted
-      
+    x - reshape list after delete (CITY)
+      - add button focus on enter
 
 TBD:
     - Enhance CreateTrip panel 
