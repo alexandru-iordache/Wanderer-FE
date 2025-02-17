@@ -1,4 +1,4 @@
-<app-navbar></app-navbar>
+<app-navbar [isLoggedIn]="isLoggedIn"></app-navbar>
 <div class="layout">
     <app-sidebar *ngIf="isLoggedIn === true"></app-sidebar>
     <div class="content">

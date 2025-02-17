@@ -1,0 +1,47 @@
+<div class="map-container">
+  <app-map
+    [options]="mapOptions"
+    [cityList]="cityList"
+    [selectedCity]="selectedCityDto"
+    [currentDayIndex]="currentDayIndex"
+    (cityToAdd)="onCityToAdd($event)"
+  ></app-map>
+  <app-create-trip-modal
+    (viewChanged)="onViewChanged($event)"
+    (tripStarted)="onTripStarted($event)"
+    *ngIf="modalClosed === false"
+  ></app-create-trip-modal>
+</div>
+<app-city-list-panel
+  [cityToAdd]="cityToAdd"
+  [cityList]="cityList"
+  [startDate]="startDate"
+  [viewChanged]="panelViewToSet"
+  (action)="handlePanelAction($event)"
+  [openDeleteModal]="openDeleteModal.bind(this)"
+  *ngIf="modalClosed === true"
+></app-city-list-panel>
+<div class="exit-city-button-container" *ngIf="selectedCityDto">
+  <button class="exit-city-button" (click)="onExitCityView()">
+    Exit City View
+  </button>
+</div>
+
+<div class="modal-backdrop" *ngIf="selectedEntity">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-text">Delete {{ selectedEntity.data.name }}</div>
+    </div>
+    <div class="modal-content">
+      <h3>Are you sure you want to delete this {{ selectedEntity.type }}?</h3>
+      <div class="modal-buttons">
+        <button class="discard-button" (click)="closeDeleteModal()">
+          Discard
+        </button>
+        <button class="confirm-button" (click)="confirmDelete()">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

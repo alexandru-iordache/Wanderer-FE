@@ -3,6 +3,7 @@
 .layout {
     height: calc(100vh - 80px);
     width: 100%;
+    padding: 0px;
     position: absolute;
     top: 80px;
     display: flex;
@@ -10,4 +11,18 @@
 
 .content {
     flex-grow: 1;
+}
+
+@media (max-width: 767px){
+    .layout {
+        flex-direction: column;
+    }
+
+    app-sidebar {
+        order: 2;
+    }
+
+    .content {
+        order: 1;
+    }
 }

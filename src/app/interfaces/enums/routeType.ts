@@ -1,0 +1,4 @@
+enum RouteType {
+    InterCityRoute,
+    InterWaypointRoute
+}
