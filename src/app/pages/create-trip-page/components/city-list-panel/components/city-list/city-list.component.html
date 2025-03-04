@@ -1,0 +1,40 @@
+<div
+  *ngFor="let city of cities; let i = index"
+  class="option-button"
+  (click)="onCityClick(city)"
+>
+  <div class="button-info-container">
+    <span class="button-text-container">
+      <div class="button-icon" id="city-icon"></div>
+      <span class="button-text name">{{ city.name }}</span>
+    </span>
+    <div class="date-text">
+      {{
+        city.arrivalDate?.toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "short"
+        })
+      }}
+      ({{ city.numberOfNights }}
+      {{ city.numberOfNights === 1 ? "night" : "nights" }})
+    </div>
+  </div>
+  <div class="menu-container" (click)="$event.stopPropagation()">
+    <div class="menu-dots">•••</div>
+    <div class="dropdown-menu">
+      <div class="dropdown-item" id="edit" (click)="onEditClick(city)">
+        Edit
+      </div>
+      <div class="dropdown-item" id="delete" (click)="onDeleteClick(city)">
+        Delete
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="option-button" (click)="setCurrentView(PanelView.CityView)">
+  <span class="button-text-container">
+    <div class="button-icon" id="add-icon"></div>
+    <span class="button-text">Add new city</span>
+  </span>
+</div>

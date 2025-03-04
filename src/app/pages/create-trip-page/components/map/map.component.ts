@@ -17,6 +17,7 @@ import { AddCityDto } from '../../../../interfaces/dtos/add-city-dto';
 import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 import { SelectedCityDto } from '../../../../interfaces/dtos/selected-city-dto';
 import { AddWaypointDto } from '../../../../interfaces/dtos/add-waypoint-dto';
+import { TripStateService } from '../../services/trip-state.service';
 
 @Component({
   selector: 'app-map',
@@ -43,7 +44,8 @@ export class MapComponent implements AfterViewInit, OnChanges {
   constructor(
     private googleMapsService: GoogleMapsService,
     private googleComponentsFactoryService: GoogleComponentsFactoryService,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private tripStateService: TripStateService
   ) {
     this.geocoder = new google.maps.Geocoder();
   }
@@ -178,7 +180,9 @@ export class MapComponent implements AfterViewInit, OnChanges {
       this.cityOverlay = this.googleComponentsFactoryService.createCityOverlay(
         { lat: latitude, lng: longitude },
         cityObject,
-        this.cityToAdd
+        (city: CityTransferDto | undefined) => {
+          this.tripStateService.updateCityToAdd(city);
+        }
       );
 
       this.cityOverlay.setMap(this.map);

@@ -21,6 +21,9 @@ import { MapComponent } from './pages/create-trip-page/components/map/map.compon
 import { GoogleMapsModule } from '@angular/google-maps';
 import { CreateTripModalComponent } from './pages/create-trip-page/components/create-trip-modal/create-trip-modal.component';
 import { CityListPanelComponent } from './pages/create-trip-page/components/city-list-panel/city-list-panel.component';
+import { TripStateService } from './pages/create-trip-page/services/trip-state.service';
+import { CityListComponent } from './pages/create-trip-page/components/city-list-panel/components/city-list/city-list.component';
+import { CityFormComponent } from './pages/create-trip-page/components/city-list-panel/components/city-form/city-form.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +36,10 @@ import { CityListPanelComponent } from './pages/create-trip-page/components/city
     CreateTripPageComponent,
     MapComponent,
     CreateTripModalComponent,
-    CityListPanelComponent
+    CityListPanelComponent,
+    CityListComponent,
+    CityFormComponent,
+    CityListComponent
   ],
   imports: [
     BrowserModule,
@@ -47,7 +53,7 @@ import { CityListPanelComponent } from './pages/create-trip-page/components/city
     MatButtonModule,
     GoogleMapsModule
   ],
-  providers: [],
+  providers: [TripStateService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

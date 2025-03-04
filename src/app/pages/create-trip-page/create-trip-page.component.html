@@ -1,8 +1,8 @@
 <div class="map-container">
   <app-map
     [options]="mapOptions"
-    [cityList]="cityList"
-    [selectedCity]="selectedCityDto"
+    [cityList]="cities"
+    [selectedCity]="selectedCity"
     [currentDayIndex]="currentDayIndex"
     (cityToAdd)="onCityToAdd($event)"
   ></app-map>
@@ -14,14 +14,14 @@
 </div>
 <app-city-list-panel
   [cityToAdd]="cityToAdd"
-  [cityList]="cityList"
+  [cityList]="cities"
   [startDate]="startDate"
   [viewChanged]="panelViewToSet"
   (action)="handlePanelAction($event)"
   [openDeleteModal]="openDeleteModal.bind(this)"
   *ngIf="modalClosed === true"
 ></app-city-list-panel>
-<div class="exit-city-button-container" *ngIf="selectedCityDto">
+<div class="exit-city-button-container" *ngIf="selectedCity">
   <button class="exit-city-button" (click)="onExitCityView()">
     Exit City View
   </button>

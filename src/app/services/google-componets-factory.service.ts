@@ -11,23 +11,23 @@ export class GoogleComponentsFactoryService {
   createCityOverlay(
     position: google.maps.LatLngLiteral,
     city: CityTransferDto,
-    cityAdded: EventEmitter<{ city: CityTransferDto }>
+    updateCityToAdd: (cityTransferDto: CityTransferDto | undefined) => void
   ) {
     class CityOverlay extends google.maps.OverlayView {
       position: google.maps.LatLngLiteral;
       div: HTMLElement | null = null;
       city: CityTransferDto;
-      cityAdded: EventEmitter<{ city: CityTransferDto }>;
+      updateCityToAdd: (cityTransferDto: CityTransferDto | undefined) => void
 
       constructor(
         position: google.maps.LatLngLiteral,
         city: CityTransferDto,
-        cityAdded: EventEmitter<{ city: CityTransferDto }>
+        updateCityToAdd: (cityTransferDto: CityTransferDto | undefined) => void
       ) {
         super();
         this.city = city;
         this.position = position;
-        this.cityAdded = cityAdded;
+        this.updateCityToAdd = updateCityToAdd;
       }
 
       override onAdd() {
@@ -60,7 +60,7 @@ export class GoogleComponentsFactoryService {
         const button = div.querySelector('#add-city-btn') as HTMLButtonElement;
         button?.addEventListener('click', (event) => {
           event.stopPropagation();
-          this.cityAdded.emit({ city: city });
+          this.updateCityToAdd(this.city);
           this.setMap(null);
         });
 
@@ -93,7 +93,7 @@ export class GoogleComponentsFactoryService {
       }
     }
 
-    return new CityOverlay(position, city, cityAdded);
+    return new CityOverlay(position, city, updateCityToAdd);
   }
 
   createMarker(

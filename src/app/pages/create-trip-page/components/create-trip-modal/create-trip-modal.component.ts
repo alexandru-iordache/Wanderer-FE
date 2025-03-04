@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ModalView } from '../../../helpers/modal-view.enum';
 import { GoogleMapsService } from '../../../../services/google-maps.service';
-import { City } from '../../../../interfaces/city';
+import { City } from '../../../../interfaces/models/city';
 import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
 import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 

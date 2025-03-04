@@ -1,120 +1,28 @@
 <div class="create-trip-panel">
   <div class="panel-header"></div>
-  <div class="city-list-panel">
+  <div class="panel-content">
     @switch (currentView) {
 
     <!-- Cities List View -->
 
     @case (PanelView.CitiesListView) {
-    <div
-      *ngFor="let city of cityList; let i = index"
-      class="option-button"
-      (click)="onCityClick(city)"
-    >
-      <div class="button-info-container">
-        <span class="button-text-container">
-          <div class="button-icon" id="city-icon"></div>
-          <span class="button-text name">{{ city.name }}</span>
-        </span>
-        <div class="date-text">
-          {{
-            city.arrivalDate?.toLocaleDateString("en-US", {
-              day: "numeric",
-              month: "short"
-            })
-          }}
-          ({{ city.numberOfNights }}
-          {{ city.numberOfNights === 1 ? "night" : "nights" }})
-        </div>
-      </div>
-      <div class="menu-container" (click)="$event.stopPropagation()">
-        <div class="menu-dots">•••</div>
-        <div class="dropdown-menu">
-          <div
-            class="dropdown-item"
-            id="edit"
-            (click)="onEditClick(city, 'city')"
-          >
-            Edit
-          </div>
-          <div
-            class="dropdown-item"
-            id="delete"
-            (click)="onDeleteClick(city, 'city')"
-          >
-            Delete
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="option-button" (click)="setCurrentView(PanelView.CityView)">
-      <span class="button-text-container">
-        <div class="button-icon" id="add-icon"></div>
-        <span class="button-text">Add new city</span>
-      </span>
-    </div>
+      <app-city-list
+      [setCurrentView]="setCurrentView.bind(this)"
+      [openDeleteModal]="openDeleteModal.bind(this)"
+      style="width: 100%;">
+      </app-city-list>
     }
 
     <!-- City View -->
 
     @case (PanelView.CityView) {
-    <form
-      class="add-form"
-      [formGroup]="cityForm"
-      (ngSubmit)="onCityFormSubmit()"
-      (keydown.enter)="preventEnterSubmit($event)"
-    >
-      <div class="form-row-section">
-        <label class="form-label">City Name</label>
-        <input
-          #cityName
-          type="text"
-          formControlName="cityName"
-          placeholder="Enter the city name"
-          [class.disabled-input]="cityForm.get('cityName')?.disabled"
-        />
-        <small
-          *ngIf="
-            cityForm.get('cityName')?.hasError('required') &&
-            cityForm.get('cityName')?.touched
-          "
-          class="text-danger"
-        >
-          City Name cannot be empty.
-        </small>
-        <small
-          *ngIf="
-            cityForm.get('cityName')?.hasError('noResult') &&
-            cityForm.get('cityName')?.touched
-          "
-          class="text-danger"
-        >
-          No results found. Please select a valid city from the list.
-        </small>
-      </div>
-      <div class="form-row-section number">
-        <label class="form-label number">No. of Nights</label>
-        <input
-          class="number"
-          type="number"
-          formControlName="numberOfNights"
-          min="0"
-          max="100"
-        />
-      </div>
-      <div class="buttons-section">
-        <div
-          class="discard-button"
-          (click)="onDiscardClick(PanelView.CitiesListView, 'city')"
-        >
-          Discard
-        </div>
-        <button type="submit" class="submit-button">
-          {{ isEditFlow === false ? "Add" : "Edit" }}
-        </button>
-      </div>
-    </form>
+    <app-city-form
+    [onDiscardClick]="onDiscardClick.bind(this)"
+    [setCurrentView]="setCurrentView.bind(this)"
+    [preventEnterSubmit]="preventEnterSubmit.bind(this)"
+    style="width: 100%;">
+    >  
+    </app-city-form>
     }
 
     <!-- Waypoints List View -->
