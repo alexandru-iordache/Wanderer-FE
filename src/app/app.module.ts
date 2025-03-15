@@ -24,6 +24,8 @@ import { CityListPanelComponent } from './pages/create-trip-page/components/city
 import { TripStateService } from './pages/create-trip-page/services/trip-state.service';
 import { CityListComponent } from './pages/create-trip-page/components/city-list-panel/components/city-list/city-list.component';
 import { CityFormComponent } from './pages/create-trip-page/components/city-list-panel/components/city-form/city-form.component';
+import { WaypointListComponent } from './pages/create-trip-page/components/city-list-panel/components/waypoint-list/waypoint-list.component';
+import { WaypointFormComponent } from './pages/create-trip-page/components/city-list-panel/components/waypoint-form/waypoint-form.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import { CityFormComponent } from './pages/create-trip-page/components/city-list
     CityListPanelComponent,
     CityListComponent,
     CityFormComponent,
-    CityListComponent
+    CityListComponent,
+    WaypointListComponent,
+    WaypointFormComponent
   ],
   imports: [
     BrowserModule,

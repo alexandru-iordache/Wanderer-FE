@@ -25,7 +25,6 @@ export class CityListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.push(
       this.tripStateService.getCities().subscribe((cities) => {
-        console.log('Cities: ', cities);
         this.cities = cities;
       })
     );

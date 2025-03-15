@@ -17,7 +17,6 @@
   [cityList]="cities"
   [startDate]="startDate"
   [viewChanged]="panelViewToSet"
-  (action)="handlePanelAction($event)"
   [openDeleteModal]="openDeleteModal.bind(this)"
   *ngIf="modalClosed === true"
 ></app-city-list-panel>

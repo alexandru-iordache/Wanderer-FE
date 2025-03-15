@@ -49,14 +49,17 @@ TBD IMPORTANT:
     x - reshape list after delete (CITY)
       - add button focus on enter
 
+    - refactoring
+      - investigate also the map component, subscribe to relevant events
+
 TBD:
     - Enhance CreateTrip panel 
     - DateTime picker solution
   x - validation for add city component
-    - validation for add waypoint component
+  x - validation for add waypoint component
     - refactor the create-trip-modal
   x - see the doouble click problem on the x Overlay 
     - change font in overlay, marker
     - change maps cursor over a locality??
     - rename AddCityDto maybe??
-    - refactor ngOnChanges (every change should come with its method)
+  D - refactor ngOnChanges (every change should come with its method) (Discarded since we have a trip state service now)
