@@ -3,6 +3,7 @@ import { LatLngBound } from './lat-lang-bound';
 
 export class AddCityDto {
   name: string;
+  placeId: string;
   country: string;
   latitude: number;
   longitude: number;
@@ -15,6 +16,7 @@ export class AddCityDto {
 
   constructor(
     name: string,
+    placeId: string,
     country: string,
     latitude: number,
     longitude: number,
@@ -26,6 +28,7 @@ export class AddCityDto {
     waypoints: AddWaypointDto[][]
   ) {
     this.name = name;
+    this.placeId = placeId;
     this.country = country;
     this.latitude = latitude;
     this.longitude = longitude;

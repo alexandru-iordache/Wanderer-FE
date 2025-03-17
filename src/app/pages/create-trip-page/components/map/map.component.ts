@@ -55,9 +55,12 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
       this.tripStateService.getCities().subscribe((cities) => {
         this.handleCitiesChange(cities);
       }),
-      this.tripStateService.getSelectedCity().pipe(skip(1)).subscribe((selectedCity) => {
-        this.handleSelectedCityChange(selectedCity);
-      }),
+      this.tripStateService
+        .getSelectedCity()
+        .pipe(skip(1))
+        .subscribe((selectedCity) => {
+          this.handleSelectedCityChange(selectedCity);
+        }),
       this.tripStateService.getCurrentDayIndex().subscribe((index) => {
         this.handleCurrentDayIndexChange(index);
       })
@@ -128,7 +131,6 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
       'click',
       async (event: google.maps.MapMouseEvent) => {
         event.stop();
-        console.log("Hehe");
         this.drawCityOverlayAsync(event, this.geocoder);
       }
     );
@@ -173,6 +175,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
         this.cityOverlay.setMap(null);
       }
 
+      const placeId = city.place_id;
       const shortName = city.address_components
         .filter((x) => x.types.includes('locality'))
         .at(0)?.long_name;
@@ -192,6 +195,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
 
       const cityObject = new CityTransferDto(
         shortName!,
+        placeId,
         countryName!,
         latitude,
         longitude,
@@ -305,9 +309,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
       minZoom: 5,
     });
 
-    if (this.waypointClickListener === null) {
-      this.initializeWaypointClickListener();
-    }
+    this.initializeWaypointClickListener();
 
     this.renderWaypointMarkers();
   }
@@ -316,10 +318,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.destroyListener(this.waypointClickListener);
     this.map?.setOptions(this.options);
 
-    console.log(this.cityClickListener);
-    if (this.cityClickListener === null) {
-      this.initializeCityClickListener();
-    }
+    this.initializeCityClickListener();
 
     this.renderCityMarkers();
   }

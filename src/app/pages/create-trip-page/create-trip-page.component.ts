@@ -52,7 +52,10 @@ export class CreateTripPageComponent implements OnInit, OnDestroy {
       this.tripState.getCities().subscribe((cities) => (this.cities = cities)),
       this.tripState
         .getSelectedCity()
-        .subscribe((city) => (this.selectedCity = city)),
+        .subscribe((city) => {
+          this.selectedCity = city;
+          this.changeDetector.detectChanges();
+        }),
       this.tripState
         .getCurrentDayIndex()
         .subscribe((index) => (this.currentDayIndex = index)),

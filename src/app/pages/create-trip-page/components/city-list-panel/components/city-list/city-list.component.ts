@@ -31,7 +31,6 @@ export class CityListComponent implements OnInit, OnDestroy {
   }
 
   onCityClick(selectedCity: AddCityDto) {
-    console.log('City clicked: ' + selectedCity.name);
     const cityBounds = new google.maps.LatLngBounds(
       new google.maps.LatLng(
         selectedCity.southWestBound.latitude,

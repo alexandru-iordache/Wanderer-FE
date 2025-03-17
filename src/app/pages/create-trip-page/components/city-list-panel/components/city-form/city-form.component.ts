@@ -114,6 +114,7 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cityForm.get('cityName')?.setValue(cityTransferDto.name);
     this.cityInProcess = new AddCityDto(
       cityTransferDto.name,
+      cityTransferDto.placeId,
       cityTransferDto.country,
       cityTransferDto.latitude,
       cityTransferDto.longitude,
@@ -217,7 +218,7 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cityAutocomplete = new google.maps.places.Autocomplete(
       this.cityNameInput!.nativeElement,
       {
-        types: ['(cities)'],
+        types: ['(cities)']
       }
     );
 
@@ -227,6 +228,8 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
       if (!place.place_id || !place.name) {
         return;
       }
+
+      console.log(place);
 
       if (place.address_components === undefined) {
         // IMPORTANT: See how to handle this type of problem
@@ -239,6 +242,7 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
       // this.cityForm.get('cityName')?.setErrors(null);
 
       // IMPORTANT: Show no result feedback, country filtering etc
+      const placeId = place.place_id;
       const countryName =
         place.address_components
           .filter((x) => x.types.includes('country'))
@@ -257,6 +261,7 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.cityInProcess = new AddCityDto(
         cityName,
+        placeId,
         countryName,
         latitude,
         longitude,

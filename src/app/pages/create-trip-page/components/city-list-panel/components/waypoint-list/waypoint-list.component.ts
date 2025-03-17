@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   Input,
   OnDestroy,
@@ -25,22 +26,24 @@ export class WaypointListComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  constructor(private tripStateService: TripStateService) {}
+  constructor(private tripStateService: TripStateService, private changeDetector: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.subscriptions.push(
       this.tripStateService.getCurrentDayIndex().subscribe((index) => {
         this.currentDayIndex = index;
       }),
-      this.tripStateService.getSelectedCity().subscribe((selectedCity) => {
+      this.tripStateService.getSelectedCity().subscribe((selectedCityDto) => {
         this.selectedCity =
-          selectedCity !== null ? selectedCity.selectedCity : null;
+          selectedCityDto !== null ? selectedCityDto.selectedCity : null;
+          this.changeDetector.detectChanges();
       })
     );
   }
 
   navigateToDay(dayIndex: number): void {
     this.tripStateService.updateCurrentDayIndex(dayIndex);
+    this.changeDetector.detectChanges();
   }
 
   getDateForDay(startDate: Date, dayIndex: number): string {

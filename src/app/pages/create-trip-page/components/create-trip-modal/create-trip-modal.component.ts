@@ -122,6 +122,7 @@ export class CreateTripModalComponent
       }
 
       // IMPORTANT: Show no result feedback, country filtering etc
+      const placeId = place.place_id;
       const shortName =
         place.address_components
           .filter((x) => x.types.includes('locality'))
@@ -143,6 +144,7 @@ export class CreateTripModalComponent
 
       this.startingCity = new CityTransferDto(
         shortName,
+        placeId!,
         countryName,
         latitude,
         longitude,
