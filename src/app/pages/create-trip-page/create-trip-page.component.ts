@@ -1,13 +1,10 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { GoogleMapsService } from '../../services/google-maps.service';
 
 import { environment } from '../../../environments/environment';
 import { ModalView } from '../helpers/modal-view.enum';
 import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
 import { AddCityDto } from '../../interfaces/dtos/add-city-dto';
 import { SelectedCityDto } from '../../interfaces/dtos/selected-city-dto';
-import { LatLngBound } from '../../interfaces/dtos/lat-lang-bound';
-import { PanelView } from '../helpers/panel-view.enum';
 import { AddWaypointDto } from '../../interfaces/dtos/add-waypoint-dto';
 import { TripStateService } from './services/trip-state.service';
 import { Subscription } from 'rxjs';
@@ -31,11 +28,6 @@ export class CreateTripPageComponent implements OnInit, OnDestroy {
     restriction: null,
   };
 
-  // Panel Shared Properties
-  cityToAdd: CityTransferDto | undefined = undefined;
-  startDate: Date | null = new Date();
-  panelViewToSet: PanelView | null = null;
-
   //Modal Shared Properties
   modalClosed: boolean = true;
 
@@ -54,31 +46,22 @@ export class CreateTripPageComponent implements OnInit, OnDestroy {
     private changeDetector: ChangeDetectorRef,
     private tripState: TripStateService
   ) {}
-  
+
   ngOnInit(): void {
     this.subscriptions = [
-      this.tripState.getCities().subscribe(cities => this.cities = cities),
-      this.tripState.getSelectedCity().subscribe(city => this.selectedCity = city),
-      this.tripState.getCurrentDayIndex().subscribe(index => this.currentDayIndex = index),
-      this.tripState.getCityToAdd().subscribe(city => this.cityToAdd = city),
-      this.tripState.getStartDate().subscribe(date => this.startDate = date)
+      this.tripState.getCities().subscribe((cities) => (this.cities = cities)),
+      this.tripState
+        .getSelectedCity()
+        .subscribe((city) => (this.selectedCity = city)),
+      this.tripState
+        .getCurrentDayIndex()
+        .subscribe((index) => (this.currentDayIndex = index)),
     ];
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-  }
-
-  onCityToAdd(cityToAddData: { city: CityTransferDto }): void {
-    this.cityToAdd = cityToAddData.city;
-    this.changeDetector.detectChanges();
-  }
-
   onTripStarted(tripStarted: { city: CityTransferDto; startDate: Date }) {
-    this.cityToAdd = tripStarted.city;
-    this.startDate = tripStarted.startDate;
-
-    this.changeDetector.detectChanges();
+    this.tripState.updateCityToAdd(tripStarted.city);
+    this.tripState.updateStartDate(tripStarted.startDate);
   }
 
   onViewChanged(viewData: { view: ModalView }): void {
@@ -88,10 +71,10 @@ export class CreateTripPageComponent implements OnInit, OnDestroy {
   }
 
   onExitCityView() {
-    this.panelViewToSet = PanelView.CitiesListView;
     this.currentDayIndex = 0;
-    this.selectedCity = null;
 
+    this.tripState.updateCurrentDayIndex(0);
+    this.tripState.updateSelectedCity(null);
     this.changeDetector.detectChanges();
   }
 
@@ -117,5 +100,9 @@ export class CreateTripPageComponent implements OnInit, OnDestroy {
 
   closeDeleteModal() {
     this.selectedEntity = null;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }

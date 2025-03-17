@@ -37,22 +37,16 @@ import { Subscription } from 'rxjs';
   styleUrl: './city-list-panel.component.scss',
 })
 export class CityListPanelComponent
-  implements OnInit, OnChanges, AfterViewInit
+  implements OnInit, OnChanges
 {
-  @Input() cityToAdd: CityTransferDto | undefined = undefined;
-  @Input() cityList: AddCityDto[] = [];
-  @Input() startDate: Date | null = null;
-  @Input() viewChanged: PanelView | null = null;
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
 
   PanelView = PanelView;
 
-  waypointForm: FormGroup = new FormGroup({});
+  waypointForm: FormGroup = new FormGroup({}); // remove when implementing the add from map
 
-  currentView: PanelView = PanelView.CitiesListView; // change it
-  currentDayIndex: number = 0;
+  currentView: PanelView = PanelView.CitiesListView;
   waypointInProcess: AddWaypointDto | null = null;
-  selectedCity: AddCityDto | null = null;
   isEditFlow: boolean = false;
 
   private subscriptions: Subscription[] = [];
@@ -65,9 +59,6 @@ export class CityListPanelComponent
 
   async ngOnInit(): Promise<void> {
     this.subscriptions.push(
-      this.tripStateService.getCities().subscribe((cities) => {
-        this.cityList = cities;
-      }),
       this.tripStateService.getSelectedCity().subscribe((selectedCity) => {
         this.handleCitySelected(selectedCity);
       }),
@@ -88,8 +79,6 @@ export class CityListPanelComponent
       console.error('[City-List-Panel] Google Maps script not loaded.', error);
     }
   }
-
-  ngAfterViewInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
@@ -114,34 +103,16 @@ export class CityListPanelComponent
       );
     }
 
-    if (changes['startDate'] && (changes['startDate'].currentValue as Date)) {
-      this.startDate = new Date(changes['startDate'].currentValue);
-    }
-
-    if (
-      changes['viewChanged'] &&
-      changes['viewChanged'].currentValue !== null
-    ) {
-      const view = changes['viewChanged'].currentValue as PanelView;
-      this.setCurrentView(view);
-
-      if (view === PanelView.CitiesListView) {
-        this.currentDayIndex = 0;
-      }
-    }
-
     this.changeDetector.detectChanges();
   }
 
   handleCitySelected(selectedCity: SelectedCityDto | null) {
     if (selectedCity === null) {
+      this.setCurrentView(PanelView.CitiesListView)
       return;
     }
 
-    this.selectedCity = selectedCity.selectedCity;
     this.setCurrentView(PanelView.WaypointsListView);
-
-    this.changeDetector.detectChanges();
   }
 
   onDiscardClick(view: PanelView, type: 'city' | 'waypoint') {

@@ -141,7 +141,7 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     let nights = this.cityList.reduce(
-      (sumOfNights, city) => sumOfNights + city.numberOfNights,
+      (sumOfNights, city) => sumOfNights + Number(city.numberOfNights),
       0
     );
 

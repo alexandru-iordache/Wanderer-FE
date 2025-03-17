@@ -1,13 +1,10 @@
 import {
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter,
   Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
+  OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { GoogleMapsService } from '../../../../services/google-maps.service';
@@ -18,21 +15,23 @@ import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 import { SelectedCityDto } from '../../../../interfaces/dtos/selected-city-dto';
 import { AddWaypointDto } from '../../../../interfaces/dtos/add-waypoint-dto';
 import { TripStateService } from '../../services/trip-state.service';
+import { skip, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
 })
-export class MapComponent implements AfterViewInit, OnChanges {
+export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() options: google.maps.MapOptions = {};
-  @Input() cityList: AddCityDto[] = [];
-  @Input() selectedCity: SelectedCityDto | null = null;
-  @Input() currentDayIndex: number = 0;
-  @Output() cityToAdd = new EventEmitter<{ city: CityTransferDto }>();
   @ViewChild('map') mapElement?: ElementRef<HTMLDivElement>;
 
   map: google.maps.Map | null = null;
+
+  private currentDayIndex: number = 0;
+  private cityList: AddCityDto[] = [];
+  private selectedCity: SelectedCityDto | null = null;
+
   private mapInitializationFlag: boolean = false;
   private cityOverlay: any | undefined = undefined;
   private cityMarkers: google.maps.marker.AdvancedMarkerElement[] = [];
@@ -40,14 +39,29 @@ export class MapComponent implements AfterViewInit, OnChanges {
   private geocoder: google.maps.Geocoder;
 
   private cityClickListener: google.maps.MapsEventListener | null = null;
+  private waypointClickListener: google.maps.MapsEventListener | null = null;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private googleMapsService: GoogleMapsService,
     private googleComponentsFactoryService: GoogleComponentsFactoryService,
-    private changeDetector: ChangeDetectorRef,
     private tripStateService: TripStateService
   ) {
     this.geocoder = new google.maps.Geocoder();
+  }
+
+  ngOnInit(): void {
+    this.subscriptions.push(
+      this.tripStateService.getCities().subscribe((cities) => {
+        this.handleCitiesChange(cities);
+      }),
+      this.tripStateService.getSelectedCity().pipe(skip(1)).subscribe((selectedCity) => {
+        this.handleSelectedCityChange(selectedCity);
+      }),
+      this.tripStateService.getCurrentDayIndex().subscribe((index) => {
+        this.handleCurrentDayIndexChange(index);
+      })
+    );
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -63,40 +77,37 @@ export class MapComponent implements AfterViewInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['cityList']) {
-      if (this.selectedCity !== null) {
-        this.removeMarkers(this.waypointMarkers);
-        this.renderWaypointMarkers();
-      } else {
-        this.removeMarkers(this.cityMarkers);
-        this.renderCityMarkers();
-      }
+  private handleCurrentDayIndexChange(index: number) {
+    this.currentDayIndex = index;
+
+    if (this.selectedCity !== null) {
+      this.removeMarkers(this.waypointMarkers);
+      this.renderWaypointMarkers();
     }
+  }
 
-    if (changes['selectedCity'] && !changes['selectedCity'].isFirstChange()) {
-      this.selectedCity = changes['selectedCity']
-        .currentValue as SelectedCityDto | null;
+  private handleCitiesChange(cities: AddCityDto[]) {
+    this.cityList = cities;
 
-      if (this.selectedCity === null) {
-        this.removeMarkers(this.waypointMarkers);
-        this.unblockCityView();
-      } else {
-        this.removeMarkers(this.cityMarkers);
-        this.blockCityView();
-      }
+    if (this.selectedCity !== null) {
+      this.removeMarkers(this.waypointMarkers);
+      this.renderWaypointMarkers();
+    } else {
+      this.removeMarkers(this.cityMarkers);
+      this.renderCityMarkers();
     }
+  }
 
-    if (changes['currentDayIndex']) {
-      this.currentDayIndex = changes['currentDayIndex'].currentValue as number;
+  private handleSelectedCityChange(selectedCity: SelectedCityDto | null) {
+    this.selectedCity = selectedCity;
 
-      if (this.selectedCity !== null) {
-        this.removeMarkers(this.waypointMarkers);
-        this.renderWaypointMarkers();
-      }
+    if (this.selectedCity === null) {
+      this.removeMarkers(this.waypointMarkers);
+      this.unblockCityView();
+    } else {
+      this.removeMarkers(this.cityMarkers);
+      this.blockCityView();
     }
-
-    this.changeDetector.detectChanges();
   }
 
   private initializeMap(): void {
@@ -117,7 +128,18 @@ export class MapComponent implements AfterViewInit, OnChanges {
       'click',
       async (event: google.maps.MapMouseEvent) => {
         event.stop();
+        console.log("Hehe");
         this.drawCityOverlayAsync(event, this.geocoder);
+      }
+    );
+  }
+
+  private initializeWaypointClickListener() {
+    this.waypointClickListener = this.map!.addListener(
+      'click',
+      async (event: google.maps.MapMouseEvent) => {
+        event.stop();
+        //this.drawWaypointOverlayAsync(event, this.geocoder);
       }
     );
   }
@@ -189,6 +211,40 @@ export class MapComponent implements AfterViewInit, OnChanges {
     });
   }
 
+  private drawWaypointOverlayAsync(
+    event: google.maps.MapMouseEvent,
+    geocoder: google.maps.Geocoder
+  ) {
+    if (this.selectedCity === null) {
+      console.error('No city is selected. The overlay cannot be drawn.');
+      return;
+    }
+
+    const latlng = {
+      lat: event.latLng!.lat(),
+      lng: event.latLng!.lng(),
+    };
+
+    geocoder.geocode({ location: latlng }, (results, status) => {
+      if (status !== 'OK' || results === null || results[0] === null) {
+        // IMPORTANT: Add error snackbar or something
+        console.log(
+          'Response status not equal with ok from Google Geocode API.'
+        );
+        return;
+      }
+
+      const waypoint = results.find((result) =>
+        result.types.includes('establishment')
+      );
+      if (waypoint === undefined) {
+        // IMPORTANT: Add error snackbar or something
+        console.log('No waypoint found in the results[] response.');
+        return;
+      }
+    });
+  }
+
   private renderCityMarkers(): void {
     if (this.map) {
       this.cityList.forEach((addCityDto, index) => {
@@ -240,8 +296,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
   }
 
   private blockCityView() {
-    this.destroyListener();
-
+    this.destroyListener(this.cityClickListener);
     this.map?.setOptions({
       restriction: {
         latLngBounds: this.selectedCity!.bounds!,
@@ -250,11 +305,18 @@ export class MapComponent implements AfterViewInit, OnChanges {
       minZoom: 5,
     });
 
+    if (this.waypointClickListener === null) {
+      this.initializeWaypointClickListener();
+    }
+
     this.renderWaypointMarkers();
   }
 
   private unblockCityView() {
+    this.destroyListener(this.waypointClickListener);
     this.map?.setOptions(this.options);
+
+    console.log(this.cityClickListener);
     if (this.cityClickListener === null) {
       this.initializeCityClickListener();
     }
@@ -266,10 +328,19 @@ export class MapComponent implements AfterViewInit, OnChanges {
     markers.forEach((marker) => (marker.map = null));
   }
 
-  private destroyListener() {
-    if (this.cityClickListener) {
-      google.maps.event.removeListener(this.cityClickListener);
-      this.cityClickListener = null;
+  private destroyListener(listener: google.maps.MapsEventListener | null) {
+    if (listener === null) {
+      return;
     }
+
+    google.maps.event.removeListener(listener);
+    listener = null;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions = [];
+    this.destroyListener(this.cityClickListener);
+    this.destroyListener(this.waypointClickListener);
   }
 }
