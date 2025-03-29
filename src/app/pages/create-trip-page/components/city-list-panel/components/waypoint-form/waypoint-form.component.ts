@@ -12,14 +12,14 @@ import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { timeValidator } from '../../../../../../shared/helpers/validators';
-import { AddCityDto } from '../../../../../../interfaces/dtos/add-city-dto';
-import { AddWaypointDto } from '../../../../../../interfaces/dtos/add-waypoint-dto';
 import { WaypointType } from '../../../../../helpers/waypoint-type.enum';
 import {
   ATTRACTIONS_WAYPOINT_TYPES,
   FOOD_WAYPOINT_TYPES,
   RECREATIONAL_WAYPOINT_TYPES,
 } from '../../../../../../shared/helpers/preferred-waypoint-types';
+import { BaseCityVisitDto, CityVisitDto } from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
+import { BaseWaypointVisitDto, AddWaypointVisitDto } from '../../../../../../interfaces/dtos/request/base-waypoint-visit-dto';
 
 @Component({
   selector: 'app-waypoint-form',
@@ -38,18 +38,18 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   waypointForm: FormGroup = new FormGroup({});
   isEditFlow: boolean = false;
-  waypointInProcess: AddWaypointDto | null = null;
+  waypointVisitInProcess: BaseWaypointVisitDto | null = null;
   PanelView = PanelView;
 
   private subsciptions: Subscription[] = [];
   private waypointAutocomplete: google.maps.places.Autocomplete | null = null;
-  private selectedCity: AddCityDto | null = null;
+  private selectedCityVisit: BaseCityVisitDto | null = null;
   private currentDayIndex: number = 0;
   private getWaypoints = () =>
-    this.selectedCity?.waypoints[this.currentDayIndex] ?? undefined;
+    this.selectedCityVisit?.dayVisits[this.currentDayIndex].waypointVisits ?? undefined;
   private getIsEditFlag = () => ({
     isEditFlow: this.isEditFlow ?? false,
-    waypointInProcess: this.waypointInProcess ?? undefined,
+    waypointVisitInProcess: this.waypointVisitInProcess ?? undefined,
   });
 
   constructor(
@@ -72,18 +72,18 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.subsciptions.push(
-      this.tripStateService.getSelectedCity().subscribe((city) => {
-        this.selectedCity = city !== null ? city.selectedCity : null;
+      this.tripStateService.getSelectedCityVisit().subscribe((value) => {
+        this.selectedCityVisit = value !== null ? value.cityVisit : null;
       }),
       this.tripStateService.getCurrentDayIndex().subscribe((dayIndex) => {
         this.currentDayIndex = dayIndex;
       }),
-      this.tripStateService.getWaypointToEdit().subscribe((waypoint) => {
-        if (waypoint === undefined) {
+      this.tripStateService.getWaypointVisitToEdit().subscribe((waypointVisit) => {
+        if (waypointVisit === undefined) {
           return;
         }
 
-        this.HandleWaypointToEdit(waypoint);
+        this.HandleWaypointToEdit(waypointVisit);
       })
     );
   }
@@ -92,7 +92,7 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initializeWaypointAutocomplete();
   }
 
-  private HandleWaypointToEdit(waypoint: AddWaypointDto): void {
+  private HandleWaypointToEdit(waypoint: BaseWaypointVisitDto): void {
     this.isEditFlow = true;
     this.setWaypointForm(waypoint);
   }
@@ -103,27 +103,28 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    if (this.waypointInProcess === null) {
+    if (this.waypointVisitInProcess === null) {
       this.waypointForm.get('waypointName')?.setErrors({ noResult: true });
       return;
     }
 
     const formattedTime = this.getFormattedTime(this.waypointForm);
 
-    this.waypointInProcess!.startTime = formattedTime.startTime;
-    this.waypointInProcess!.endTime = formattedTime.endTime;
+    this.waypointVisitInProcess!.startTime = formattedTime.startTime;
+    this.waypointVisitInProcess!.endTime = formattedTime.endTime;
 
     let response: boolean;
     if (this.isEditFlow) {
       response = this.HandleWaypointEdit();
-      this.isEditFlow = false;
     } else {
       response = this.HandleWaypointAdd();
     }
 
+    console.log(response);
+
     if (response) {
       if (this.isEditFlow) {
-        this.tripStateService.updateWaypointToEdit(undefined);
+        this.tripStateService.updateWaypointVisitToEdit(undefined);
       }
       this.setCurrentView(PanelView.WaypointsListView);
     }
@@ -135,8 +136,8 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
     inputElement.value = this.formatTwoDigits(inputElement.value, type);
   }
 
-  private setWaypointForm(waypointToEdit: AddWaypointDto) {
-    this.waypointInProcess = waypointToEdit;
+  private setWaypointForm(waypointToEdit: BaseWaypointVisitDto) {
+    this.waypointVisitInProcess = waypointToEdit;
 
     this.waypointForm.get('waypointName')?.disable();
     const [startHour, startMinutes] = waypointToEdit.startTime.split(':');
@@ -152,18 +153,16 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private HandleWaypointAdd(): boolean {
     const enteredValue = this.waypointNameInput?.nativeElement.value.trim();
-    if (!enteredValue || this.waypointInProcess!.name !== enteredValue) {
+    if (!enteredValue || this.waypointVisitInProcess!.name !== enteredValue) {
       this.waypointForm.get('waypointName')?.setErrors({ noResult: true });
       return false;
     }
 
-    this.tripStateService.submitWaypointForm(this.waypointInProcess!, false);
-    return true;
+    return this.tripStateService.submitWaypointForm(this.waypointVisitInProcess!, false);
   }
 
   private HandleWaypointEdit(): boolean {
-    this.tripStateService.submitWaypointForm(this.waypointInProcess!, true);
-    return true;
+    return this.tripStateService.submitWaypointForm(this.waypointVisitInProcess!, true);
   }
 
   private getFormattedTime(waypointForm: FormGroup<any>): {
@@ -227,7 +226,7 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    if (this.selectedCity === null) {
+    if (this.selectedCityVisit === null) {
       console.error(
         'No city is selected. The autocomplete cannot be initialized.'
       );
@@ -241,12 +240,12 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
         fields: ['name', 'types', 'place_id', 'geometry'],
         bounds: new google.maps.LatLngBounds(
           new google.maps.LatLng(
-            this.selectedCity.southWestBound.latitude,
-            this.selectedCity.southWestBound.longitude
+            this.selectedCityVisit.southWestBound.latitude,
+            this.selectedCityVisit.southWestBound.longitude
           ),
           new google.maps.LatLng(
-            this.selectedCity.northEastBound.latitude,
-            this.selectedCity.northEastBound.longitude
+            this.selectedCityVisit.northEastBound.latitude,
+            this.selectedCityVisit.northEastBound.longitude
           )
         ),
         strictBounds: true,
@@ -278,16 +277,15 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
       const latitude = place.geometry?.location?.lat() ?? 0;
       const longitude = place.geometry?.location?.lng() ?? 0;
 
-      this.waypointInProcess = new AddWaypointDto(
-        waypointName,
-        waypointType.toString(),
-        placeId,
-        latitude,
-        longitude,
-        '',
-        '',
-        0
-      );
+      this.waypointVisitInProcess = {
+        name: waypointName,
+        type: waypointType.toString(),
+        placeId: placeId,
+        latitude: latitude,
+        longitude: longitude,
+        startTime: '00:00',
+        endTime: '00:01'
+      } as AddWaypointVisitDto;
     });
   }
 

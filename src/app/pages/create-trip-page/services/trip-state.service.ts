@@ -1,42 +1,53 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, concatMap, delay, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { CityTransferDto } from '../../../interfaces/dtos/city-transfer-dto';
-import { AddCityDto } from '../../../interfaces/dtos/add-city-dto';
-import { SelectedCityDto } from '../../../interfaces/dtos/selected-city-dto';
-import { AddWaypointDto } from '../../../interfaces/dtos/add-waypoint-dto';
+import { SelectedCityVisitDto } from '../../../interfaces/dtos/selected-city-dto';
+import { BaseCityVisitDto } from '../../../interfaces/dtos/request/base-city-visit-dto';
+import {
+  AddWaypointVisitDto,
+  BaseWaypointVisitDto,
+} from '../../../interfaces/dtos/request/base-waypoint-visit-dto';
 
 @Injectable({
   providedIn: 'root',
+  deps: []
 })
 export class TripStateService {
-  private cities = new BehaviorSubject<AddCityDto[]>([]);
-  private selectedCity = new BehaviorSubject<SelectedCityDto | null>(null);
-  private cityToEdit = new BehaviorSubject<AddCityDto | undefined>(undefined);
+  private cityVisits = new BehaviorSubject<BaseCityVisitDto[]>([]);
+  private selectedCityVisit = new BehaviorSubject<SelectedCityVisitDto | null>(
+    null
+  );
+  private cityToEdit = new BehaviorSubject<BaseCityVisitDto | undefined>(
+    undefined
+  );
   private currentDayIndex = new BehaviorSubject<number>(0);
   private cityToAdd = new BehaviorSubject<CityTransferDto | undefined>(
     undefined
   );
   private startDate = new BehaviorSubject<Date | null>(new Date());
 
-  private waypointToEdit = new BehaviorSubject<AddWaypointDto | undefined>(
+  private waypointToAdd = new BehaviorSubject<BaseWaypointVisitDto | undefined>(
     undefined
   );
+  private waypointToEdit = new BehaviorSubject<
+    BaseWaypointVisitDto | undefined
+  >(undefined);
 
   // Cities
-  getCities() {
-    return this.cities.asObservable();
+  getCityVisits() {
+    return this.cityVisits.asObservable();
   }
-  updateCities(cities: AddCityDto[]) {
-    this.cities.next(cities);
+  updateCityVisits(cities: BaseCityVisitDto[]) {
+    this.cityVisits.next(cities);
     console.log('Cities: ', cities);
   }
 
   // Selected City
-  getSelectedCity() {
-    return this.selectedCity.asObservable();
+  getSelectedCityVisit() {
+    return this.selectedCityVisit.asObservable();
   }
-  updateSelectedCity(city: SelectedCityDto | null) {
-    this.selectedCity.next(city);
+  updateSelectedCity(city: SelectedCityVisitDto | null) {
+    this.selectedCityVisit.next(city);
   }
 
   // Current Day Index
@@ -59,49 +70,62 @@ export class TripStateService {
   getCityToEdit() {
     return this.cityToEdit.asObservable();
   }
-  updateCityToEdit(city: AddCityDto | undefined) {
+  updateCityToEdit(city: BaseCityVisitDto | undefined) {
     this.cityToEdit.next(city);
   }
 
+  // Waypoint To Add
+  getWaypointToAdd() {
+    return this.waypointToAdd.asObservable();
+  }
+  updateWaypointToAdd(waypoint: AddWaypointVisitDto | undefined) {
+    this.waypointToAdd.next(waypoint);
+  }
+
   // Waypoint To Edit
-  getWaypointToEdit() {
+  getWaypointVisitToEdit() {
     return this.waypointToEdit.asObservable();
   }
-  updateWaypointToEdit(waypoint: AddWaypointDto | undefined) {
+  updateWaypointVisitToEdit(waypoint: BaseWaypointVisitDto | undefined) {
     this.waypointToEdit.next(waypoint);
   }
 
   // Waypoint Submit Form
-  submitWaypointForm(waypoint: AddWaypointDto, isEditFlow: boolean) {
-    const citiesValue = this.cities.getValue();
+  submitWaypointForm(waypointVisit: BaseWaypointVisitDto, isEditFlow: boolean) : boolean{
+    const cityVisitsValue = this.cityVisits.getValue();
     const currentDayIndexValue = this.currentDayIndex.getValue();
-    const selectedCityValue = this.selectedCity.getValue();
-    if (!selectedCityValue) return;
+    const selectedCityVisitValue = this.selectedCityVisit.getValue();
+    if (!selectedCityVisitValue) return false;
 
-    const city = citiesValue.find((city) => city === selectedCityValue.selectedCity);
-    if (!city) return;
+    const cityVisit = cityVisitsValue.find(
+      (city) => city === selectedCityVisitValue.cityVisit
+    );
+    if (!cityVisit) return false;
 
     if (!isEditFlow) {
-      this.setWaypointsOrder(
-        waypoint,
-        city.waypoints[currentDayIndexValue].length,
-        city
-      );
-
-      city.waypoints[currentDayIndexValue].push(waypoint);
+      cityVisit.dayVisits[currentDayIndexValue].waypointVisits.push(waypointVisit);
     } else {
-      let waypointInList = city?.waypoints[currentDayIndexValue].find(
-        (cityWaypoint) => cityWaypoint.placeId === waypoint.placeId
+      let waypointInList = cityVisit.dayVisits[currentDayIndexValue].waypointVisits.find(
+        (cityWaypoint) => cityWaypoint.placeId === waypointVisit.placeId
       );
 
-      waypointInList!.startTime = waypoint.startTime;
-      waypointInList!.endTime = waypoint.endTime;
+      if (waypointInList === undefined) {
+        console.error('No waypoint found.');
+        return false;
+      }
 
-      this.setWaypointsOrder(waypointInList!, waypointInList!.order, city!);
+      waypointInList.startTime = waypointVisit.startTime;
+      waypointInList.endTime = waypointVisit.endTime;
     }
 
-    city.waypoints[currentDayIndexValue].sort((a, b) => a.order - b.order);
-    this.updateCities([...citiesValue]);
+    cityVisit.dayVisits[currentDayIndexValue].waypointVisits.sort(
+      (a, b) =>
+        this.convertToMinutes(a.startTime) - this.convertToMinutes(b.endTime)
+    );
+
+    this.updateCityVisits([...cityVisitsValue]);
+
+    return true;
   }
 
   // Start Date
@@ -113,110 +137,59 @@ export class TripStateService {
   }
 
   // Delete flows
-  deleteCity(city: AddCityDto) {
-    const citiesValue = this.cities.getValue();
-    const cityIndex = citiesValue.indexOf(city);
+  deleteCity(cityVisit: BaseCityVisitDto) {
+    const cityVisitsValue = this.cityVisits.getValue();
+    
+    const cityIndex = cityVisitsValue.indexOf(cityVisit);
     if (cityIndex > -1) {
-      citiesValue.splice(cityIndex, 1);
+      cityVisitsValue.splice(cityIndex, 1);
     }
 
-    citiesValue
+    cityVisitsValue
       .sort((x) => x.order)
-      .forEach((city, index) => {
-        city.order = index;
+      .forEach((x, index) => {
+        x.order = index;
 
         if (index == 0) {
-          city.arrivalDate = this.startDate.getValue();
+          x.startDate = this.startDate.getValue()!;
         } else {
-          let tempDate = new Date(citiesValue[index - 1].arrivalDate!);
+          let tempDate = new Date(cityVisitsValue[index - 1].startDate);
           tempDate.setDate(
-            citiesValue[index - 1].arrivalDate!.getDate() +
-              citiesValue[index - 1].numberOfNights
+            cityVisitsValue[index - 1].startDate.getDate() +
+              cityVisitsValue[index - 1].numberOfNights
           );
-          city.arrivalDate = tempDate;
+          x.startDate = tempDate;
         }
       });
-    this.updateCities([...citiesValue]);
+    this.updateCityVisits([...cityVisitsValue]);
 
-    console.log('City: ' + city.name + ' deleted succesfully.');
+    console.log('City: ' + cityVisit.city + ' deleted succesfully.');
   }
-  deleteWaypoint(waypoint: AddWaypointDto) {
-    const citiesValue = this.cities.getValue();
+
+  deleteWaypoint(waypoint: BaseWaypointVisitDto) {
+    const cityVisitsValue = this.cityVisits.getValue();
     const currentDayIndexValue = this.currentDayIndex.getValue();
-    const selectedCityValue = this.selectedCity.getValue();
-    if (!selectedCityValue) return;
+    const selectedCityVisitValue = this.selectedCityVisit.getValue();
+    if (!selectedCityVisitValue) return;
 
-    let city = citiesValue.find((city) => city === selectedCityValue.selectedCity);
-
-    if (city === undefined) {
+    let cityVisit = cityVisitsValue.find((city) => city === selectedCityVisitValue.cityVisit);
+    if (cityVisit === undefined) {
       console.error('No city found.');
       return;
     }
 
-    const waypointIndex =
-      city.waypoints[currentDayIndexValue].indexOf(waypoint);
-    if (waypointIndex > -1) {
-      city.waypoints[currentDayIndexValue].splice(waypointIndex, 1);
+    const waypointVisitIndex =
+      cityVisit.dayVisits[currentDayIndexValue].waypointVisits.indexOf(waypoint);
+    if (waypointVisitIndex > -1) {
+      cityVisit.dayVisits[currentDayIndexValue].waypointVisits.splice(waypointVisitIndex, 1);
     }
 
-    city.waypoints[currentDayIndexValue]
-      .sort((x) => x.order)
-      .forEach((waypoint, index) => {
-        waypoint.order = index;
-      });
-
-    this.updateCities([...citiesValue]);
+    this.updateCityVisits([...cityVisitsValue]);
     console.log('Waypoint: ' + waypoint.name + ' deleted succesfully.');
   }
 
-  private setWaypointsOrder(
-    waypoint: AddWaypointDto,
-    initialOrder: number,
-    city: AddCityDto
-  ) {
-    const waypointSplitStartTime = waypoint.startTime.split(':');
-    const waypointStartTime =
-      parseInt(waypointSplitStartTime[0], 10) * 60 +
-      parseInt(waypointSplitStartTime[1], 10);
-
-    let currentDayWaypoints = city.waypoints[this.currentDayIndex.getValue()];
-
-    let order = initialOrder;
-    let index = 0;
-    let isLast = true;
-    while (index < currentDayWaypoints.length) {
-      const splitStartTime = currentDayWaypoints[index].startTime.split(':');
-      const currentWaypointStartTime =
-        parseInt(splitStartTime[0], 10) * 60 + parseInt(splitStartTime[1], 10);
-
-      if (waypointStartTime < currentWaypointStartTime) {
-        isLast = false;
-        break;
-      }
-
-      const currentPlaceId = currentDayWaypoints[index].placeId;
-      if (
-        waypointStartTime === currentWaypointStartTime &&
-        waypoint.placeId === currentPlaceId
-      ) {
-        break;
-      }
-
-      index++;
-    }
-
-    if (isLast === false) {
-      order = currentDayWaypoints[index].order;
-      for (
-        let secondIndex = index;
-        secondIndex < currentDayWaypoints.length;
-        secondIndex++
-      ) {
-        currentDayWaypoints[secondIndex].order =
-          currentDayWaypoints[secondIndex].order + 1;
-      }
-    }
-
-    waypoint.order = order;
+  private convertToMinutes(time: string): number {
+    const splitTime = time.split(':');
+    return parseInt(splitTime[0], 10) * 60 + parseInt(splitTime[1], 10);
   }
 }

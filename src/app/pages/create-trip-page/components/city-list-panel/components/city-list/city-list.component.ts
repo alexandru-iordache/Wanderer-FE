@@ -1,9 +1,9 @@
 import { Component, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { AddCityDto } from '../../../../../../interfaces/dtos/add-city-dto';
 import { PanelView } from '../../../../../helpers/panel-view.enum';
 import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
-import { SelectedCityDto } from '../../../../../../interfaces/dtos/selected-city-dto';
+import { SelectedCityVisitDto } from '../../../../../../interfaces/dtos/selected-city-dto';
+import { BaseCityVisitDto } from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
 
 @Component({
   selector: 'app-city-list',
@@ -16,7 +16,7 @@ export class CityListComponent implements OnInit, OnDestroy {
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
 
   PanelView = PanelView;
-  cities: AddCityDto[] = [];
+  cityVisits: BaseCityVisitDto[] = [];
 
   private subscriptions: Subscription[] = [];
 
@@ -24,13 +24,13 @@ export class CityListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.tripStateService.getCities().subscribe((cities) => {
-        this.cities = cities;
+      this.tripStateService.getCityVisits().subscribe((cities) => {
+        this.cityVisits = cities;
       })
     );
   }
 
-  onCityClick(selectedCity: AddCityDto) {
+  onCityClick(selectedCity: BaseCityVisitDto) {
     const cityBounds = new google.maps.LatLngBounds(
       new google.maps.LatLng(
         selectedCity.southWestBound.latitude,
@@ -42,16 +42,16 @@ export class CityListComponent implements OnInit, OnDestroy {
       )
     );
 
-    let selectedCityDto = new SelectedCityDto(selectedCity, cityBounds);
+    let selectedCityDto = new SelectedCityVisitDto(selectedCity, cityBounds);
     this.tripStateService.updateSelectedCity(selectedCityDto);
   }
 
-  onEditClick(entity: AddCityDto) {
+  onEditClick(entity: BaseCityVisitDto) {
     this.tripStateService.updateCityToEdit(entity);
     this.setCurrentView(PanelView.CityView);
   }
 
-  onDeleteClick(entity: AddCityDto) {
+  onDeleteClick(entity: BaseCityVisitDto) {
     this.openDeleteModal('city', entity);
   }
 

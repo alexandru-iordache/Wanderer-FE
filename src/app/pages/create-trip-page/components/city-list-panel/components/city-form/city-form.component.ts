@@ -9,12 +9,16 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PanelView } from '../../../../../helpers/panel-view.enum';
-import { AddCityDto } from '../../../../../../interfaces/dtos/add-city-dto';
 import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
-import { GoogleMapsService } from '../../../../../../services/google-maps.service';
 import { LatLngBound } from '../../../../../../interfaces/dtos/lat-lang-bound';
 import { CityTransferDto } from '../../../../../../interfaces/dtos/city-transfer-dto';
+import {
+  AddCityVisitDto,
+  BaseCityVisitDto,
+} from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
+import { BaseDayVisitDto } from '../../../../../../interfaces/dtos/request/base-day-visit-dto';
+import { BaseWaypointVisitDto } from '../../../../../../interfaces/dtos/request/base-waypoint-visit-dto';
 
 @Component({
   selector: 'app-city-form',
@@ -35,17 +39,16 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   cityForm: FormGroup = new FormGroup({});
   isEditFlow: boolean = false;
-  cityInProcess: AddCityDto | null = null;
+  cityVisitInProcess: AddCityVisitDto | null = null;
 
   private subscriptions: Subscription[] = [];
   private cityAutocomplete: google.maps.places.Autocomplete | null = null;
-  private cityList: AddCityDto[] = [];
+  private cityVisits: AddCityVisitDto[] = [];
   private startDate: Date | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
-    private tripStateService: TripStateService,
-    private googleMapsService: GoogleMapsService
+    private tripStateService: TripStateService
   ) {}
 
   ngOnInit(): void {
@@ -55,8 +58,8 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.subscriptions.push(
-      this.tripStateService.getCities().subscribe((cities) => {
-        this.cityList = cities;
+      this.tripStateService.getCityVisits().subscribe((cities) => {
+        this.cityVisits = cities;
       }),
       this.tripStateService.getStartDate().subscribe((date) => {
         this.startDate = date;
@@ -86,7 +89,7 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    if (this.cityInProcess === null) {
+    if (this.cityVisitInProcess === null) {
       this.cityForm.get('cityName')?.setErrors({ noResult: true });
       return;
     }
@@ -112,36 +115,42 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private HandleCityToAdd(cityTransferDto: CityTransferDto) {
     this.cityForm.get('cityName')?.setValue(cityTransferDto.name);
-    this.cityInProcess = new AddCityDto(
-      cityTransferDto.name,
-      cityTransferDto.placeId,
-      cityTransferDto.country,
-      cityTransferDto.latitude,
-      cityTransferDto.longitude,
-      null,
-      0,
-      cityTransferDto.northEastBound,
-      cityTransferDto.southWestBound,
-      this.cityList.length > 0
-        ? Math.max(...this.cityList.map((x) => x.order)) + 1
-        : 0,
-      []
-    );
+
+    this.cityVisitInProcess = {
+      city: cityTransferDto.name,
+      country: cityTransferDto.country,
+      startDate: new Date(),
+      numberOfNights: 0,
+      placeId: cityTransferDto.placeId,
+      northEastBound: cityTransferDto.northEastBound,
+      southWestBound: cityTransferDto.southWestBound,
+      order:
+        this.cityVisits.length > 0
+          ? Math.max(...this.cityVisits.map((x) => x.order)) + 1
+          : 0,
+      dayVisits: [] as BaseDayVisitDto[],
+    } as AddCityVisitDto;
   }
 
-  private HandleCityToEdit(city: AddCityDto): void {
+  private HandleCityToEdit(cityVisit: BaseCityVisitDto): void {
     this.isEditFlow = true;
-    this.setCityForm(city);
+    this.setCityForm(cityVisit);
   }
 
   private HandleCityAddSubmit(numberOfNights: number): boolean {
+    if (this.cityVisitInProcess === null) {
+      // TO DO: Add snackbar
+      console.error('City Visit In Process is null.');
+      return false;
+    }
+
     const enteredValue = this.cityNameInput?.nativeElement.value.trim();
-    if (!enteredValue || this.cityInProcess!.name !== enteredValue) {
+    if (!enteredValue || this.cityVisitInProcess.city !== enteredValue) {
       this.cityForm.get('cityName')?.setErrors({ noResult: true });
       return false;
     }
 
-    let nights = this.cityList.reduce(
+    let nights = this.cityVisits.reduce(
       (sumOfNights, city) => sumOfNights + Number(city.numberOfNights),
       0
     );
@@ -149,61 +158,104 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
     let tempDate = new Date(this.startDate!);
     tempDate.setDate(this.startDate!.getDate() + nights);
 
-    this.cityInProcess!.arrivalDate = tempDate;
-    this.cityInProcess!.setNumberOfNights(numberOfNights);
+    this.cityVisitInProcess.startDate = tempDate;
+    this.cityVisitInProcess.numberOfNights = numberOfNights;
+    this.cityVisitInProcess.dayVisits = Array.from(
+      { length: numberOfNights + 1 },
+      (x, index) =>
+        ({
+          date: this.calculateDate(this.cityVisitInProcess!.startDate, index),
+          waypointVisits: [] as BaseWaypointVisitDto[],
+        } as BaseDayVisitDto)
+    );
 
-    this.tripStateService.updateCities([...this.cityList, this.cityInProcess!]);
+    this.tripStateService.updateCityVisits([
+      ...this.cityVisits,
+      this.cityVisitInProcess!,
+    ]);
 
     return true;
   }
 
-  private HandleCityEditSubmit(numberOfNights: number): boolean {
-    if (this.cityInProcess!.numberOfNights < numberOfNights) {
+  private HandleCityEditSubmit(newNumberOfNights: number): boolean {
+    if (this.cityVisitInProcess === null) {
+      // TO DO: Add snackbar
+      console.error('City Visit In Process is null.');
+      return false;
+    }
+
+    if (this.cityVisitInProcess.numberOfNights < newNumberOfNights) {
       // TO DO: Ask for confirmation
     }
 
-    if (this.cityInProcess!.numberOfNights === numberOfNights) {
+    if (this.cityVisitInProcess.numberOfNights === newNumberOfNights) {
       return true;
     }
 
-    this.cityList
-      .filter((x) => x.order >= this.cityInProcess!.order)
-      .forEach((x) => {
-        let previousArrivalDate;
+    let currentCityVisit = this.cityVisits.find(
+      (x) => x.order === this.cityVisitInProcess!.order
+    )!;
 
-        if (x.order === this.cityInProcess!.order) {
-          x.setNumberOfNights(numberOfNights);
-        }
+    if (currentCityVisit.numberOfNights > newNumberOfNights) {
+      currentCityVisit.dayVisits = currentCityVisit.dayVisits.slice(0, newNumberOfNights + 1);
+    } else {
+      const newDayVisits = Array.from(
+        { length: newNumberOfNights - currentCityVisit.numberOfNights + 1 },
+        () =>
+          ({
+            waypointVisits: [] as BaseWaypointVisitDto[],
+          } as BaseDayVisitDto)
+      );
 
-        if (this.cityList.indexOf(x) == 0) {
-          x.arrivalDate = this.startDate;
-          return;
-        } else {
-          previousArrivalDate =
-            this.cityList[this.cityList.indexOf(x) - 1].arrivalDate;
-        }
+      currentCityVisit.dayVisits.push(...newDayVisits);
+    }
+    currentCityVisit.numberOfNights = newNumberOfNights;
 
-        let tempDate = new Date(previousArrivalDate!);
-        tempDate.setDate(
-          previousArrivalDate!.getDate() +
-            this.cityList[this.cityList.indexOf(x) - 1].numberOfNights
-        );
-
-        x.arrivalDate = tempDate;
+    this.cityVisits
+      .filter((x) => x.order >= this.cityVisitInProcess!.order)
+      .forEach((cityVisit) => {
+        this.RearrangeDates(cityVisit);
       });
 
-    this.tripStateService.updateCities(this.cityList);
+    this.tripStateService.updateCityVisits(this.cityVisits);
 
     return true;
   }
 
-  private setCityForm(cityToEdit: AddCityDto) {
-    this.cityInProcess = cityToEdit;
+  private RearrangeDates(cityVisit: AddCityVisitDto) {
+    if (this.cityVisits.indexOf(cityVisit) == 0) {
+      cityVisit.startDate = this.startDate!;
+    } else {
+      const previousArrivalDate =
+        this.cityVisits[this.cityVisits.indexOf(cityVisit) - 1].startDate;
+
+      let tempDate = new Date(previousArrivalDate);
+      tempDate.setDate(
+        previousArrivalDate.getDate() +
+          this.cityVisits[this.cityVisits.indexOf(cityVisit) - 1].numberOfNights
+      );
+
+      cityVisit.startDate = tempDate;
+    }
+
+    cityVisit.dayVisits.forEach((dayVisit, index) => {
+      dayVisit.date = this.calculateDate(cityVisit.startDate, index);
+    });
+  }
+
+  private calculateDate(date: Date, days: number): Date {
+    const newDate = new Date(date);
+    newDate.setDate(newDate.getDate() + days);
+    return newDate;
+  }
+
+  private setCityForm(cityVisitToEdit: BaseCityVisitDto) {
+    this.cityVisitInProcess = cityVisitToEdit;
 
     this.cityForm.get('cityName')?.disable();
     this.cityForm.patchValue({
-      cityName: cityToEdit.name,
-      numberOfNights: cityToEdit.numberOfNights,
+      cityName: cityVisitToEdit.city,
+      numberOfNights: cityVisitToEdit.numberOfNights,
     });
   }
 
@@ -218,7 +270,7 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cityAutocomplete = new google.maps.places.Autocomplete(
       this.cityNameInput!.nativeElement,
       {
-        types: ['(cities)']
+        types: ['(cities)'],
       }
     );
 
@@ -259,21 +311,28 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
 
-      this.cityInProcess = new AddCityDto(
-        cityName,
-        placeId,
-        countryName,
-        latitude,
-        longitude,
-        null,
-        0,
-        new LatLngBound(northEastBound!.lat(), northEastBound!.lng()),
-        new LatLngBound(southWestBound!.lat(), southWestBound!.lng()),
-        this.cityList.length > 0
-          ? Math.max(...this.cityList.map((x) => x.order)) + 1
-          : 0,
-        []
-      );
+      this.cityVisitInProcess = {
+        city: cityName,
+        placeId: placeId,
+        country: countryName,
+        latitude: latitude,
+        longitude: longitude,
+        startDate: new Date(),
+        numberOfNights: 0,
+        northEastBound: new LatLngBound(
+          northEastBound!.lat(),
+          northEastBound!.lng()
+        ),
+        southWestBound: new LatLngBound(
+          southWestBound!.lat(),
+          southWestBound!.lng()
+        ),
+        order:
+          this.cityVisits.length > 0
+            ? Math.max(...this.cityVisits.map((x) => x.order)) + 1
+            : 0,
+        dayVisits: [],
+      } as AddCityVisitDto;
     });
   }
 

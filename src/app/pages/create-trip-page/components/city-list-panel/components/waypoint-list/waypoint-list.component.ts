@@ -8,8 +8,8 @@ import {
 import { PanelView } from '../../../../../helpers/panel-view.enum';
 import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
-import { AddCityDto } from '../../../../../../interfaces/dtos/add-city-dto';
-import { AddWaypointDto } from '../../../../../../interfaces/dtos/add-waypoint-dto';
+import { BaseCityVisitDto } from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
+import { BaseWaypointVisitDto } from '../../../../../../interfaces/dtos/request/base-waypoint-visit-dto';
 
 @Component({
   selector: 'app-waypoint-list',
@@ -21,22 +21,24 @@ export class WaypointListComponent implements OnInit, OnDestroy {
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
 
   currentDayIndex: number = 0;
-  selectedCity: AddCityDto | null = null;
+  selectedCityVisit: BaseCityVisitDto | null = null;
   PanelView = PanelView;
 
   private subscriptions: Subscription[] = [];
 
-  constructor(private tripStateService: TripStateService, private changeDetector: ChangeDetectorRef) {}
+  constructor(
+    private tripStateService: TripStateService,
+    private changeDetector: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.subscriptions.push(
       this.tripStateService.getCurrentDayIndex().subscribe((index) => {
         this.currentDayIndex = index;
       }),
-      this.tripStateService.getSelectedCity().subscribe((selectedCityDto) => {
-        this.selectedCity =
-          selectedCityDto !== null ? selectedCityDto.selectedCity : null;
-          this.changeDetector.detectChanges();
+      this.tripStateService.getSelectedCityVisit().subscribe((value) => {
+        this.selectedCityVisit = value !== null ? value.cityVisit : null;
+        this.changeDetector.detectChanges();
       })
     );
   }
@@ -56,12 +58,12 @@ export class WaypointListComponent implements OnInit, OnDestroy {
     });
   }
 
-  onEditClick(entity: AddWaypointDto) {
-    this.tripStateService.updateWaypointToEdit(entity);
+  onEditClick(entity: BaseWaypointVisitDto) {
+    this.tripStateService.updateWaypointVisitToEdit(entity);
     this.setCurrentView(PanelView.WaypointView);
   }
 
-  onDeleteClick(entity: AddWaypointDto) {
+  onDeleteClick(entity: BaseWaypointVisitDto) {
     this.openDeleteModal('waypoint', entity);
   }
 

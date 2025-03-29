@@ -7,11 +7,11 @@
       &#9664;
     </button>
     <h3 class="day-header">
-      {{ getDateForDay(selectedCity!.arrivalDate!, currentDayIndex) }}
+      {{ getDateForDay(selectedCityVisit!.startDate!, currentDayIndex) }}
     </h3>
     <button
       [class.hidden]="
-        currentDayIndex === (selectedCity?.waypoints)!.length - 1
+        currentDayIndex === selectedCityVisit!.dayVisits.length - 1
       "
       (click)="navigateToDay(currentDayIndex + 1)"
       class="arrow"
@@ -20,7 +20,7 @@
     </button>
   </div>
   <div
-    *ngFor="let waypoint of selectedCity!.waypoints[currentDayIndex]"
+    *ngFor="let waypoint of selectedCityVisit!.dayVisits[currentDayIndex].waypointVisits"
     class="option-button"
   >
     <div class="button-info-container">

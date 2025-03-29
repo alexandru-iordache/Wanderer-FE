@@ -1,13 +1,21 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 
 import { environment } from '../../../environments/environment';
 import { ModalView } from '../helpers/modal-view.enum';
 import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
-import { AddCityDto } from '../../interfaces/dtos/add-city-dto';
-import { SelectedCityDto } from '../../interfaces/dtos/selected-city-dto';
-import { AddWaypointDto } from '../../interfaces/dtos/add-waypoint-dto';
+import { SelectedCityVisitDto } from '../../interfaces/dtos/selected-city-dto';
 import { TripStateService } from './services/trip-state.service';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { Uuid } from '../../shared/helpers/uuid';
+import { TripService } from '../../services/trip.service';
+import { BaseCityVisitDto } from '../../interfaces/dtos/request/base-city-visit-dto';
+import { BaseWaypointVisitDto } from '../../interfaces/dtos/request/base-waypoint-visit-dto';
 
 @Component({
   selector: 'app-create-trip-page',
@@ -15,6 +23,8 @@ import { Subscription } from 'rxjs';
   styleUrl: './create-trip-page.component.scss',
 })
 export class CreateTripPageComponent implements OnInit, OnDestroy {
+  @Input() tripId: Uuid | null = null;
+
   // Map Shared Properties
   mapOptions: google.maps.MapOptions = {
     mapId: environment.googleMapId,
@@ -30,41 +40,49 @@ export class CreateTripPageComponent implements OnInit, OnDestroy {
 
   //Modal Shared Properties
   modalClosed: boolean = true;
+  isEditMode: boolean = false;
 
   // Multiple Dependendants Properties
-  cities: AddCityDto[] = [];
-  selectedCity: SelectedCityDto | null = null;
+  cities: BaseCityVisitDto[] = [];
+  selectedCity: SelectedCityVisitDto | null = null;
   currentDayIndex: number = 0;
   selectedEntity: {
     type: 'city' | 'waypoint';
-    data: AddCityDto | AddWaypointDto;
+    data: BaseCityVisitDto | BaseWaypointVisitDto;
   } | null = null;
 
   private subscriptions: Subscription[] = [];
 
   constructor(
     private changeDetector: ChangeDetectorRef,
-    private tripState: TripStateService
+    private tripStateService: TripStateService,
+    private tripService: TripService
   ) {}
 
   ngOnInit(): void {
+    if (this.tripId) {
+      this.isEditMode = true;
+      this.modalClosed = true;
+      this.loadExistingTrip();
+    }
+
     this.subscriptions = [
-      this.tripState.getCities().subscribe((cities) => (this.cities = cities)),
-      this.tripState
-        .getSelectedCity()
-        .subscribe((city) => {
-          this.selectedCity = city;
-          this.changeDetector.detectChanges();
-        }),
-      this.tripState
+      this.tripStateService
+        .getCityVisits()
+        .subscribe((cities) => (this.cities = cities)),
+      this.tripStateService.getSelectedCityVisit().subscribe((city) => {
+        this.selectedCity = city;
+        this.changeDetector.detectChanges();
+      }),
+      this.tripStateService
         .getCurrentDayIndex()
         .subscribe((index) => (this.currentDayIndex = index)),
     ];
   }
 
   onTripStarted(tripStarted: { city: CityTransferDto; startDate: Date }) {
-    this.tripState.updateCityToAdd(tripStarted.city);
-    this.tripState.updateStartDate(tripStarted.startDate);
+    this.tripStateService.updateCityToAdd(tripStarted.city);
+    this.tripStateService.updateStartDate(tripStarted.startDate);
   }
 
   onViewChanged(viewData: { view: ModalView }): void {
@@ -76,25 +94,27 @@ export class CreateTripPageComponent implements OnInit, OnDestroy {
   onExitCityView() {
     this.currentDayIndex = 0;
 
-    this.tripState.updateCurrentDayIndex(0);
-    this.tripState.updateSelectedCity(null);
+    this.tripStateService.updateCurrentDayIndex(0);
+    this.tripStateService.updateSelectedCity(null);
     this.changeDetector.detectChanges();
   }
 
   openDeleteModal(
     type: 'city' | 'waypoint',
-    data: AddCityDto | AddWaypointDto
+    data: BaseCityVisitDto | BaseWaypointVisitDto
   ) {
     this.selectedEntity = { type, data };
   }
 
   confirmDelete() {
     if (this.selectedEntity?.type === 'city') {
-      this.tripState.deleteCity(this.selectedEntity.data as AddCityDto);
+      this.tripStateService.deleteCity(this.selectedEntity.data as BaseCityVisitDto);
     }
 
     if (this.selectedEntity?.type === 'waypoint') {
-      this.tripState.deleteWaypoint(this.selectedEntity.data as AddWaypointDto);
+      this.tripStateService.deleteWaypoint(
+        this.selectedEntity.data as BaseWaypointVisitDto
+      );
     }
 
     this.changeDetector.detectChanges();
@@ -103,6 +123,19 @@ export class CreateTripPageComponent implements OnInit, OnDestroy {
 
   closeDeleteModal() {
     this.selectedEntity = null;
+  }
+
+  private async loadExistingTrip() {
+    try {
+      const trip = await firstValueFrom(
+        this.tripService.getTripById(this.tripId!)
+      );
+
+      this.tripStateService.updateCityVisits(trip.cityVisits);
+      this.tripStateService.updateStartDate(trip.startDate);
+    } catch (error) {
+      console.error('[Create-Trip-Page] Error loading existing trip.', error);
+    }
   }
 
   ngOnDestroy(): void {

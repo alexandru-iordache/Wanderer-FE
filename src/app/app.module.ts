@@ -26,6 +26,8 @@ import { CityListComponent } from './pages/create-trip-page/components/city-list
 import { CityFormComponent } from './pages/create-trip-page/components/city-list-panel/components/city-form/city-form.component';
 import { WaypointListComponent } from './pages/create-trip-page/components/city-list-panel/components/waypoint-list/waypoint-list.component';
 import { WaypointFormComponent } from './pages/create-trip-page/components/city-list-panel/components/waypoint-form/waypoint-form.component';
+import { TripService } from './services/trip.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,7 @@ import { WaypointFormComponent } from './pages/create-trip-page/components/city-
     CityFormComponent,
     CityListComponent,
     WaypointListComponent,
-    WaypointFormComponent
+    WaypointFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,9 +57,10 @@ import { WaypointFormComponent } from './pages/create-trip-page/components/city-
     MatIconModule,
     MatListModule,
     MatButtonModule,
-    GoogleMapsModule
+    GoogleMapsModule,
+    HttpClientModule
   ],
-  providers: [TripStateService],
-  bootstrap: [AppComponent]
+  providers: [TripService, TripStateService],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

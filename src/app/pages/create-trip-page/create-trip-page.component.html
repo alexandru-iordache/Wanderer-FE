@@ -5,7 +5,7 @@
   <app-create-trip-modal
     (viewChanged)="onViewChanged($event)"
     (tripStarted)="onTripStarted($event)"
-    *ngIf="modalClosed === false"
+    *ngIf="modalClosed === false && !isEditMode"
   ></app-create-trip-modal>
 </div>
 <app-city-list-panel
@@ -21,7 +21,7 @@
 <div class="modal-backdrop" *ngIf="selectedEntity">
   <div class="modal-box">
     <div class="modal-header">
-      <div class="modal-header-text">Delete {{ selectedEntity.data.name }}</div>
+      <div class="modal-header-text">Delete {{ selectedEntity.data.placeId }}</div>
     </div>
     <div class="modal-content">
       <h3>Are you sure you want to delete this {{ selectedEntity.type }}?</h3>

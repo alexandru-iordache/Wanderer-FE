@@ -1,33 +1,17 @@
 import {
-  AfterViewInit,
   ChangeDetectorRef,
   Component,
-  ElementRef,
-  EventEmitter,
-  HostListener,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
-  ViewChild,
 } from '@angular/core';
 import { PanelView } from '../../../helpers/panel-view.enum';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
-import { AddCityDto } from '../../../../interfaces/dtos/add-city-dto';
+import { FormGroup } from '@angular/forms';
 import { GoogleMapsService } from '../../../../services/google-maps.service';
-import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
-import { SelectedCityDto } from '../../../../interfaces/dtos/selected-city-dto';
+import { SelectedCityVisitDto } from '../../../../interfaces/dtos/selected-city-dto';
 import { AddWaypointDto } from '../../../../interfaces/dtos/add-waypoint-dto';
 import { WaypointTransferDto } from '../../../../interfaces/dtos/waypoint-transfer-dto';
-import {
-  ATTRACTIONS_WAYPOINT_TYPES,
-  FOOD_WAYPOINT_TYPES,
-  RECREATIONAL_WAYPOINT_TYPES,
-} from '../../../../shared/helpers/preferred-waypoint-types';
-import { WaypointType } from '../../../helpers/waypoint-type.enum';
-import { timeValidator as timeValidator } from '../../../../shared/helpers/validators';
 import { TripStateService } from '../../services/trip-state.service';
 import { Subscription } from 'rxjs';
 
@@ -59,7 +43,7 @@ export class CityListPanelComponent
 
   async ngOnInit(): Promise<void> {
     this.subscriptions.push(
-      this.tripStateService.getSelectedCity().subscribe((selectedCity) => {
+      this.tripStateService.getSelectedCityVisit().subscribe((selectedCity) => {
         this.handleCitySelected(selectedCity);
       }),
       this.tripStateService.getCityToAdd().subscribe((cityToAdd) => {
@@ -106,7 +90,7 @@ export class CityListPanelComponent
     this.changeDetector.detectChanges();
   }
 
-  handleCitySelected(selectedCity: SelectedCityDto | null) {
+  handleCitySelected(selectedCity: SelectedCityVisitDto | null) {
     if (selectedCity === null) {
       this.setCurrentView(PanelView.CitiesListView)
       return;

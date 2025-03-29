@@ -10,12 +10,19 @@ import {
 import { GoogleMapsService } from '../../../../services/google-maps.service';
 import { GoogleComponentsFactoryService } from '../../../../services/google-componets-factory.service';
 import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
-import { AddCityDto } from '../../../../interfaces/dtos/add-city-dto';
 import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
-import { SelectedCityDto } from '../../../../interfaces/dtos/selected-city-dto';
+import { SelectedCityVisitDto } from '../../../../interfaces/dtos/selected-city-dto';
 import { AddWaypointDto } from '../../../../interfaces/dtos/add-waypoint-dto';
 import { TripStateService } from '../../services/trip-state.service';
 import { skip, Subscription } from 'rxjs';
+import { WaypointType } from '../../../helpers/waypoint-type.enum';
+import {
+  ATTRACTIONS_WAYPOINT_TYPES,
+  FOOD_WAYPOINT_TYPES,
+  RECREATIONAL_WAYPOINT_TYPES,
+} from '../../../../shared/helpers/preferred-waypoint-types';
+import { BaseCityVisitDto } from '../../../../interfaces/dtos/request/base-city-visit-dto';
+import { BaseWaypointVisitDto } from '../../../../interfaces/dtos/request/base-waypoint-visit-dto';
 
 @Component({
   selector: 'app-map',
@@ -29,11 +36,12 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
   map: google.maps.Map | null = null;
 
   private currentDayIndex: number = 0;
-  private cityList: AddCityDto[] = [];
-  private selectedCity: SelectedCityDto | null = null;
+  private cityVisits: BaseCityVisitDto[] = [];
+  private selectedCity: SelectedCityVisitDto | null = null;
 
   private mapInitializationFlag: boolean = false;
   private cityOverlay: any | undefined = undefined;
+  private waypointOverlay: any | undefined = undefined;
   private cityMarkers: google.maps.marker.AdvancedMarkerElement[] = [];
   private waypointMarkers: google.maps.marker.AdvancedMarkerElement[] = [];
   private geocoder: google.maps.Geocoder;
@@ -52,11 +60,11 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.tripStateService.getCities().subscribe((cities) => {
+      this.tripStateService.getCityVisits().subscribe((cities) => {
         this.handleCitiesChange(cities);
       }),
       this.tripStateService
-        .getSelectedCity()
+        .getSelectedCityVisit()
         .pipe(skip(1))
         .subscribe((selectedCity) => {
           this.handleSelectedCityChange(selectedCity);
@@ -89,8 +97,8 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private handleCitiesChange(cities: AddCityDto[]) {
-    this.cityList = cities;
+  private handleCitiesChange(cityVisits: BaseCityVisitDto[]) {
+    this.cityVisits = cityVisits;
 
     if (this.selectedCity !== null) {
       this.removeMarkers(this.waypointMarkers);
@@ -101,7 +109,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private handleSelectedCityChange(selectedCity: SelectedCityDto | null) {
+  private handleSelectedCityChange(selectedCity: SelectedCityVisitDto | null) {
     this.selectedCity = selectedCity;
 
     if (this.selectedCity === null) {
@@ -141,7 +149,7 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
       'click',
       async (event: google.maps.MapMouseEvent) => {
         event.stop();
-        //this.drawWaypointOverlayAsync(event, this.geocoder);
+        this.drawWaypointOverlayAsync(event, this.geocoder);
       }
     );
   }
@@ -238,29 +246,70 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
 
-      const waypoint = results.find((result) =>
+      const place = results.find((result) =>
         result.types.includes('establishment')
       );
-      if (waypoint === undefined) {
+      console.log(place);
+
+      if (place === undefined) {
         // IMPORTANT: Add error snackbar or something
         console.log('No waypoint found in the results[] response.');
         return;
       }
+
+      if (this.waypointOverlay) {
+        this.waypointOverlay.setMap(null);
+      }
+
+      const waypointType = this.getWaypointType(place.types!);
+      if (waypointType === WaypointType.Unkwnown) {
+        console.log("Type is not ok.");
+        return;
+      }
+
+      // IMPORTANT: Show no result feedback, country filtering etc
+      const placeId = place.place_id;
+      const waypointName = place.address_components
+        .filter((x) => x.types.includes('locality'))
+        .at(0)?.long_name;
+      const latitude = place.geometry?.location?.lat() ?? 0;
+      const longitude = place.geometry?.location?.lng() ?? 0;
+
+      const waypointToAdd = new AddWaypointDto(
+        waypointName!,
+        waypointType.toString(),
+        placeId,
+        latitude,
+        longitude,
+        '',
+        '',
+        0
+      );
+
+      this.waypointOverlay = this.googleComponentsFactoryService.createWaypointOverlay(
+        { lat: latitude, lng: longitude },
+        waypointToAdd,
+        (waypoint: AddWaypointDto | undefined) => {
+          this.tripStateService.updateWaypointToAdd(waypoint);
+        }
+      );
+
+      this.waypointOverlay.setMap(this.map);
     });
   }
 
   private renderCityMarkers(): void {
     if (this.map) {
-      this.cityList.forEach((addCityDto, index) => {
+      this.cityVisits.forEach((cityVisit, index) => {
         let cityMarker = this.googleComponentsFactoryService.createMarker(
           this.map!,
-          { lat: addCityDto.latitude, lng: addCityDto.longitude },
-          addCityDto.name,
-          addCityDto,
+          { lat: cityVisit.latitude, lng: cityVisit.longitude },
+          cityVisit.city,
+          cityVisit,
           undefined,
-          (city) => {
+          (cityVisit) => {
             console.log(
-              `Marker clicked for city: ${(city as AddCityDto).name}`
+              `Marker clicked for city: ${(cityVisit as BaseCityVisitDto).city}`
             );
           },
           index + 1
@@ -276,18 +325,18 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.selectedCity!.selectedCity?.waypoints[this.currentDayIndex].forEach(
-      (waypointDto, index) => {
+    this.selectedCity!.cityVisit?.dayVisits[this.currentDayIndex].waypointVisits.forEach(
+      (waypointVisit, index) => {
         let cityMarker = this.googleComponentsFactoryService.createMarker(
           this.map!,
-          { lat: waypointDto.latitude, lng: waypointDto.longitude },
-          waypointDto.name,
-          waypointDto,
+          { lat: waypointVisit.latitude, lng: waypointVisit.longitude },
+          waypointVisit.name,
+          waypointVisit,
           undefined,
           (waypoint) => {
             console.log(
               `Marker clicked for waypoint: ${
-                (waypoint as AddWaypointDto).name
+                (waypoint as BaseWaypointVisitDto).name
               }`
             );
           },
@@ -297,6 +346,31 @@ export class MapComponent implements OnInit, OnDestroy, AfterViewInit {
         this.waypointMarkers.push(cityMarker);
       }
     );
+  }
+
+  private getWaypointType(types: string[]): WaypointType {
+    const foodMatch = types.find((type) =>
+      FOOD_WAYPOINT_TYPES.find((knownType) => knownType === type)
+    );
+    if (foodMatch) {
+      return WaypointType.Food;
+    }
+
+    const recreationalMatch = types.find((type) =>
+      RECREATIONAL_WAYPOINT_TYPES.find((knownType) => knownType === type)
+    );
+    if (recreationalMatch) {
+      return WaypointType.Recreational;
+    }
+
+    const attractionMatch = types.find((type) =>
+      ATTRACTIONS_WAYPOINT_TYPES.find((knownType) => knownType === type)
+    );
+    if (attractionMatch) {
+      return WaypointType.Attraction;
+    }
+
+    return WaypointType.Unkwnown;
   }
 
   private blockCityView() {
