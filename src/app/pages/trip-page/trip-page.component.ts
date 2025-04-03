@@ -18,11 +18,11 @@ import { BaseCityVisitDto } from '../../interfaces/dtos/request/base-city-visit-
 import { BaseWaypointVisitDto } from '../../interfaces/dtos/request/base-waypoint-visit-dto';
 
 @Component({
-  selector: 'app-create-trip-page',
-  templateUrl: './create-trip-page.component.html',
-  styleUrl: './create-trip-page.component.scss',
+  selector: 'app-trip-page',
+  templateUrl: './trip-page.component.html',
+  styleUrl: './trip-page.component.scss',
 })
-export class CreateTripPageComponent implements OnInit, OnDestroy {
+export class TripPageComponent implements OnInit, OnDestroy {
   @Input() tripId: Uuid | null = null;
 
   // Map Shared Properties
@@ -39,7 +39,7 @@ export class CreateTripPageComponent implements OnInit, OnDestroy {
   };
 
   //Modal Shared Properties
-  modalClosed: boolean = true;
+  modalClosed: boolean = false;
   isEditMode: boolean = false;
 
   // Multiple Dependendants Properties

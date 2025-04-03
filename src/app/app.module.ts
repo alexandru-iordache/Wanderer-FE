@@ -16,16 +16,16 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { SignInPageComponent } from './pages/sign-in-page/sign-in-page.component';
 import { DahsboardPageComponent } from './pages/dahsboard-page/dahsboard-page.component';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
-import { CreateTripPageComponent } from './pages/create-trip-page/create-trip-page.component';
-import { MapComponent } from './pages/create-trip-page/components/map/map.component';
+import { TripPageComponent } from './pages/trip-page/trip-page.component';
+import { MapComponent } from './pages/trip-page/components/map/map.component';
 import { GoogleMapsModule } from '@angular/google-maps';
-import { CreateTripModalComponent } from './pages/create-trip-page/components/create-trip-modal/create-trip-modal.component';
-import { CityListPanelComponent } from './pages/create-trip-page/components/city-list-panel/city-list-panel.component';
-import { TripStateService } from './pages/create-trip-page/services/trip-state.service';
-import { CityListComponent } from './pages/create-trip-page/components/city-list-panel/components/city-list/city-list.component';
-import { CityFormComponent } from './pages/create-trip-page/components/city-list-panel/components/city-form/city-form.component';
-import { WaypointListComponent } from './pages/create-trip-page/components/city-list-panel/components/waypoint-list/waypoint-list.component';
-import { WaypointFormComponent } from './pages/create-trip-page/components/city-list-panel/components/waypoint-form/waypoint-form.component';
+import { CreateTripModalComponent } from './pages/trip-page/components/create-trip-modal/create-trip-modal.component';
+import { CityListPanelComponent } from './pages/trip-page/components/city-list-panel/city-list-panel.component';
+import { TripStateService } from './pages/trip-page/services/trip-state.service';
+import { CityListComponent } from './pages/trip-page/components/city-list-panel/components/city-list/city-list.component';
+import { CityFormComponent } from './pages/trip-page/components/city-list-panel/components/city-form/city-form.component';
+import { WaypointListComponent } from './pages/trip-page/components/city-list-panel/components/waypoint-list/waypoint-list.component';
+import { WaypointFormComponent } from './pages/trip-page/components/city-list-panel/components/waypoint-form/waypoint-form.component';
 import { TripService } from './services/trip.service';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -37,7 +37,7 @@ import { HttpClientModule } from '@angular/common/http';
     SignInPageComponent,
     DahsboardPageComponent,
     SidebarComponent,
-    CreateTripPageComponent,
+    TripPageComponent,
     MapComponent,
     CreateTripModalComponent,
     CityListPanelComponent,
