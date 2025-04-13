@@ -39,10 +39,18 @@ export class TripService {
     };
   }
 
-  updateTrip(id: Uuid, trip: TripDto): Observable<TripDto> {
-    return this.http
-      .put(`${this.apiUrl}/${id}`, trip)
-      .pipe(map((response: any) => response.data as TripDto));
+  async updateTrip(id: Uuid, trip: TripDto) {
+    const response = await firstValueFrom(
+      this.http.put(`${this.apiUrl}` + `/${id}`, trip, {
+        observe: 'response',
+        headers: this.createHeaders(),
+      })
+    );
+    return {
+      statusCode: response.status,
+      statusText: response.statusText,
+      body: response.body as TripDto,
+    };
   }
 
   private createHeaders(): HttpHeaders {

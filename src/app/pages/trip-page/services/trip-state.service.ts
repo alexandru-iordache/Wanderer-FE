@@ -76,7 +76,7 @@ export class TripStateService {
   }
 
   // City To Add
-  getCityToAdd() {
+  getCityVisitToAdd() {
     return this.cityToAdd.asObservable();
   }
   updateCityToAdd(city: CityTransferDto | undefined) {
@@ -84,10 +84,10 @@ export class TripStateService {
   }
 
   // City To Edit
-  getCityToEdit() {
+  getCityVisitToEdit() {
     return this.cityToEdit.asObservable();
   }
-  updateCityToEdit(city: BaseCityVisitDto | undefined) {
+  updateCityVisitToEdit(city: BaseCityVisitDto | undefined) {
     this.cityToEdit.next(city);
   }
 
@@ -108,7 +108,7 @@ export class TripStateService {
   }
 
   // Waypoint Submit Form
-  submitWaypointForm(
+  submitWaypointVisitForm(
     waypointVisit: BaseWaypointVisitDto,
     isEditFlow: boolean
   ): boolean {

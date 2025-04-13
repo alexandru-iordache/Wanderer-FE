@@ -28,7 +28,8 @@ import { BaseWaypointVisitDto } from '../../../../../../interfaces/dtos/request/
 export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() onDiscardClick!: (
     view: PanelView,
-    type: 'city' | 'waypoint'
+    type: 'city' | 'waypoint',
+    isEditFlow: boolean
   ) => void;
   @Input() preventEnterSubmit!: (event: Event) => void;
   @Input() setCurrentView!: (panelView: PanelView) => void;
@@ -64,17 +65,17 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
       this.tripStateService.getStartDate().subscribe((date) => {
         this.startDate = date;
       }),
-      this.tripStateService.getCityToAdd().subscribe((city) => {
+      this.tripStateService.getCityVisitToAdd().subscribe((city) => {
         if (city === undefined) {
           return;
         }
         this.HandleCityToAdd(city);
       }),
-      this.tripStateService.getCityToEdit().subscribe((city) => {
+      this.tripStateService.getCityVisitToEdit().subscribe((city) => {
         if (city === undefined) {
           return;
         }
-        this.HandleCityToEdit(city);
+        this.HandleCityVisitToEdit(city);
       })
     );
   }
@@ -100,12 +101,12 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isEditFlow) {
       response = this.HandleCityEditSubmit(numberOfNights);
     } else {
-      response = this.HandleCityAddSubmit(numberOfNights);
+      response = this.HandleCityVisitAddSubmit(numberOfNights);
     }
 
     if (response) {
       if (this.isEditFlow) {
-        this.tripStateService.updateCityToEdit(undefined);
+        this.tripStateService.updateCityVisitToEdit(undefined);
       } else {
         this.tripStateService.updateCityToAdd(undefined);
       }
@@ -134,12 +135,12 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
     } as AddCityVisitDto;
   }
 
-  private HandleCityToEdit(cityVisit: BaseCityVisitDto): void {
+  private HandleCityVisitToEdit(cityVisit: BaseCityVisitDto): void {
     this.isEditFlow = true;
     this.setCityForm(cityVisit);
   }
 
-  private HandleCityAddSubmit(numberOfNights: number): boolean {
+  private HandleCityVisitAddSubmit(numberOfNights: number): boolean {
     if (this.cityVisitInProcess === null) {
       // TO DO: Add snackbar
       console.error('City Visit In Process is null.');

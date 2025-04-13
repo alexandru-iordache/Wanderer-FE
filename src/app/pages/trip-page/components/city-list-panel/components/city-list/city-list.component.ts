@@ -54,7 +54,7 @@ export class CityListComponent implements OnInit, OnDestroy {
   }
 
   onEditClick(entity: BaseCityVisitDto) {
-    this.tripStateService.updateCityToEdit(entity);
+    this.tripStateService.updateCityVisitToEdit(entity);
     this.setCurrentView(PanelView.CityView);
   }
 

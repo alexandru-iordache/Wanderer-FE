@@ -27,6 +27,8 @@ export class CreateTripModalComponent
   @Output() viewChanged = new EventEmitter<{ view: ModalView }>();
   @ViewChild('startingLocationInput')
   startingLocationInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('tripTitleInput')
+  tripTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('departureDate') departureDateInput?: ElementRef<HTMLInputElement>;
 
   public modalView = ModalView;
@@ -75,12 +77,14 @@ export class CreateTripModalComponent
       this.departureDateInput?.nativeElement.value!
     );
 
+    let tripTitleValue = this.tripTitleInput?.nativeElement.value!;
+
     this.tripStateService.updateCityToAdd(this.startingCity);
     this.tripStateService.updateStartDate(startDateValue);
     this.tripStateService.updateTrip({
       cityVisits: [],
       startDate: startDateValue,
-      title: 'New Trip',
+      title: tripTitleValue,
     } as BaseTripDto);
   }
 

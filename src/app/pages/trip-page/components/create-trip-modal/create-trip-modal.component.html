@@ -21,6 +21,13 @@
   >
     <h2 class="modal-heading">Tell us some details</h2>
     <div class="form-container">
+      <label class="input-label">Trip title</label>
+      <input
+        type="text"
+        #tripTitleInput
+        class="input"
+        placeholder="Enter your trip title"
+      />
       <label class="input-label">Starting location</label>
       <input
         type="text"
@@ -45,18 +52,15 @@
         class="input"
         placeholder="Select the departure date"
       />
-      <div class="buttons-container">
-        <div
-          class="back-button"
-          (click)="setCurrentView(modalView.WelcomeView)"
-        >
-          Back
-        </div>
-        <!-- IMPORTANT: Add validations on this button -->
-        <button type="submit" class="button" (click)="createTrip()">
-          Start your journey
-        </button>
+    </div>
+    <div class="buttons-container">
+      <div class="back-button" (click)="setCurrentView(modalView.WelcomeView)">
+        Back
       </div>
+      <!-- IMPORTANT: Add validations on this button -->
+      <button type="submit" class="button" (click)="createTrip()">
+        Create
+      </button>
     </div>
   </div>
 </div>

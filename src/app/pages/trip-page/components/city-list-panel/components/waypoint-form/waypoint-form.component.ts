@@ -29,7 +29,8 @@ import { BaseWaypointVisitDto, AddWaypointVisitDto } from '../../../../../../int
 export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() onDiscardClick!: (
     view: PanelView,
-    type: 'city' | 'waypoint'
+    type: 'city' | 'waypoint',
+    isEditFlow: boolean
   ) => void;
   @Input() preventEnterSubmit!: (event: Event) => void;
   @Input() setCurrentView!: (panelView: PanelView) => void;
@@ -83,7 +84,7 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
           return;
         }
 
-        this.HandleWaypointToEdit(waypointVisit);
+        this.HandleWaypointVisitToEdit(waypointVisit);
       })
     );
   }
@@ -92,9 +93,9 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initializeWaypointAutocomplete();
   }
 
-  private HandleWaypointToEdit(waypoint: BaseWaypointVisitDto): void {
+  private HandleWaypointVisitToEdit(waypoint: BaseWaypointVisitDto): void {
     this.isEditFlow = true;
-    this.setWaypointForm(waypoint);
+    this.setWaypointVisitForm(waypoint);
   }
 
   onWaypointFormSubmit() {
@@ -117,7 +118,7 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isEditFlow) {
       response = this.HandleWaypointEdit();
     } else {
-      response = this.HandleWaypointAdd();
+      response = this.HandleWaypointVisitAdd();
     }
 
     console.log(response);
@@ -136,7 +137,7 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
     inputElement.value = this.formatTwoDigits(inputElement.value, type);
   }
 
-  private setWaypointForm(waypointToEdit: BaseWaypointVisitDto) {
+  private setWaypointVisitForm(waypointToEdit: BaseWaypointVisitDto) {
     this.waypointVisitInProcess = waypointToEdit;
 
     this.waypointForm.get('waypointName')?.disable();
@@ -151,18 +152,18 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private HandleWaypointAdd(): boolean {
+  private HandleWaypointVisitAdd(): boolean {
     const enteredValue = this.waypointNameInput?.nativeElement.value.trim();
     if (!enteredValue || this.waypointVisitInProcess!.name !== enteredValue) {
       this.waypointForm.get('waypointName')?.setErrors({ noResult: true });
       return false;
     }
 
-    return this.tripStateService.submitWaypointForm(this.waypointVisitInProcess!, false);
+    return this.tripStateService.submitWaypointVisitForm(this.waypointVisitInProcess!, false);
   }
 
   private HandleWaypointEdit(): boolean {
-    return this.tripStateService.submitWaypointForm(this.waypointVisitInProcess!, true);
+    return this.tripStateService.submitWaypointVisitForm(this.waypointVisitInProcess!, true);
   }
 
   private getFormattedTime(waypointForm: FormGroup<any>): {
@@ -215,7 +216,7 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
       return WaypointType.Attraction;
     }
 
-    return WaypointType.Unkwnown;
+    return WaypointType.Other;
   }
 
   private initializeWaypointAutocomplete() {
@@ -279,7 +280,7 @@ export class WaypointFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.waypointVisitInProcess = {
         name: waypointName,
-        type: waypointType.toString(),
+        type: WaypointType[waypointType],
         placeId: placeId,
         latitude: latitude,
         longitude: longitude,

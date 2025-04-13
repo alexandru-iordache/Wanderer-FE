@@ -47,24 +47,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.trip.cityVisits = cityVisits as BaseCityVisitDto[];
     });
 
-    if (this.trip.id !== undefined) {
-      this.tripService
-        .updateTrip(this.trip.id, this.trip as TripDto)
-        .subscribe(() => {
-          console.log('Trip updated successfully!');
-        });
-    } else {
-      try {
-        var response = await this.tripService.createTrip(this.trip);
-
-        this.tripStateService.updateTrip(response.body as TripDto);
-        this.tripStateService.updateCityVisits(
-          response.body.cityVisits as CityVisitDto[]
+    try {
+      if (this.trip.id !== undefined) {
+        var response = await this.tripService.updateTrip(
+          this.trip.id,
+          this.trip as TripDto
         );
-        this.tripStateService.updateIsSaved(true);
-      } catch (error) {
-        console.error('Error creating trip:', error);
+      } else {
+        var response = await this.tripService.createTrip(this.trip);
       }
+
+      this.tripStateService.updateTrip(response.body as TripDto);
+      this.tripStateService.updateCityVisits(
+        response.body.cityVisits as CityVisitDto[]
+      );
+
+      this.tripStateService.updateIsSaved(true);
+    } catch (error) {
+      // IMPORTANT: Snackbar service
+      console.error('Error creating trip:', error);
     }
   }
 }

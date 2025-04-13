@@ -46,7 +46,7 @@ export class PanelComponent
       this.tripStateService.getSelectedCityVisit().subscribe((selectedCity) => {
         this.handleCitySelected(selectedCity);
       }),
-      this.tripStateService.getCityToAdd().subscribe((cityToAdd) => {
+      this.tripStateService.getCityVisitToAdd().subscribe((cityToAdd) => {
         if (cityToAdd === undefined) {
           return;
         }
@@ -98,14 +98,13 @@ export class PanelComponent
     this.setCurrentView(PanelView.WaypointsListView);
   }
 
-  onDiscardClick(view: PanelView, type: 'city' | 'waypoint') {
-    if (this.isEditFlow) {
-      this.isEditFlow = false;
+  onDiscardClick(view: PanelView, type: 'city' | 'waypoint', isEditFlow: boolean) {
+    if (isEditFlow) {
 
       if (type === 'city') {
-        this.tripStateService.updateCityToEdit(undefined);
+        this.tripStateService.updateCityVisitToEdit(undefined);
       } else {
-        this.waypointForm.get('waypointName')?.enable();
+        this.tripStateService.updateWaypointVisitToEdit(undefined);
       }
     } else {
       this.tripStateService.updateCityToAdd(undefined);

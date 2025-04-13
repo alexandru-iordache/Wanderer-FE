@@ -149,11 +149,14 @@ export class SignInPageComponent implements OnInit {
 
   async signInWithGoogle() {
     let addUserDto: AddUserDto;
+    let isNewUser: boolean = true;
     try {
       const credential = await this.authService.signInWithGoogle();
       if (credential.user == null) {
         return;
       }
+
+      isNewUser = credential.additionalUserInfo?.isNewUser ?? true;
 
       await this.SaveAccessTokenToStorage(true);
 
@@ -172,20 +175,30 @@ export class SignInPageComponent implements OnInit {
     }
 
     try {
-      const response = await this.userService.createUser(addUserDto);
-      if (response.statusCode != 201 && response.statusCode != 409) {
-        // IMPORTANT: Snackbar handling
-        await this.authService.signOut();
-        alert('Error creating user in database');
-        return;
+      let userDetails: UserDto | null = null;
+      if (isNewUser) {
+        const response = await this.userService.createUser(addUserDto);
+        if (response.statusCode != 201 && response.statusCode != 409) {
+          // IMPORTANT: Snackbar handling
+          await this.authService.signOut();
+          alert('Error creating user in database');
+          return;
+        }
+        userDetails = response.body;
+      } else {
+        const response = await this.userService.getUserDetails();
+        if (response.statusCode != 200) {
+          // IMPORTANT: Snackbar handling
+          await this.authService.signOut();
+          alert('Error getting user details');
+          return;
+        }
+        userDetails = response.body;
       }
 
-      var isSucces = await this.TrySaveUserDetailsToStorage(
-        false,
-        response.statusCode === 201 ? response.body : null
-      );
+      var isSucces = await this.TrySaveUserDetailsToStorage(false, userDetails);
       if (!isSucces) {
-        alert('Error getting user details');
+        alert('Error saving user details to storage');
         await this.authService.signOut();
         return;
       }
@@ -249,10 +262,10 @@ export class SignInPageComponent implements OnInit {
       alert('Wrong password.');
     } else if (errorCode === 'auth/email-already-in-use') {
       alert('Email already in use.');
-    } else if (errorCode === 'auth/cancelled-popup-request'){
-      return
+    } else if (errorCode === 'auth/cancelled-popup-request') {
+      return;
     } else {
-      alert("Error: " + errorMessage);
+      alert('Error: ' + errorMessage);
     }
   }
 }
