@@ -51,8 +51,12 @@ TBD IMPORTANT:
 
     - refactoring
       x - investigate also the map component, subscribe to relevant events
-        - investigate listener bug (after city view the listner is not initialized)
+      x - investigate listener bug (after city view the listner is not initialized)
         - investigate city to add bug
+
+    - see token refresh bug
+    - verify update flow (style the icon for info panel)
+      - change path if succesfull at create (so it loads the trip from the DB) 
 
 TBD:
     - Review my trip AI
