@@ -9,12 +9,7 @@
       <span class="button-text name">{{ cityVisit.city }}</span>
     </span>
     <div class="date-text">
-      {{
-        cityVisit.startDate.toLocaleDateString("en-US", {
-          day: "numeric",
-          month: "short"
-        })
-      }}
+      {{ getFormattedDate(cityVisit.startDate) }}
       ({{ cityVisit.numberOfNights }}
       {{ cityVisit.numberOfNights === 1 ? "night" : "nights" }})
     </div>

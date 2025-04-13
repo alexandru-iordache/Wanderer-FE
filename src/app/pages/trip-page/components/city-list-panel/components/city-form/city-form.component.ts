@@ -124,6 +124,8 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
       placeId: cityTransferDto.placeId,
       northEastBound: cityTransferDto.northEastBound,
       southWestBound: cityTransferDto.southWestBound,
+      latitude: cityTransferDto.latitude,
+      longitude: cityTransferDto.longitude,
       order:
         this.cityVisits.length > 0
           ? Math.max(...this.cityVisits.map((x) => x.order)) + 1
@@ -281,8 +283,6 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
 
-      console.log(place);
-
       if (place.address_components === undefined) {
         // IMPORTANT: See how to handle this type of problem
         return;
@@ -299,6 +299,7 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
         place.address_components
           .filter((x) => x.types.includes('country'))
           .at(0)?.long_name ?? '';
+
       const latitude = place.geometry?.location?.lat() ?? 0;
       const longitude = place.geometry?.location?.lng() ?? 0;
 

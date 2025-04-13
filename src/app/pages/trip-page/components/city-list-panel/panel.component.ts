@@ -16,11 +16,11 @@ import { TripStateService } from '../../services/trip-state.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-city-list-panel',
-  templateUrl: './city-list-panel.component.html',
-  styleUrl: './city-list-panel.component.scss',
+  selector: 'app-panel',
+  templateUrl: './panel.component.html',
+  styleUrl: './panel.component.scss',
 })
-export class CityListPanelComponent
+export class PanelComponent
   implements OnInit, OnChanges
 {
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
@@ -50,7 +50,6 @@ export class CityListPanelComponent
         if (cityToAdd === undefined) {
           return;
         }
-
         this.setCurrentView(PanelView.CityView);
       })
     );
@@ -60,7 +59,7 @@ export class CityListPanelComponent
         await this.googleMapsService.loadScriptAsync();
       }
     } catch (error) {
-      console.error('[City-List-Panel] Google Maps script not loaded.', error);
+      console.error('[panel] Google Maps script not loaded.', error);
     }
   }
 

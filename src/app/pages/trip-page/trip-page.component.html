@@ -1,17 +1,23 @@
 <div class="map-container">
-  <app-map
-    [options]="mapOptions"
-  ></app-map>
+  <app-map [options]="mapOptions"></app-map>
   <app-create-trip-modal
     (viewChanged)="onViewChanged($event)"
-    (tripStarted)="onTripStarted($event)"
     *ngIf="modalClosed === false && !isEditMode"
   ></app-create-trip-modal>
+  <div class="saved-status-container" *ngIf="modalClosed === true">
+    @if (isSaved === true) {
+    <mat-icon class="saved-status-icon" fontIcon="check_circle"></mat-icon>
+    <span class="saved-status-message">Saved</span>
+    } @else {
+    <mat-icon class="saved-status-icon" fontIcon="clear"> </mat-icon>
+    <span class="saved-status-message">Not saved</span>
+    }
+  </div>
 </div>
-<app-city-list-panel
+<app-panel
   [openDeleteModal]="openDeleteModal.bind(this)"
   *ngIf="modalClosed === true"
-></app-city-list-panel>
+></app-panel>
 <div class="exit-city-button-container" *ngIf="selectedCity">
   <button class="exit-city-button" (click)="onExitCityView()">
     Exit City View
@@ -21,7 +27,9 @@
 <div class="modal-backdrop" *ngIf="selectedEntity">
   <div class="modal-box">
     <div class="modal-header">
-      <div class="modal-header-text">Delete {{ selectedEntity.data.placeId }}</div>
+      <div class="modal-header-text">
+        Delete {{ selectedEntity.data.placeId }}
+      </div>
     </div>
     <div class="modal-content">
       <h3>Are you sure you want to delete this {{ selectedEntity.type }}?</h3>

@@ -36,6 +36,7 @@ export class TripPageComponent implements OnInit, OnDestroy {
     zoomControl: true,
     mapTypeControl: false,
     restriction: null,
+    keyboardShortcuts: false,
   };
 
   //Modal Shared Properties
@@ -50,6 +51,7 @@ export class TripPageComponent implements OnInit, OnDestroy {
     type: 'city' | 'waypoint';
     data: BaseCityVisitDto | BaseWaypointVisitDto;
   } | null = null;
+  isSaved: boolean = false;
 
   private subscriptions: Subscription[] = [];
 
@@ -63,6 +65,7 @@ export class TripPageComponent implements OnInit, OnDestroy {
     if (this.tripId) {
       this.isEditMode = true;
       this.modalClosed = true;
+      this.isSaved = true;
       this.loadExistingTrip();
     }
 
@@ -77,12 +80,10 @@ export class TripPageComponent implements OnInit, OnDestroy {
       this.tripStateService
         .getCurrentDayIndex()
         .subscribe((index) => (this.currentDayIndex = index)),
+      this.tripStateService
+        .getIsSaved()
+        .subscribe((isSaved) => (this.isSaved = isSaved)),
     ];
-  }
-
-  onTripStarted(tripStarted: { city: CityTransferDto; startDate: Date }) {
-    this.tripStateService.updateCityToAdd(tripStarted.city);
-    this.tripStateService.updateStartDate(tripStarted.startDate);
   }
 
   onViewChanged(viewData: { view: ModalView }): void {
@@ -108,7 +109,9 @@ export class TripPageComponent implements OnInit, OnDestroy {
 
   confirmDelete() {
     if (this.selectedEntity?.type === 'city') {
-      this.tripStateService.deleteCity(this.selectedEntity.data as BaseCityVisitDto);
+      this.tripStateService.deleteCity(
+        this.selectedEntity.data as BaseCityVisitDto
+      );
     }
 
     if (this.selectedEntity?.type === 'waypoint') {
@@ -131,6 +134,7 @@ export class TripPageComponent implements OnInit, OnDestroy {
         this.tripService.getTripById(this.tripId!)
       );
 
+      this.tripStateService.updateTrip(trip);
       this.tripStateService.updateCityVisits(trip.cityVisits);
       this.tripStateService.updateStartDate(trip.startDate);
     } catch (error) {

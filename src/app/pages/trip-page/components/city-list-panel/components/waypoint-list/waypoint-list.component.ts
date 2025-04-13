@@ -10,6 +10,7 @@ import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
 import { BaseCityVisitDto } from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
 import { BaseWaypointVisitDto } from '../../../../../../interfaces/dtos/request/base-waypoint-visit-dto';
+import { UiHelper } from '../../../../../../shared/helpers/ui-helper';
 
 @Component({
   selector: 'app-waypoint-list',
@@ -49,13 +50,9 @@ export class WaypointListComponent implements OnInit, OnDestroy {
   }
 
   getDateForDay(startDate: Date, dayIndex: number): string {
-    const result = new Date(startDate);
-    result.setDate(startDate.getDate() + dayIndex);
+   const currentDayDate = UiHelper.getSummedDate(startDate, dayIndex);
 
-    return result.toLocaleDateString('en-US', {
-      day: 'numeric',
-      month: 'long',
-    });
+    return UiHelper.getLongMonthDate(currentDayDate);
   }
 
   onEditClick(entity: BaseWaypointVisitDto) {

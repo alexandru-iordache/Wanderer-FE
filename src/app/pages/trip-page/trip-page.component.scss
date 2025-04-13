@@ -107,3 +107,35 @@
     }
   }
 }
+
+.saved-status-container{
+  position: absolute;
+  bottom: 0px;
+  left: 100px;
+  width: 100px;
+  height: 30px;
+  z-index: 99;
+  border-top-right-radius: 20px;
+  border-top-left-radius: 20px;
+  border: 1px $primary-color solid;
+  border-bottom: $secondary-color solid;
+  background-color: $secondary-color;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+  padding-left: 6px;
+  font-family: $primary-font;
+  font-size: 10px;
+  font-weight: 500;
+  color: $primary-color;
+  display: flex;
+  align-items: center;
+
+  .saved-status-icon{
+    color: $primary-color;
+    margin-top: 2px;
+  }
+
+  .saved-status-message {
+    margin: auto 5px;
+    text-align: center;
+  }
+}

@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { AddUserDto } from '../../interfaces/dtos/request/add-user-dto';
 import { FirebaseError } from 'firebase/app';
+import { UserDto } from '../../interfaces/dtos/response/user-dto';
 
 @Component({
   selector: 'app-sign-in-page',
@@ -57,11 +58,20 @@ export class SignInPageComponent implements OnInit {
 
     const email = this.loginForm.get('email')?.value;
     const password = this.loginForm.get('password')?.value;
+    const rememberMe = this.loginForm.get('rememberMe')?.value;
 
     try {
-      const rememberMe = this.loginForm.get('rememberMe')?.value;
       this.authService.setPersistence(rememberMe);
       await this.authService.signIn(email, password);
+
+      await this.SaveAccessTokenToStorage(rememberMe);
+
+      var isSucces = await this.TrySaveUserDetailsToStorage(rememberMe);
+      if (!isSucces) {
+        alert('Error getting user details');
+        await this.authService.signOut();
+        return;
+      }
 
       this.router.navigate(['/dashboard']);
     } catch (error: unknown) {
@@ -75,7 +85,7 @@ export class SignInPageComponent implements OnInit {
   }
 
   async onRegisterSubmit() {
-    if (this.registerForm.valid) {
+    if (!this.registerForm.valid) {
       return;
     }
 
@@ -93,6 +103,8 @@ export class SignInPageComponent implements OnInit {
         return;
       }
 
+      await this.SaveAccessTokenToStorage(false);
+
       addUserDto = {
         profileName: username ?? 'No name',
         email: credential.user.email ?? 'No email',
@@ -109,15 +121,27 @@ export class SignInPageComponent implements OnInit {
 
     try {
       var response = await this.userService.createUser(addUserDto);
-      if (response.statusCode != 200) {
+      if (response.statusCode != 201) {
+        await this.authService.signOut();
         // IMPORTANT: Snackbar handling
         console.log('Failed!');
+        return;
+      }
+
+      var isSucces = await this.TrySaveUserDetailsToStorage(
+        false,
+        response.body
+      );
+      if (!isSucces) {
+        alert('Error getting user details');
+        await this.authService.signOut();
         return;
       }
 
       this.router.navigate(['/dashboard']);
       return;
     } catch (error) {
+      await this.authService.signOut();
       console.error('Error creating user in database', error);
       return;
     }
@@ -131,11 +155,7 @@ export class SignInPageComponent implements OnInit {
         return;
       }
 
-      if (credential.additionalUserInfo?.isNewUser == true) {
-        this.router.navigate(['/dashboard']);
-        console.log('New User');
-        return;
-      }
+      await this.SaveAccessTokenToStorage(true);
 
       addUserDto = {
         profileName: credential.user.displayName ?? 'No name',
@@ -155,13 +175,25 @@ export class SignInPageComponent implements OnInit {
       const response = await this.userService.createUser(addUserDto);
       if (response.statusCode != 201 && response.statusCode != 409) {
         // IMPORTANT: Snackbar handling
+        await this.authService.signOut();
+        alert('Error creating user in database');
         return;
       }
-      console.log('User created in database', response.body);
+
+      var isSucces = await this.TrySaveUserDetailsToStorage(
+        false,
+        response.statusCode === 201 ? response.body : null
+      );
+      if (!isSucces) {
+        alert('Error getting user details');
+        await this.authService.signOut();
+        return;
+      }
 
       this.router.navigate(['/dashboard']);
       return;
     } catch (error) {
+      await this.authService.signOut();
       // IMPORTANT: Snackbar handling
       alert('Unexpected error');
       console.error('Error creating user in database', error);
@@ -171,6 +203,39 @@ export class SignInPageComponent implements OnInit {
 
   setIsLogin(): void {
     this.isLogin = !this.isLogin;
+  }
+
+  private async SaveAccessTokenToStorage(rememberMe: boolean) {
+    var accessId = await this.authService.getIdToken();
+    if (rememberMe) {
+      localStorage.setItem('idToken', accessId!);
+    } else {
+      sessionStorage.setItem('idToken', accessId!);
+    }
+  }
+
+  private async TrySaveUserDetailsToStorage(
+    rememberMe: boolean,
+    userDetails: UserDto | null = null
+  ): Promise<boolean> {
+    try {
+      if (userDetails === null) {
+        var userDetailsResponse = await this.userService.getUserDetails();
+        if (userDetailsResponse.statusCode != 200) {
+          return false;
+        }
+
+        userDetails = userDetailsResponse.body;
+      }
+
+      localStorage.setItem('userId', userDetails.id);
+      localStorage.setItem('profileName', userDetails.profileName);
+
+      return true;
+    } catch (error) {
+      console.error('Error getting user details', error);
+      return false;
+    }
   }
 
   private HandleFirebaseError(error: FirebaseError) {
@@ -184,8 +249,10 @@ export class SignInPageComponent implements OnInit {
       alert('Wrong password.');
     } else if (errorCode === 'auth/email-already-in-use') {
       alert('Email already in use.');
+    } else if (errorCode === 'auth/cancelled-popup-request'){
+      return
     } else {
-      alert('Error: ' + errorMessage);
+      alert("Error: " + errorMessage);
     }
   }
 }

@@ -4,6 +4,7 @@ import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
 import { SelectedCityVisitDto } from '../../../../../../interfaces/dtos/selected-city-dto';
 import { BaseCityVisitDto } from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
+import { UiHelper } from '../../../../../../shared/helpers/ui-helper';
 
 @Component({
   selector: 'app-city-list',
@@ -28,6 +29,12 @@ export class CityListComponent implements OnInit, OnDestroy {
         this.cityVisits = cities;
       })
     );
+  }
+
+  getFormattedDate(date: Date): string {
+    var date = UiHelper.getSummedDate(date, 0);
+
+    return UiHelper.getShortMonthDate(date);
   }
 
   onCityClick(selectedCity: BaseCityVisitDto) {
