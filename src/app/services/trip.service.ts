@@ -13,10 +13,19 @@ export class TripService {
 
   constructor(private http: HttpClient) {}
 
-  getTripById(id: string): Observable<TripDto> {
-    return this.http
-      .get(`${this.apiUrl}/${id}`)
-      .pipe(map((response: any) => response.data as TripDto));
+  async getTripById(id: string) {
+    const response = await firstValueFrom(
+      this.http.get(`${this.apiUrl}/${id}`, {
+        observe: 'response',
+        headers: this.createHeaders(),
+      })
+    );
+
+    return {
+      statusCode: response.status,
+      statusText: response.statusText,
+      body: response.body as TripDto,
+    };
   }
 
   getTrips(): Observable<TripDto[]> {
@@ -61,7 +70,8 @@ export class TripService {
     }
     let headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+    const userId =
+      sessionStorage.getItem('userId') || localStorage.getItem('userId');
     headers = headers.append('X-UserId', userId || '');
     return headers;
   }

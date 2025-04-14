@@ -10,7 +10,8 @@ const routes: Routes = [
   { path: '', component: HomePageComponent, canActivate: [nonAuthGuard] },
   { path: 'sign-in', component: SignInPageComponent, canActivate: [nonAuthGuard] },
   { path: 'dashboard', component: DahsboardPageComponent, canActivate: [authGuard] },
-  { path: 'create-trip', component: TripPageComponent, canActivate: [authGuard] }
+  { path: 'trip', component: TripPageComponent, canActivate: [authGuard] },
+  { path: 'trip/:id', component: TripPageComponent, canActivate: [authGuard] }
 ];
 
 @NgModule({

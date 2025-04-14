@@ -1,10 +1,5 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 import { ModalView } from '../helpers/modal-view.enum';
@@ -16,6 +11,7 @@ import { Uuid } from '../../shared/helpers/uuid';
 import { TripService } from '../../services/trip.service';
 import { BaseCityVisitDto } from '../../interfaces/dtos/request/base-city-visit-dto';
 import { BaseWaypointVisitDto } from '../../interfaces/dtos/request/base-waypoint-visit-dto';
+import { TripDto } from '../../interfaces/dtos/request/base-trip-dto';
 
 @Component({
   selector: 'app-trip-page',
@@ -23,7 +19,7 @@ import { BaseWaypointVisitDto } from '../../interfaces/dtos/request/base-waypoin
   styleUrl: './trip-page.component.scss',
 })
 export class TripPageComponent implements OnInit, OnDestroy {
-  @Input() tripId: Uuid | null = null;
+  tripId: Uuid | null = null;
 
   // Map Shared Properties
   mapOptions: google.maps.MapOptions = {
@@ -58,18 +54,27 @@ export class TripPageComponent implements OnInit, OnDestroy {
   constructor(
     private changeDetector: ChangeDetectorRef,
     private tripStateService: TripStateService,
-    private tripService: TripService
+    private tripService: TripService,
+    private route: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.subscriptions.push(
+      this.route.paramMap.subscribe((params) => {
+        const id = params.get('id');
+
+        this.tripId = id ? (id as Uuid) : null;
+      })
+    );
+
     if (this.tripId) {
+      await this.loadExistingTrip();
       this.isEditMode = true;
       this.modalClosed = true;
-      this.isSaved = true;
-      this.loadExistingTrip();
+      this.tripStateService.updateIsSaved(true);
     }
 
-    this.subscriptions = [
+    this.subscriptions.push(
       this.tripStateService
         .getCityVisits()
         .subscribe((cities) => (this.cities = cities)),
@@ -82,8 +87,8 @@ export class TripPageComponent implements OnInit, OnDestroy {
         .subscribe((index) => (this.currentDayIndex = index)),
       this.tripStateService
         .getIsSaved()
-        .subscribe((isSaved) => (this.isSaved = isSaved)),
-    ];
+        .subscribe((isSaved) => (this.isSaved = isSaved))
+    );
   }
 
   onViewChanged(viewData: { view: ModalView }): void {
@@ -130,9 +135,13 @@ export class TripPageComponent implements OnInit, OnDestroy {
 
   private async loadExistingTrip() {
     try {
-      const trip = await firstValueFrom(
-        this.tripService.getTripById(this.tripId!)
-      );
+      const response = await this.tripService.getTripById(this.tripId!);
+      if (response.statusCode !== 200) {
+        // Important: Snackbar service
+        return;
+      }
+
+      const trip = response.body as TripDto;
 
       this.tripStateService.updateTrip(trip);
       this.tripStateService.updateCityVisits(trip.cityVisits);

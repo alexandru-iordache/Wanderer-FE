@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
 import {
@@ -23,7 +24,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(
     private tripStateService: TripStateService,
-    private tripService: TripService
+    private tripService: TripService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -48,21 +50,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
 
     try {
+      let response;
       if (this.trip.id !== undefined) {
-        var response = await this.tripService.updateTrip(
+        response = await this.tripService.updateTrip(
           this.trip.id,
           this.trip as TripDto
         );
+
+        const tripDto = response.body as TripDto;
+
+        this.tripStateService.updateTrip(tripDto);
+        this.tripStateService.updateCityVisits(
+          tripDto.cityVisits as CityVisitDto[]
+        );
+
+        this.tripStateService.updateIsSaved(true);
       } else {
-        var response = await this.tripService.createTrip(this.trip);
+        response = await this.tripService.createTrip(this.trip);
+
+        this.router.navigate(['/trip', response.body.id]);
       }
-
-      this.tripStateService.updateTrip(response.body as TripDto);
-      this.tripStateService.updateCityVisits(
-        response.body.cityVisits as CityVisitDto[]
-      );
-
-      this.tripStateService.updateIsSaved(true);
     } catch (error) {
       // IMPORTANT: Snackbar service
       console.error('Error creating trip:', error);

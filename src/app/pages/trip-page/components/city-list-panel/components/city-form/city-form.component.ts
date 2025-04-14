@@ -159,7 +159,7 @@ export class CityFormComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     let tempDate = new Date(this.startDate!);
-    tempDate.setDate(this.startDate!.getDate() + nights);
+    tempDate.setDate(tempDate.getDate() + nights);
 
     this.cityVisitInProcess.startDate = tempDate;
     this.cityVisitInProcess.numberOfNights = numberOfNights;

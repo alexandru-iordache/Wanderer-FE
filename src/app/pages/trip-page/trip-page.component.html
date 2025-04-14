@@ -2,7 +2,7 @@
   <app-map [options]="mapOptions"></app-map>
   <app-create-trip-modal
     (viewChanged)="onViewChanged($event)"
-    *ngIf="modalClosed === false && !isEditMode"
+    *ngIf="modalClosed === false && isEditMode"
   ></app-create-trip-modal>
   <div class="saved-status-container" *ngIf="modalClosed === true">
     @if (isSaved === true) {
