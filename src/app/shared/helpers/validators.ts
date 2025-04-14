@@ -1,11 +1,5 @@
-import {
-  AbstractControl,
-  FormGroup,
-  ValidationErrors,
-  ValidatorFn,
-} from '@angular/forms';
-import { AddWaypointDto } from '../../interfaces/dtos/add-waypoint-dto';
-import { TimeInterval } from 'rxjs/internal/operators/timeInterval';
+import { AbstractControl, FormGroup, ValidatorFn } from '@angular/forms';
+import { BaseWaypointVisitDto } from '../../interfaces/dtos/request/base-waypoint-visit-dto';
 
 export function minimumAgeValidator(minAge: number): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
@@ -89,10 +83,10 @@ export function datePickerValidator(): ValidatorFn {
 }
 
 export function timeValidator(
-  getWaypoints: () => AddWaypointDto[] | undefined,
+  getWaypointVisits: () => BaseWaypointVisitDto[] | undefined,
   getIsEditFlag: () => {
     isEditFlow: boolean;
-    waypointInProcess: AddWaypointDto | undefined;
+    waypointVisitInProcess: BaseWaypointVisitDto | undefined;
   }
 ): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {
@@ -115,19 +109,19 @@ export function timeValidator(
       return { endTimeEarlier: true };
     }
 
-    let waypoints = getWaypoints();
-    if (waypoints === undefined) {
-      waypoints = [];
+    let waypointVisits = getWaypointVisits();
+    if (waypointVisits === undefined) {
+      waypointVisits = [];
     }
 
     const editPayload = getIsEditFlag();
     if (editPayload.isEditFlow === true) {
-      waypoints = waypoints.filter(
-        (waypoint) => waypoint.order !== editPayload.waypointInProcess?.order
+      waypointVisits = waypointVisits.filter(
+        (waypointVisit) => waypointVisit !== editPayload.waypointVisitInProcess
       );
     }
 
-    if (isOverlapping(waypoints, newStartTime, newEndTime)) {
+    if (isOverlapping(waypointVisits, newStartTime, newEndTime)) {
       return { overlap: true };
     }
 
@@ -136,7 +130,7 @@ export function timeValidator(
 }
 
 function isOverlapping(
-  waypoints: AddWaypointDto[],
+  waypoints: BaseWaypointVisitDto[],
   newStartTime: number,
   newEndTime: number
 ): boolean {

@@ -10,9 +10,11 @@ import {
 } from '@angular/core';
 import { ModalView } from '../../../helpers/modal-view.enum';
 import { GoogleMapsService } from '../../../../services/google-maps.service';
-import { City } from '../../../../interfaces/city';
+import { City } from '../../../../interfaces/models/city';
 import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
 import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
+import { TripStateService } from '../../services/trip-state.service';
+import { BaseTripDto } from '../../../../interfaces/dtos/request/base-trip-dto';
 
 @Component({
   selector: 'app-create-trip-modal',
@@ -23,12 +25,10 @@ export class CreateTripModalComponent
   implements OnInit, AfterViewInit, AfterViewChecked
 {
   @Output() viewChanged = new EventEmitter<{ view: ModalView }>();
-  @Output() tripStarted = new EventEmitter<{
-    city: CityTransferDto;
-    startDate: Date;
-  }>();
   @ViewChild('startingLocationInput')
   startingLocationInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('tripTitleInput')
+  tripTitleInput?: ElementRef<HTMLInputElement>;
   @ViewChild('departureDate') departureDateInput?: ElementRef<HTMLInputElement>;
 
   public modalView = ModalView;
@@ -39,7 +39,10 @@ export class CreateTripModalComponent
   userHomeAddressFlag: boolean = false;
   startingCity: CityTransferDto | undefined = undefined;
 
-  constructor(private googleMapsService: GoogleMapsService) {}
+  constructor(
+    private googleMapsService: GoogleMapsService,
+    private tripStateService: TripStateService
+  ) {}
 
   ngOnInit(): void {
     this.currentView = ModalView.WelcomeView;
@@ -71,13 +74,18 @@ export class CreateTripModalComponent
     this.setCurrentView(ModalView.NoView);
 
     let startDateValue = new Date(
-      this.startingLocationInput?.nativeElement.value!
+      this.departureDateInput?.nativeElement.value!
     );
 
-    this.tripStarted.emit({
-      city: this.startingCity!,
+    let tripTitleValue = this.tripTitleInput?.nativeElement.value!;
+
+    this.tripStateService.updateCityToAdd(this.startingCity);
+    this.tripStateService.updateStartDate(startDateValue);
+    this.tripStateService.updateTrip({
+      cityVisits: [],
       startDate: startDateValue,
-    });
+      title: tripTitleValue,
+    } as BaseTripDto);
   }
 
   setCurrentView(view: ModalView): void {
@@ -97,6 +105,9 @@ export class CreateTripModalComponent
 
   private initializeModalLocationAutocomplete(): void {
     if (this.startingLocationInput?.nativeElement === undefined) {
+      console.error(
+        'City Name Input is not rendered. The autocomplete cannot be initialized.'
+      );
       return;
     }
 
@@ -106,13 +117,12 @@ export class CreateTripModalComponent
         types: ['(cities)'],
       }
     );
+
     this.autocomplete.addListener('place_changed', () => {
       let place = this.autocomplete!.getPlace();
 
-      this.startingLocationInput!.nativeElement.value =
-        place.formatted_address ?? '';
-      if (place === undefined) {
-        // IMPORTANT: Modify drop down to show no result
+      if (!place.place_id || !place.name) {
+        // IMPORTANT: See how to handle this type of problem
         return;
       }
 
@@ -121,15 +131,16 @@ export class CreateTripModalComponent
         return;
       }
 
+      const cityName = place.name;
+      this.startingLocationInput!.nativeElement.value = cityName;
+
       // IMPORTANT: Show no result feedback, country filtering etc
-      const shortName =
-        place.address_components
-          .filter((x) => x.types.includes('locality'))
-          .at(0)?.short_name ?? '';
+      const placeId = place.place_id;
       const countryName =
         place.address_components
           .filter((x) => x.types.includes('country'))
           .at(0)?.long_name ?? '';
+          
       const latitude = place.geometry?.location?.lat() ?? 0;
       const longitude = place.geometry?.location?.lng() ?? 0;
 
@@ -142,7 +153,8 @@ export class CreateTripModalComponent
       }
 
       this.startingCity = new CityTransferDto(
-        shortName,
+        cityName,
+        placeId!,
         countryName,
         latitude,
         longitude,

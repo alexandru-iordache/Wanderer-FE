@@ -1,0 +1,52 @@
+<div class="create-trip-panel">
+  <app-header style="width: 100%"></app-header>
+  <div class="panel-content">
+    @switch (currentView) {
+
+    <!-- Cities List View -->
+
+    @case (PanelView.CitiesListView) {
+    <app-city-list
+      [setCurrentView]="setCurrentView.bind(this)"
+      [openDeleteModal]="openDeleteModal.bind(this)"
+      style="width: 100%"
+    >
+    </app-city-list>
+    }
+
+    <!-- City View -->
+
+    @case (PanelView.CityView) {
+    <app-city-form
+      [onDiscardClick]="onDiscardClick.bind(this)"
+      [setCurrentView]="setCurrentView.bind(this)"
+      [preventEnterSubmit]="preventEnterSubmit.bind(this)"
+      style="width: 100%"
+    >
+      >
+    </app-city-form>
+    }
+
+    <!-- Waypoints List View -->
+
+    @case (PanelView.WaypointsListView) {
+    <app-waypoint-list
+      [setCurrentView]="setCurrentView.bind(this)"
+      [openDeleteModal]="openDeleteModal.bind(this)"
+      style="width: 100%"
+    >
+    </app-waypoint-list>
+    }
+
+    <!-- Waypoint View -->
+
+    @case (PanelView.WaypointView) {
+    <app-waypoint-form
+      [onDiscardClick]="onDiscardClick.bind(this)"
+      [setCurrentView]="setCurrentView.bind(this)"
+      [preventEnterSubmit]="preventEnterSubmit.bind(this)"
+      style="width: 100%"
+    ></app-waypoint-form>
+    } }
+  </div>
+</div>

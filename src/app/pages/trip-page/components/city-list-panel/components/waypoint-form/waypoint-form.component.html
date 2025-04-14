@@ -1,0 +1,107 @@
+<form
+  class="add-form"
+  [formGroup]="waypointForm"
+  (ngSubmit)="onWaypointFormSubmit()"
+  (keydown.enter)="preventEnterSubmit($event)"
+>
+  <div class="form-row-section">
+    <label class="form-label">Waypoint Name</label>
+    <input
+      #waypointName
+      type="text"
+      formControlName="waypointName"
+      placeholder="Enter the waypoint name"
+      [class.disabled-input]="waypointForm.get('waypointName')?.disabled"
+    />
+    <small
+      *ngIf="
+        waypointForm.get('waypointName')?.hasError('required') &&
+        waypointForm.get('waypointName')?.touched
+      "
+      class="text-danger"
+    >
+      Waypoint Name cannot be empty.
+    </small>
+    <small
+      *ngIf="waypointForm.get('waypointName')?.hasError('noResult')"
+      class="text-danger"
+    >
+      No results found. Please select a valid waypoint from the list.
+    </small>
+    <small
+      *ngIf="
+        waypointForm.get('waypointName')?.hasError('unsupportedType') &&
+        waypointForm.get('waypointName')?.touched
+      "
+      class="text-danger"
+    >
+      The waypoint selected is not a food location, an attraction or a
+      recreational place.
+    </small>
+  </div>
+  <div class="form-row-section number">
+    <label class="form-label number">Start Time</label>
+    <span class="time-counter">
+      <input
+        class="number"
+        type="number"
+        formControlName="startHour"
+        min="0"
+        max="23"
+        (input)="formatTwoDigitsInput($event, 'hour')"
+      />
+      h
+      <input
+        class="number"
+        type="number"
+        formControlName="startMinutes"
+        min="0"
+        max="59"
+        (input)="formatTwoDigitsInput($event, 'minutes')"
+      />
+      m
+    </span>
+  </div>
+  <div class="form-row-section number">
+    <label class="form-label number">End Time</label>
+    <span class="time-counter">
+      <input
+        class="number"
+        type="number"
+        formControlName="endHour"
+        min="0"
+        max="23"
+        (input)="formatTwoDigitsInput($event, 'hour')"
+      />
+      h
+      <input
+        class="number"
+        type="number"
+        formControlName="endMinutes"
+        min="0"
+        max="59"
+        (input)="formatTwoDigitsInput($event, 'minutes')"
+      />
+      m
+    </span>
+  </div>
+  <div class="form-row-section">
+    <small *ngIf="waypointForm.hasError('endTimeEarlier')" class="text-danger">
+      End time must be later than the start time.
+    </small>
+    <small *ngIf="waypointForm.hasError('overlap')" class="text-danger">
+      Current interval is overlapping with one of the existing ones.
+    </small>
+  </div>
+  <div class="buttons-section">
+    <div
+      class="discard-button"
+      (click)="onDiscardClick(PanelView.WaypointsListView, 'waypoint', isEditFlow)"
+    >
+      Discard
+    </div>
+    <button type="submit" class="submit-button">
+      {{ isEditFlow === false ? "Add" : "Edit" }}
+    </button>
+  </div>
+</form>

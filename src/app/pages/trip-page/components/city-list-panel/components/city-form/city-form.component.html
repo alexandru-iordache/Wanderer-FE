@@ -1,0 +1,56 @@
+<form
+  class="add-form"
+  [formGroup]="cityForm"
+  (ngSubmit)="onCityFormSubmit()"
+  (keydown.enter)="preventEnterSubmit($event)"
+>
+  <div class="form-row-section">
+    <label class="form-label">City Name</label>
+    <input
+      #cityName
+      type="text"
+      formControlName="cityName"
+      placeholder="Enter the city name"
+      [class.disabled-input]="cityForm.get('cityName')?.disabled"
+    />
+    <small
+      *ngIf="
+        cityForm.get('cityName')?.hasError('required') &&
+        cityForm.get('cityName')?.touched
+      "
+      class="text-danger"
+    >
+      City Name cannot be empty.
+    </small>
+    <small
+      *ngIf="
+        cityForm.get('cityName')?.hasError('noResult') &&
+        cityForm.get('cityName')?.touched
+      "
+      class="text-danger"
+    >
+      No results found. Please select a valid city from the list.
+    </small>
+  </div>
+  <div class="form-row-section number">
+    <label class="form-label number">No. of Nights</label>
+    <input
+      class="number"
+      type="number"
+      formControlName="numberOfNights"
+      min="0"
+      max="100"
+    />
+  </div>
+  <div class="buttons-section">
+    <div
+      class="discard-button"
+      (click)="onDiscardClick(PanelView.CitiesListView, 'city', isEditFlow)"
+    >
+      Discard
+    </div>
+    <button type="submit" class="submit-button">
+      {{ isEditFlow === false ? "Add" : "Edit" }}
+    </button>
+  </div>
+</form>
