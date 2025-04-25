@@ -1,0 +1,109 @@
+<div class="my-trips-page">
+  <div class="section left">
+    <div class="calendar-panel">
+      <div class="panel-header">Calendar</div>
+      <div class="separator"></div>
+    </div>
+    <div class="stats-panel">
+      <div class="panel-header">Your stats</div>
+      <div class="separator"></div>
+      <div class="stats-content">
+        <div class="stat-item">
+          <div class="stat-header">
+            <span class="stat-label">Trips</span>
+            <span class="stat-numbers">{{userCompletedStats.tripsCount}} / {{userTotalStats.tripsCount}}</span>
+          </div>
+          <mat-progress-bar
+            [value]="(userCompletedStats.tripsCount / (userTotalStats.tripsCount || 1)) * 100"
+            color="primary">
+          </mat-progress-bar>
+        </div>
+        
+        <div class="stat-item">
+          <div class="stat-header">
+            <span class="stat-label">Countries</span>
+            <span class="stat-numbers">{{userCompletedStats.countriesCount}} / {{userTotalStats.countriesCount}}</span>
+          </div>
+          <mat-progress-bar
+            [value]="(userCompletedStats.countriesCount / (userTotalStats.countriesCount || 1)) * 100"
+            color="primary">
+          </mat-progress-bar>
+        </div>
+        
+        <div class="stat-item">
+          <div class="stat-header">
+            <span class="stat-label">Cities</span>
+            <span class="stat-numbers">{{userCompletedStats.citiesCount}} / {{userTotalStats.citiesCount}}</span>
+          </div>
+          <mat-progress-bar
+            [value]="(userCompletedStats.citiesCount / (userTotalStats.citiesCount || 1)) * 100"
+            color="primary">
+          </mat-progress-bar>
+        </div>
+        
+        <div class="stat-item">
+          <div class="stat-header">
+            <span class="stat-label">Waypoints</span>
+            <span class="stat-numbers">{{userCompletedStats.waypointsCount}} / {{userTotalStats.waypointsCount}}</span>
+          </div>
+          <mat-progress-bar
+            [value]="(userCompletedStats.waypointsCount / (userTotalStats.waypointsCount || 1)) * 100"
+            color="primary">
+          </mat-progress-bar>
+        </div>
+        
+        <div class="stat-item">
+          <div class="stat-header">
+            <span class="stat-label">Days</span>
+            <span class="stat-numbers">{{userCompletedStats.daysCount}} / {{userTotalStats.daysCount}}</span>
+          </div>
+          <mat-progress-bar
+            [value]="(userCompletedStats.daysCount / (userTotalStats.daysCount || 1)) * 100"
+            color="primary">
+          </mat-progress-bar>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section right">
+    <div class="trips-panel">
+      <div class="panel-header">Your Trips</div>
+      <div class="separator"></div>
+      <div class="panel-content">
+        @if (trips.length === 0) {
+        <div class="empty-trips-list">
+          <p>You don't have any trips yet.</p>
+          <p>
+            <a routerLink="/trip" class="create-trip-link">Create</a> one now!
+          </p>
+        </div>
+        } @else {
+        <div class="trips-list">
+          @for (trip of trips; track $index) {
+          <div class="trip-button">
+            <div class="button-info-container" routerLink="/trip/{{ trip.id }}">
+              <span class="button-text-container">
+                <mat-icon
+                  class="button-icon"
+                  fontIcon="directions_bus_filled"
+                ></mat-icon>
+                <span class="button-text name">{{ trip.title }}</span>
+              </span>
+              <div class="date-text">
+                {{ getFormattedDate(trip.startDate) }}
+              </div>
+            </div>
+            <div
+              class="menu-container"
+              (click)="deleteTrip($event, trip.title, trip.id)"
+            >
+              <mat-icon class="button-icon" fontIcon="delete"></mat-icon>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

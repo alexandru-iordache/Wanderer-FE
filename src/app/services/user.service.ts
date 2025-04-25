@@ -1,10 +1,15 @@
 import { EnvironmentInjector, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpErrorResponse,
+} from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { AddUserDto } from '../interfaces/dtos/request/add-user-dto';
 import { UserDto } from '../interfaces/dtos/response/user-dto';
+import { UserStatsDto } from '../interfaces/dtos/response/user-stats-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +39,7 @@ export class UserService {
 
         return {
           statusCode: 409,
-          statusText: "Conflict",
+          statusText: 'Conflict',
           body: null,
         };
       } else {
@@ -44,7 +49,7 @@ export class UserService {
     }
   }
 
-  async getUserDetails(){
+  async getUserDetails() {
     const response = await firstValueFrom(
       this.http.get(environment.apiUrl + '/api/users/details', {
         observe: 'response',
@@ -58,13 +63,26 @@ export class UserService {
     };
   }
 
+  getUserStats(isCompleted: boolean) {
+    return this.http
+      .get(environment.apiUrl + `/api/users/stats?isCompleted=${isCompleted}`, {
+        observe: 'response',
+        headers: this.createHeaders(),
+      })
+      .pipe(map((response: any) => response.body as UserStatsDto));
+  }
+
   private createHeaders(): HttpHeaders {
-    const token = sessionStorage.getItem('idToken') || localStorage.getItem('idToken');
+    const token =
+      sessionStorage.getItem('idToken') || localStorage.getItem('idToken');
     if (!token) {
       throw new Error('Token not found in storage');
     }
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+    let headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const userId =
+    sessionStorage.getItem('userId') || localStorage.getItem('userId');
+    headers = headers.append('X-UserId', userId || '');
+    
     return headers;
   }
 }

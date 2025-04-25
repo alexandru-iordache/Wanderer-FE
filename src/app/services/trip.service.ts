@@ -28,10 +28,28 @@ export class TripService {
     };
   }
 
-  getTrips(): Observable<TripDto[]> {
+  getTrips(isOrderedByDate: boolean): Observable<TripDto[]> {
     return this.http
-      .get(`${this.apiUrl}`)
-      .pipe(map((response: any) => response.data as TripDto[]));
+      .get(`${this.apiUrl}?isOrderedByDate=${isOrderedByDate}`, {
+        headers: this.createHeaders(),
+        observe: 'response',
+      })
+      .pipe(map((response: any) => response.body as TripDto[]));
+  }
+
+  async deleteTrip(id: Uuid) {
+    const response = await firstValueFrom(
+      this.http.delete(`${this.apiUrl}/${id}`, {
+        headers: this.createHeaders(),
+        observe: 'response',
+      })
+    );
+
+    return {
+      statusCode: response.status,
+      statusText: response.statusText,
+      body: response.body as TripDto,
+    };
   }
 
   async createTrip(trip: AddTripDto) {

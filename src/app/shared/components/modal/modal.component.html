@@ -1,0 +1,25 @@
+<div class="modal-backdrop">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        {{ header }}
+      </div>
+    </div>
+    <div class="modal-content">
+      <h3>{{ message }}</h3>
+      <div class="modal-buttons">
+        <button 
+          *ngIf="showDiscardButton && discardText" 
+          class="discard-button" 
+          (click)="onDiscard()">
+          {{ discardText }}
+        </button>
+        <button 
+          class="confirm-button" 
+          (click)="onConfirm()">
+          {{ confirmText }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

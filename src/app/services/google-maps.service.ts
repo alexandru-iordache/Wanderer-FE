@@ -10,6 +10,7 @@ export class GoogleMapsService {
   private loader = new Loader({
     apiKey: environment.googleMapsApiKey,
     libraries: ["places"],
+    language: 'en'
   });
 
   constructor() {

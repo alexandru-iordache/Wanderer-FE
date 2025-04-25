@@ -115,6 +115,7 @@ export class CreateTripModalComponent
       this.startingLocationInput!.nativeElement,
       {
         types: ['(cities)'],
+        componentRestrictions: { country: ['us', 'ca'] }
       }
     );
 

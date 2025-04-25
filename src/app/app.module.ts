@@ -7,6 +7,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -30,6 +31,9 @@ import { HeaderComponent } from './pages/trip-page/components/city-list-panel/co
 import { TripService } from './services/trip.service';
 import { HttpClientModule } from '@angular/common/http';
 import { TokenRefreshService } from './services/token-refresh.service';
+import { MyTripsPageComponent } from './pages/my-trips-page/my-trips-page.component';
+import { ModalService } from './services/modal.service';
+import { ModalComponent } from './shared/components/modal/modal.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +53,8 @@ import { TokenRefreshService } from './services/token-refresh.service';
     WaypointListComponent,
     WaypointFormComponent,
     HeaderComponent,
+    MyTripsPageComponent,
+    ModalComponent
   ],
   imports: [
     BrowserModule,
@@ -60,10 +66,11 @@ import { TokenRefreshService } from './services/token-refresh.service';
     MatIconModule,
     MatListModule,
     MatButtonModule,
+    MatProgressBarModule,
     GoogleMapsModule,
     HttpClientModule
   ],
-  providers: [TripService, TripStateService, TokenRefreshService],
+  providers: [TripService, TripStateService, TokenRefreshService, ModalService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
