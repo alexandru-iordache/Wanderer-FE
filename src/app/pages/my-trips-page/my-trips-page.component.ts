@@ -1,4 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { TripDto } from '../../interfaces/dtos/request/base-trip-dto';
 import { TripService } from '../../services/trip.service';
 import { Subscription } from 'rxjs';
@@ -6,6 +14,7 @@ import { UiHelper } from '../../shared/helpers/ui-helper';
 import { ModalService } from '../../services/modal.service';
 import { UserStatsDto } from '../../interfaces/dtos/response/user-stats-dto';
 import { UserService } from '../../services/user.service';
+import { FilterOptionsDto } from '../../interfaces/dtos/filter-options-dto';
 
 @Component({
   selector: 'app-my-trips-page',
@@ -13,6 +22,11 @@ import { UserService } from '../../services/user.service';
   styleUrl: './my-trips-page.component.scss',
 })
 export class MyTripsPageComponent implements OnInit, OnDestroy {
+  @ViewChild('minDate') minDateInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('maxDate') maxDateInput?: ElementRef<HTMLInputElement>;
+  @ViewChildren('allStatus, completedStatus, notStatus')
+  completionRadioButtons?: QueryList<ElementRef<HTMLInputElement>>;
+
   trips: TripDto[] = [];
   userTotalStats: UserStatsDto = {
     tripsCount: 0,
@@ -28,6 +42,12 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
     waypointsCount: 0,
     daysCount: 0,
   } as UserStatsDto;
+  filterOptions: FilterOptionsDto = {
+    minDate: undefined,
+    maxDate: undefined,
+    completionStatus: 'All',
+  };
+  areFiltersOpened: boolean = false;
 
   private subscriptions: Subscription[] = [];
 
@@ -39,7 +59,7 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.tripService.getTrips(true).subscribe({
+      this.tripService.getTrips(true, this.filterOptions).subscribe({
         next: (trips) => {
           this.trips = trips as TripDto[];
         },
@@ -66,7 +86,6 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
           console.error('Error fetching user stats:', error);
         },
       })
-
     );
   }
 
@@ -74,6 +93,64 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
     var date = UiHelper.getSummedDate(date, 0);
 
     return UiHelper.getShortMonthDate(date);
+  }
+
+  onFiltersClicked(event: MouseEvent): void {
+    event.stopPropagation();
+    this.areFiltersOpened = !this.areFiltersOpened;
+
+    setTimeout(() => {
+      if (this.areFiltersOpened) {
+        this.minDateInput!.nativeElement.value = this.filterOptions.minDate
+          ? this.filterOptions.minDate.toISOString().split('T')[0]
+          : '';
+        this.maxDateInput!.nativeElement.value = this.filterOptions.maxDate
+          ? this.filterOptions.maxDate.toISOString().split('T')[0]
+          : '';
+        const toCheckRadioButton = this.completionRadioButtons!.find(
+          (radio) => radio.nativeElement.value === this.filterOptions.completionStatus
+        );
+        toCheckRadioButton!.nativeElement.checked = true;
+      }
+    });
+  }
+
+  onClearClicked(event: MouseEvent): void {
+    event.stopPropagation();
+    this.filterOptions = {
+      minDate: undefined,
+      maxDate: undefined,
+      completionStatus: 'All',
+    };
+    this.minDateInput!.nativeElement.value = '';
+    this.maxDateInput!.nativeElement.value = '';
+    const allRadioButton = this.completionRadioButtons!.find(
+      (radio) => radio.nativeElement.value === 'All'
+    );
+    allRadioButton!.nativeElement.checked = true;
+  }
+
+  onSaveClicked(event: MouseEvent): void {
+    event.stopPropagation();
+    this.filterOptions.minDate = this.minDateInput?.nativeElement.value
+      ? new Date(this.minDateInput.nativeElement.value)
+      : undefined;
+    this.filterOptions.maxDate = this.maxDateInput?.nativeElement.value
+      ? new Date(this.maxDateInput.nativeElement.value)
+      : undefined;
+    const checkedRadioButton = this.completionRadioButtons!.toArray().find((radio) => {
+      console.log(radio.nativeElement.value, radio.nativeElement.checked);
+      return radio.nativeElement.checked === true;
+    });
+
+    this.filterOptions.completionStatus = checkedRadioButton!.nativeElement.value;
+
+    this.subscriptions[0]?.unsubscribe();
+    this.subscriptions[0] = this.tripService
+      .getTrips(true, this.filterOptions)
+      .subscribe((trips) => (this.trips = trips as TripDto[]));
+
+    this.areFiltersOpened = !this.areFiltersOpened;
   }
 
   async deleteTrip(

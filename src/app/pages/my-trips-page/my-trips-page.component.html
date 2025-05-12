@@ -11,55 +11,94 @@
         <div class="stat-item">
           <div class="stat-header">
             <span class="stat-label">Trips</span>
-            <span class="stat-numbers">{{userCompletedStats.tripsCount}} / {{userTotalStats.tripsCount}}</span>
+            <span class="stat-numbers"
+              >{{ userCompletedStats.tripsCount }} /
+              {{ userTotalStats.tripsCount }}</span
+            >
           </div>
           <mat-progress-bar
-            [value]="(userCompletedStats.tripsCount / (userTotalStats.tripsCount || 1)) * 100"
-            color="primary">
+            [value]="
+              (userCompletedStats.tripsCount /
+                (userTotalStats.tripsCount || 1)) *
+              100
+            "
+            color="primary"
+          >
           </mat-progress-bar>
         </div>
-        
+
         <div class="stat-item">
           <div class="stat-header">
             <span class="stat-label">Countries</span>
-            <span class="stat-numbers">{{userCompletedStats.countriesCount}} / {{userTotalStats.countriesCount}}</span>
+            <span class="stat-numbers"
+              >{{ userCompletedStats.countriesCount }} /
+              {{ userTotalStats.countriesCount }}</span
+            >
           </div>
           <mat-progress-bar
-            [value]="(userCompletedStats.countriesCount / (userTotalStats.countriesCount || 1)) * 100"
-            color="primary">
+            [value]="
+              (userCompletedStats.countriesCount /
+                (userTotalStats.countriesCount || 1)) *
+              100
+            "
+            color="primary"
+          >
           </mat-progress-bar>
         </div>
-        
+
         <div class="stat-item">
           <div class="stat-header">
             <span class="stat-label">Cities</span>
-            <span class="stat-numbers">{{userCompletedStats.citiesCount}} / {{userTotalStats.citiesCount}}</span>
+            <span class="stat-numbers"
+              >{{ userCompletedStats.citiesCount }} /
+              {{ userTotalStats.citiesCount }}</span
+            >
           </div>
           <mat-progress-bar
-            [value]="(userCompletedStats.citiesCount / (userTotalStats.citiesCount || 1)) * 100"
-            color="primary">
+            [value]="
+              (userCompletedStats.citiesCount /
+                (userTotalStats.citiesCount || 1)) *
+              100
+            "
+            color="primary"
+          >
           </mat-progress-bar>
         </div>
-        
+
         <div class="stat-item">
           <div class="stat-header">
             <span class="stat-label">Waypoints</span>
-            <span class="stat-numbers">{{userCompletedStats.waypointsCount}} / {{userTotalStats.waypointsCount}}</span>
+            <span class="stat-numbers"
+              >{{ userCompletedStats.waypointsCount }} /
+              {{ userTotalStats.waypointsCount }}</span
+            >
           </div>
           <mat-progress-bar
-            [value]="(userCompletedStats.waypointsCount / (userTotalStats.waypointsCount || 1)) * 100"
-            color="primary">
+            [value]="
+              (userCompletedStats.waypointsCount /
+                (userTotalStats.waypointsCount || 1)) *
+              100
+            "
+            color="primary"
+          >
           </mat-progress-bar>
         </div>
-        
+
         <div class="stat-item">
           <div class="stat-header">
             <span class="stat-label">Days</span>
-            <span class="stat-numbers">{{userCompletedStats.daysCount}} / {{userTotalStats.daysCount}}</span>
+            <span class="stat-numbers"
+              >{{ userCompletedStats.daysCount }} /
+              {{ userTotalStats.daysCount }}</span
+            >
           </div>
           <mat-progress-bar
-            [value]="(userCompletedStats.daysCount / (userTotalStats.daysCount || 1)) * 100"
-            color="primary">
+            [value]="
+              (userCompletedStats.daysCount / (userTotalStats.daysCount || 1)) *
+              100
+            "
+            color="primary"
+          >
           </mat-progress-bar>
         </div>
       </div>
@@ -69,6 +108,52 @@
     <div class="trips-panel">
       <div class="panel-header">Your Trips</div>
       <div class="separator"></div>
+      <div class="options-section">
+        <div
+          id="filters"
+          [ngClass]="{
+            filters: areFiltersOpened === false,
+            'filters-opened': areFiltersOpened === true
+          }"
+          (click)="onFiltersClicked($event)"
+        >
+          Filters
+        </div>
+      </div>
+
+      @if(areFiltersOpened === true){
+      <div class="filters-panel">
+        <div class="filter-section">
+          <div class="filter-label">Start Date Range</div>
+          <div class="filter-content">
+            <input type="date" #minDate class="input"/>
+            <span class="linking-message">to</span>
+            <input type="date" #maxDate class="input"/>
+          </div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-label">Completion Status</div>
+          <div class="filter-content">
+            <input type="radio" #allStatus id="all" name="com_status" value="All" checked/>
+            <label for="all" class="radio-label">All</label><br />
+            <input
+              type="radio"
+              #completedStatus
+              id="completed"
+              name="com_status"
+              value="Completed"
+            />
+            <label for="completed" class="radio-label">Completed</label><br />
+            <input type="radio"#notStatus id="not" name="com_status" value="NotCompleted" />
+            <label for="not" class="radio-label">Not</label>
+          </div>
+        </div>
+        <div class="buttons-section">
+          <button class="clear-button" (click)="onClearClicked($event)">Clear</button>
+          <button class="save-button" (click)="onSaveClicked($event)">Save</button>
+        </div>
+      </div>
+      } @else {
       <div class="panel-content">
         @if (trips.length === 0) {
         <div class="empty-trips-list">
@@ -104,6 +189,7 @@
         </div>
         }
       </div>
+      }
     </div>
   </div>
 </div>

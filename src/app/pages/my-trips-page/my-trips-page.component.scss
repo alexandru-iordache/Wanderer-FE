@@ -56,40 +56,156 @@
 }
 
 .separator {
-    width: 80%;
-    height: 1px;
+  width: 80%;
+  height: 1px;
+  background-color: $primary-color;
+  border-radius: 20px;
+  margin: 10px auto;
+}
+
+.options-section {
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  color: $primary-color;
+  font-family: $primary-font;
+  font-weight: 500;
+
+  #filters {
+    padding: 0 10px;
+  }
+
+  .filters {
+    cursor: pointer;
+
+    &:hover {
+      color: $primary-color-highlight;
+      transition: 0.2s;
+    }
+  }
+
+  .filters-opened {
+    color: $secondary-color;
     background-color: $primary-color;
-    border-radius: 20px;
-    margin: 10px auto;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+}
+
+.button {
+  padding: 5px;
+  margin-left: 5px;
+  border: 1px solid $secondary-color;
+  border-radius: 5px;
+  font-family: $primary-font;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.filters-panel {
+  width: 80%;
+  padding: 10px 10px;
+  padding-bottom: 20px;
+  border-radius: 20px;
+  border-top-left-radius: 0px;
+  background-color: $primary-color;
+  color: $secondary-color;
+  font-family: $primary-font;
+
+  .filter-section {
+    width: 80%;
+    margin: 10px 0;
+
+    .filter-label {
+      width: 100%;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .filter-content {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .input {
+      height: 40px;
+      padding-left: 5px;
+      padding-right: 5px;
+      border: 1px solid $secondary-color;
+      border-radius: 10px;
+      background-color: $primary-color;
+      font-family: $primary-font;
+      font-weight: 400;
+      color: $secondary-color;
+    }
+
+    .linking-message {
+      padding: 0 4px;
+    }
+
+    .radio-label {
+      font-weight: 400;
+    }
+  }
+
+  .buttons-section {
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .save-button {
+    @extend .button;
+    background-color: $secondary-color;
+    color: $primary-color;
+
+    &:hover {
+      transition: 0.2s;
+      background-color: $secondary-color-highlight;
+    }
+  }
+
+  .clear-button {
+    @extend .button;
+    background-color: $primary-color;
+
+    &:hover {
+      transition: 0.2s;
+      background-color: $primary-color-highlight;
+    }
+  }
 }
 
 .panel-content {
-    width: 100%;
-    flex: 1;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+  width: 100%;
+  flex: 1;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 20px;
 }
 
 .empty-trips-list {
-    padding: 0 20px;
-    font-size: 20px;
-    color: $primary-color;
-    text-align: center;
-    margin-top: 40px;
+  padding: 0 20px;
+  font-size: 20px;
+  color: $primary-color;
+  text-align: center;
 
-    a {
-        text-decoration: none;
-        color: $forth-color;
-    }
+  a {
+    text-decoration: none;
+    color: $forth-color;
+  }
 }
 
 .trips-list {
   width: 80%;
-  margin-top: 20px;
 }
 
 .trip-button {
@@ -242,4 +358,3 @@
 ::ng-deep .mat-mdc-progress-bar .mdc-linear-progress__buffer {
   background-color: $primary-color-highlight !important;
 }
-  

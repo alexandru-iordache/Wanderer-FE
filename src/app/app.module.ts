@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTabsModule } from '@angular/material/tabs'; 
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -67,6 +68,7 @@ import { ModalComponent } from './shared/components/modal/modal.component';
     MatListModule,
     MatButtonModule,
     MatProgressBarModule,
+    MatTabsModule,
     GoogleMapsModule,
     HttpClientModule
   ],
