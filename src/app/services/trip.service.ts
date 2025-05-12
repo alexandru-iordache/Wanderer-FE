@@ -4,6 +4,7 @@ import { firstValueFrom, map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AddTripDto, TripDto } from '../interfaces/dtos/request/base-trip-dto';
 import { Uuid } from '../shared/helpers/uuid';
+import { FilterOptionsDto } from '../interfaces/dtos/filter-options-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -28,10 +29,28 @@ export class TripService {
     };
   }
 
-  getTrips(): Observable<TripDto[]> {
+  getTrips(isOrderedByDate: boolean, filterOptions: FilterOptionsDto): Observable<TripDto[]> {    
     return this.http
-      .get(`${this.apiUrl}`)
-      .pipe(map((response: any) => response.data as TripDto[]));
+      .get(this.createGetRoute(isOrderedByDate, filterOptions), {
+        headers: this.createHeaders(),
+        observe: 'response',
+      })
+      .pipe(map((response: any) => response.body as TripDto[]));
+  }
+
+  async deleteTrip(id: Uuid) {
+    const response = await firstValueFrom(
+      this.http.delete(`${this.apiUrl}/${id}`, {
+        headers: this.createHeaders(),
+        observe: 'response',
+      })
+    );
+
+    return {
+      statusCode: response.status,
+      statusText: response.statusText,
+      body: response.body as TripDto,
+    };
   }
 
   async createTrip(trip: AddTripDto) {
@@ -74,5 +93,21 @@ export class TripService {
       sessionStorage.getItem('userId') || localStorage.getItem('userId');
     headers = headers.append('X-UserId', userId || '');
     return headers;
+  }
+
+  private createGetRoute(isOrderedByDate: boolean, filterOptions: FilterOptionsDto): string {
+    const params = new URLSearchParams();
+
+    if (filterOptions.completionStatus) {
+      params.append('status', filterOptions.completionStatus);
+    }
+    if (filterOptions.minDate) {
+      params.append('minDate', filterOptions.minDate.toISOString());
+    }
+    if (filterOptions.maxDate) {
+      params.append('maxDate', filterOptions.maxDate.toISOString());
+    }
+
+    return `${this.apiUrl}?isOrderedByDate=${isOrderedByDate}&${params.toString()}`;
   }
 }

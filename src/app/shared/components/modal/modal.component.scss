@@ -1,0 +1,69 @@
+@import "../../../../styles.scss";
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  min-width: 300px;
+  border-radius: 10px;
+  background: $forth-color;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-family: $primary-font;
+}
+
+.modal-content {
+  padding: 20px;
+  color: $secondary-color;
+  font-size: 1em;
+  text-align: center;
+
+  h3 {
+    font-weight: 500;
+  }
+}
+
+.modal-header {
+  width: 100%;
+  height: 30px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-color: $secondary-color;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+
+  .modal-header-text {
+    margin: auto 0;
+    margin-left: 10px;
+    font-weight: 500;
+    color: $primary-color;
+  }
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 20px;
+
+  button {
+    min-width: 40px;
+
+    &.discard-button {
+      @extend .negative-feedback-button;
+    }
+
+    &.confirm-button {
+      @extend .positive-feedback-button;
+    }
+  }
+}

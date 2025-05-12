@@ -140,7 +140,7 @@ export class CreateTripModalComponent
         place.address_components
           .filter((x) => x.types.includes('country'))
           .at(0)?.long_name ?? '';
-          
+
       const latitude = place.geometry?.location?.lat() ?? 0;
       const longitude = place.geometry?.location?.lng() ?? 0;
 
