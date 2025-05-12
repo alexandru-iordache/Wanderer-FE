@@ -1,11 +1,29 @@
 <nav>
-    <div class="logo-container">
-        <h1 class="generic-heading">Wanderer</h1>
+  <div class="logo-container">
+    <h1 class="generic-heading">Wanderer</h1>
+  </div>
+  @if (isLoggedIn === false) {
+
+  <div class="navigation-container">
+    <button class="generic-button navigation-button" routerLink="">Home</button>
+    <button class="generic-button navigation-button">About Us</button>
+    <button class="generic-button navigation-button">Plan A Trip</button>
+    <button class="generic-button sign-in-button" routerLink="/sign-in">
+      Sign In
+    </button>
+  </div>
+  } @else {
+  <div class="navigation-container logged">
+    <div class="user-info" routerLink="/account/{{ userDetails!.id }}">
+      <div class="user-avatar">
+        {{
+          userDetails?.profileName !== null
+            ? userDetails!.profileName.charAt(0)
+            : ""
+        }}
+      </div>
+      <div class="user-name">{{ userDetails?.profileName }}</div>
     </div>
-    <div class="navigation-container" *ngIf="isLoggedIn === false">
-        <button class="generic-button navigation-button" routerLink="">Home</button>
-        <button class="generic-button navigation-button">About Us</button>
-        <button class="generic-button navigation-button">Plan A Trip</button>
-        <button class="generic-button sign-in-button" routerLink="/sign-in">Sign In</button>
-    </div>
+  </div>
+  }
 </nav>

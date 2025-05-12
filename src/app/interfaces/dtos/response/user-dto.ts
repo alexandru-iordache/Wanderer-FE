@@ -3,4 +3,5 @@ export interface UserDto {
     profileName: string;
     email: string;
     address: string | null;
+    birthDate: Date | null;
 }

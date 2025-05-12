@@ -1,0 +1,47 @@
+<div class="my-trips-page">
+    <div class="user-avatar">{{userDetails?.profileName !== null ? userDetails!.profileName.charAt(0) : "C"}}</div>
+    <form class="form-section" [formGroup]="userDetailsForm" (ngSubmit)="onFormSubmit()">
+        <div class="form-row-section">
+            <label class="form-label">Email</label>
+            <input type="input" class="disabled" formControlName="email" placeholder="Enter your email">
+        </div>
+        <div class="form-row-section">
+            <label class="form-label">Profile name</label>
+            <input type="input" formControlName="profileName" placeholder="Enter your profile name">
+            <small *ngIf="userDetailsForm.get('profileName')?.invalid 
+                && userDetailsForm.get('profileName')?.touched" class="text-danger">
+                Profile name is required!
+            </small>
+        </div>
+        <div class="form-row-section">
+            <label class="form-label">Home City</label>
+            <input type="input" formControlName="homeCity" placeholder="Enter your home city">
+            <small *ngIf="userDetailsForm.get('homeCity')?.invalid 
+                && userDetailsForm.get('homeCity')?.touched" class="text-danger">
+                Profile name is required!
+            </small>
+        </div>
+        <div class="form-row-section">
+            <!-- IMPORTANT: This should be the custom date picker. Until we learn how to do it 
+                we wil use a normal one. Or maybe Angular Material date picker.-->
+            <label class="form-label">Birthdate</label>
+            <!-- <div class="date-picker">
+                <select class="dropdown">
+                    <option value="0">Day</option>
+                </select>
+                <select class="dropdown">
+                    <option value="0">Month</option>
+                </select>
+                <select class="dropdown">
+                    <option value="0">Year</option>
+                </select>
+            </div> -->
+            <input type="date" formControlName="birthDate" placeholder="Select your Birthdate">
+            <small *ngIf="(userDetailsForm.get('birthDate')?.invalid 
+                && userDetailsForm.get('birthDate')?.touched)" class="text-danger">
+                You should be at least 18 years old.
+            </small>
+        </div>
+        <button type="submit" class="submit-button">Save</button>
+    </form>
+</div>

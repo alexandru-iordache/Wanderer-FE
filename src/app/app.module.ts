@@ -35,6 +35,7 @@ import { TokenRefreshService } from './services/token-refresh.service';
 import { MyTripsPageComponent } from './pages/my-trips-page/my-trips-page.component';
 import { ModalService } from './services/modal.service';
 import { ModalComponent } from './shared/components/modal/modal.component';
+import { AccountPageComponent } from './pages/account-page/account-page.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { ModalComponent } from './shared/components/modal/modal.component';
     WaypointFormComponent,
     HeaderComponent,
     MyTripsPageComponent,
-    ModalComponent
+    ModalComponent,
+    AccountPageComponent
   ],
   imports: [
     BrowserModule,
