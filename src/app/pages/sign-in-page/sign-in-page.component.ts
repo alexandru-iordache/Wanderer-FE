@@ -186,7 +186,7 @@ export class SignInPageComponent implements OnInit {
         }
         userDetails = response.body;
       } else {
-        const response = await this.userService.getUserDetails();
+        const response = await this.userService.getUserDetailsAsync();
         if (response.statusCode != 200) {
           // IMPORTANT: Snackbar handling
           await this.authService.signOut();
@@ -233,7 +233,7 @@ export class SignInPageComponent implements OnInit {
   ): Promise<boolean> {
     try {
       if (userDetails === null) {
-        var userDetailsResponse = await this.userService.getUserDetails();
+        var userDetailsResponse = await this.userService.getUserDetailsAsync();
         if (userDetailsResponse.statusCode != 200) {
           return false;
         }

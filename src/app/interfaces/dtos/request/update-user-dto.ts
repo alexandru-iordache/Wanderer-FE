@@ -1,9 +1,8 @@
 import { HomeCityDto } from "../home-city-dto";
 
-export interface UserDto {
+export interface UpdateUserDto {
     id: string;
     profileName: string;
-    email: string;
     avatarUrl?: string;
-    homeCity?: HomeCityDto;
+    homeCity: HomeCityDto | null;
 }

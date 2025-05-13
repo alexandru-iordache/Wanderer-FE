@@ -6,10 +6,11 @@ import {
   HttpErrorResponse,
 } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { AddUserDto } from '../interfaces/dtos/request/add-user-dto';
 import { UserDto } from '../interfaces/dtos/response/user-dto';
 import { UserStatsDto } from '../interfaces/dtos/response/user-stats-dto';
+import { UpdateUserDto } from '../interfaces/dtos/request/update-user-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -49,7 +50,16 @@ export class UserService {
     }
   }
 
-  async getUserDetails() {
+  updateUser(updatedUser: UpdateUserDto) {
+    return this.http
+      .put(environment.apiUrl + `/api/users/${updatedUser.id}`, updatedUser, {
+        observe: 'response',
+        headers: this.createHeaders(),
+      })
+      .pipe(map((response: any) => response.body as UserDto));
+  }
+
+  async getUserDetailsAsync() {
     const response = await firstValueFrom(
       this.http.get(environment.apiUrl + '/api/users/details', {
         observe: 'response',
@@ -61,6 +71,15 @@ export class UserService {
       statusText: response.statusText,
       body: response.body as UserDto,
     };
+  }
+
+  getUserDetails(): Observable<UserDto> {
+    return this.http
+      .get(environment.apiUrl + '/api/users/details', {
+        observe: 'response',
+        headers: this.createHeaders(),
+      })
+      .pipe(map((response: any) => response.body as UserDto));
   }
 
   getUserStats(isCompleted: boolean) {
@@ -80,9 +99,9 @@ export class UserService {
     }
     let headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const userId =
-    sessionStorage.getItem('userId') || localStorage.getItem('userId');
+      sessionStorage.getItem('userId') || localStorage.getItem('userId');
     headers = headers.append('X-UserId', userId || '');
-    
+
     return headers;
   }
 }

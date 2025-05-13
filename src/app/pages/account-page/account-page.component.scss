@@ -99,4 +99,9 @@ input {
   margin-top: 10px;
   color: #ffffff;
   background-color: $secondary-color;
+
+  &:hover {
+    background-color: $secondary-color-highlight;
+    cursor: pointer;
+  }
 }
