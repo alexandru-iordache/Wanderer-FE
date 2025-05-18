@@ -36,6 +36,7 @@ import { MyTripsPageComponent } from './pages/my-trips-page/my-trips-page.compon
 import { ModalService } from './services/modal.service';
 import { ModalComponent } from './shared/components/modal/modal.component';
 import { AccountPageComponent } from './pages/account-page/account-page.component';
+import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { AccountPageComponent } from './pages/account-page/account-page.componen
     HeaderComponent,
     MyTripsPageComponent,
     ModalComponent,
-    AccountPageComponent
+    AccountPageComponent,
+    ProfilePageComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,35 @@
+<div class="profile-page">
+  <div class="profile-info">
+    <div class="user-avatar">
+      {{
+        userProfileDto?.profileName !== null
+          ? userProfileDto!.profileName.charAt(0)
+          : "N/A"
+      }}
+    </div>
+    <div class="profile-info-content">
+      <div class="profile-info-row">
+        <h2>{{ userProfileDto?.profileName }}</h2>
+          <span class="profile-info-value"
+          >{{ userProfileDto?.profileDescription }}</span
+        >
+      </div>
+      <div class="profile-info-row">
+        <label class="profile-info-label">Home City</label>
+        <span class="profile-info-value"
+          >{{ userProfileDto?.homeCity?.city }},
+          {{ userProfileDto?.homeCity?.country }}</span
+        >
+      </div>
+      <div class="profile-info-row">
+        <label class="profile-info-label">Followers</label>
+        <span class="profile-info-value">100 </span>
+      </div>
+      <div class="profile-info-row">
+        <label class="profile-info-label">Following</label>
+        <span class="profile-info-value">50</span>
+      </div>
+    </div>
+  </div>
+  <div class="trips-info"></div>
+</div>

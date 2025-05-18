@@ -6,4 +6,5 @@ export interface UserDto {
     email: string;
     avatarUrl?: string;
     homeCity?: HomeCityDto;
+    profileDescription?: string;
 }

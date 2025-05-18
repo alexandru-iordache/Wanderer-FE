@@ -11,6 +11,7 @@ import { AddUserDto } from '../interfaces/dtos/request/add-user-dto';
 import { UserDto } from '../interfaces/dtos/response/user-dto';
 import { UserStatsDto } from '../interfaces/dtos/response/user-stats-dto';
 import { UpdateUserDto } from '../interfaces/dtos/request/update-user-dto';
+import { UserProfileDto } from '../interfaces/dtos/response/user-profile-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -80,6 +81,15 @@ export class UserService {
         headers: this.createHeaders(),
       })
       .pipe(map((response: any) => response.body as UserDto));
+  }
+
+  getUserProfile(userId: string): Observable<UserProfileDto> {
+    return this.http
+      .get(environment.apiUrl + `/api/users/${userId}/profile`, {
+        observe: 'response',
+        headers: this.createHeaders(),
+      })
+      .pipe(map((response: any) => response.body as UserProfileDto));
   }
 
   getUserStats(isCompleted: boolean) {

@@ -14,12 +14,16 @@
             </small>
         </div>
         <div class="form-row-section">
+            <label class="form-label">Profile Description</label>
+            <textarea class="description" formControlName="profileDescription" placeholder="Say something about yourself"></textarea>
+            <small *ngIf="userDetailsForm.get('profileDescription')?.invalid 
+                && userDetailsForm.get('profileDescription')?.touched" class="text-danger">
+                The maximum length is 200 characters!
+            </small>
+        </div>
+        <div class="form-row-section">
             <label class="form-label">Home City</label>
             <input  #cityName type="input" formControlName="homeCity" placeholder="Enter your home city">
-            <small *ngIf="userDetailsForm.get('homeCity')?.invalid 
-                && userDetailsForm.get('homeCity')?.touched" class="text-danger">
-                Profile name is required!
-            </small>
         </div>
         <button type="submit" class="submit-button">Save</button>
     </form>

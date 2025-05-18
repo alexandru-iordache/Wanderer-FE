@@ -74,6 +74,21 @@ input {
   }
 }
 
+.description {
+  padding-top: 5px;
+  height: 80px;
+  max-width: 500px;
+  min-width: 300px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: 1px solid $secondary-color;
+  border-radius: 10px;
+  background-color: $primary-color;
+  font-family: $primary-font;
+  font-weight: 500;
+  color: $secondary-color;
+}
+
 .text-danger {
   margin-top: 5px;
   font-family: $primary-font;

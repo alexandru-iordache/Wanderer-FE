@@ -50,6 +50,7 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
       profileName: ['', [Validators.required]],
       email: ['', []],
       homeCity: ['', [Validators.required]],
+      profileDescription: ['', [Validators.maxLength(200)]],
     });
 
     this.userDetailsForm.get('email')?.disable();
@@ -65,6 +66,7 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
     email: this.userDetails?.email || '',
     profileName: this.userDetails?.profileName || '',
     homeCity: this.userDetails?.homeCity?.city || '',
+    profileDescription: this.userDetails?.profileDescription || '',
   });
 }
 
@@ -78,6 +80,7 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
       id: this.userDetails!.id,
       profileName: this.userDetailsForm.get('profileName')!.value,
       homeCity: this.homeCity,
+      profileDescription: this.userDetailsForm.get('profileDescription')!.value,
     };
 
     this.subscriptions.push(

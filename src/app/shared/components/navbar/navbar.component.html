@@ -14,7 +14,7 @@
   </div>
   } @else {
   <div class="navigation-container logged">
-    <div class="user-info" routerLink="/account/{{ userDetails!.id }}">
+    <div class="user-info">
       <div class="user-avatar">
         {{
           userDetails?.profileName !== null
@@ -22,7 +22,13 @@
             : ""
         }}
       </div>
-      <div class="user-name">{{ userDetails?.profileName }}</div>
+      <div class="user-options">
+        <div class="username">{{ userDetails?.profileName }}</div>
+        <div class="dropdown-menu">
+          <div class="menu-option" routerLink="/account/{{ userDetails!.id }}">Edit Profile</div>
+          <div class="menu-option" (click)="onLogoutClicked()">Logout</div>
+        </div>
+      </div>
     </div>
   </div>
   }
