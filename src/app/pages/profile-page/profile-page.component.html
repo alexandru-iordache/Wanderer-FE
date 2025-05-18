@@ -10,9 +10,9 @@
     <div class="profile-info-content">
       <div class="profile-info-row">
         <h2>{{ userProfileDto?.profileName }}</h2>
-          <span class="profile-info-value"
-          >{{ userProfileDto?.profileDescription }}</span
-        >
+        <span class="profile-info-value">{{
+          userProfileDto?.profileDescription
+        }}</span>
       </div>
       <div class="profile-info-row">
         <label class="profile-info-label">Home City</label>
@@ -22,14 +22,61 @@
         >
       </div>
       <div class="profile-info-row">
+        <label class="profile-info-label">Visited Countries</label>
+        <span class="profile-info-value">
+          {{
+            userProfileDto?.visitedCountries
+              ? userProfileDto!.visitedCountries.join(", ")
+              : ""
+          }}
+        </span>
+      </div>
+      <div class="profile-info-row">
+        <label class="profile-info-label">Visited Cities</label>
+        <span class="profile-info-value">
+          {{
+            userProfileDto?.visitedCities
+              ? userProfileDto!.visitedCities.join(", ")
+              : ""
+          }}
+        </span>
+      </div>
+      <div class="profile-info-row">
         <label class="profile-info-label">Followers</label>
-        <span class="profile-info-value">100 </span>
+        <span class="profile-info-value"
+          >{{ userProfileDto?.followersCount ?? "??" }}
+        </span>
       </div>
       <div class="profile-info-row">
         <label class="profile-info-label">Following</label>
-        <span class="profile-info-value">50</span>
+        <span class="profile-info-value">{{
+          userProfileDto?.followingCount ?? "??"
+        }}</span>
+      </div>
+      <div class="profile-info-row button">
+        <div
+          class="follow-button"
+          [ngClass]="
+            userProfileDto?.isFollowing === true ? 'unfollow' : 'follow'
+          "
+          (click)="onFollowClick()"
+        >
+          @if(!userProfileDto?.isFollowing){
+          <mat-icon class="follow-icon" id="follow" fontIcon="add"></mat-icon>
+          <span class="follow-message" id="follow">Follow</span>
+          } @else {
+          <mat-icon
+            class="follow-icon"
+            id="unfollow"
+            fontIcon="clear"
+          ></mat-icon>
+          <span class="follow-message" id="unfollow">Following</span>
+          }
+        </div>
       </div>
     </div>
   </div>
-  <div class="trips-info"></div>
+  <div class="trips-info">
+    <h2>{{ userProfileDto?.profileName }}'s trips</h2>
+  </div>
 </div>

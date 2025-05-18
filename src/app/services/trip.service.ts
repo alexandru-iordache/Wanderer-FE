@@ -53,6 +53,12 @@ export class TripService {
     };
   }
 
+  changeTripStatus(id: Uuid, isCompleted: boolean): Observable<TripDto> {
+    return this.http
+      .post(`${this.apiUrl}/${id}/complete`, { isCompleted: isCompleted}, { headers: this.createHeaders() })
+      .pipe(map((response: any) => response.body as TripDto));
+  }
+
   async createTrip(trip: AddTripDto) {
     const response = await firstValueFrom(
       this.http.post(`${this.apiUrl}`, trip, {

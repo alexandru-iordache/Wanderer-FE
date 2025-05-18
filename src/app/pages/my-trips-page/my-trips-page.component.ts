@@ -153,6 +153,29 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
     this.areFiltersOpened = !this.areFiltersOpened;
   }
 
+  completeTrip(
+    event: MouseEvent,
+    tripName: string,
+    tripId: string
+  ) {
+    event.stopPropagation();
+    const deleteConfirmed = await this.modalService.confirmDelete(
+      'trip',
+      tripName
+    );
+    if (!deleteConfirmed) {
+      return;
+    }
+
+    var response = this.tripService.changeTripStatus();
+    if ((await response).statusCode === 204) {
+      this.trips = this.trips.filter((trip) => trip.id !== tripId);
+    } else {
+      // IMPORTANT: SNACKBAR SERVICE
+      console.error('Error deleting trip:', response);
+    }
+  }
+
   async deleteTrip(
     event: MouseEvent,
     tripName: string,

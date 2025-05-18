@@ -12,6 +12,7 @@ import { UserDto } from '../interfaces/dtos/response/user-dto';
 import { UserStatsDto } from '../interfaces/dtos/response/user-stats-dto';
 import { UpdateUserDto } from '../interfaces/dtos/request/update-user-dto';
 import { UserProfileDto } from '../interfaces/dtos/response/user-profile-dto';
+import { Uuid } from '../shared/helpers/uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -57,6 +58,19 @@ export class UserService {
         observe: 'response',
         headers: this.createHeaders(),
       })
+      .pipe(map((response: any) => response.body as UserDto));
+  }
+
+  changeFollowingStatus(userId: Uuid) {
+    return this.http
+      .post(
+        environment.apiUrl + `/api/users/${userId}/follow`,
+        {},
+        {
+          observe: 'response',
+          headers: this.createHeaders(),
+        }
+      )
       .pipe(map((response: any) => response.body as UserDto));
   }
 

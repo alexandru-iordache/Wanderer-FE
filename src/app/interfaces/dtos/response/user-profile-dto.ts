@@ -7,4 +7,7 @@ export interface UserProfileDto {
     profileDescription?: string;
     visitedCities: string[];
     visitedCountries: string[];
+    followersCount: number;
+    followingCount: number;
+    isFollowing: boolean;
 }

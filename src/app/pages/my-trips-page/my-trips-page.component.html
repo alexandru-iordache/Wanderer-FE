@@ -126,15 +126,22 @@
         <div class="filter-section">
           <div class="filter-label">Start Date Range</div>
           <div class="filter-content">
-            <input type="date" #minDate class="input"/>
+            <input type="date" #minDate class="input" />
             <span class="linking-message">to</span>
-            <input type="date" #maxDate class="input"/>
+            <input type="date" #maxDate class="input" />
           </div>
         </div>
         <div class="filter-section">
           <div class="filter-label">Completion Status</div>
           <div class="filter-content">
-            <input type="radio" #allStatus id="all" name="com_status" value="All" checked/>
+            <input
+              type="radio"
+              #allStatus
+              id="all"
+              name="com_status"
+              value="All"
+              checked
+            />
             <label for="all" class="radio-label">All</label><br />
             <input
               type="radio"
@@ -144,13 +151,23 @@
               value="Completed"
             />
             <label for="completed" class="radio-label">Completed</label><br />
-            <input type="radio"#notStatus id="not" name="com_status" value="NotCompleted" />
+            <input
+              type="radio"
+              #notStatus
+              id="not"
+              name="com_status"
+              value="NotCompleted"
+            />
             <label for="not" class="radio-label">Not</label>
           </div>
         </div>
         <div class="buttons-section">
-          <button class="clear-button" (click)="onClearClicked($event)">Clear</button>
-          <button class="save-button" (click)="onSaveClicked($event)">Save</button>
+          <button class="clear-button" (click)="onClearClicked($event)">
+            Clear
+          </button>
+          <button class="save-button" (click)="onSaveClicked($event)">
+            Save
+          </button>
         </div>
       </div>
       } @else {
@@ -178,11 +195,24 @@
                 {{ getFormattedDate(trip.startDate) }}
               </div>
             </div>
-            <div
-              class="menu-container"
-              (click)="deleteTrip($event, trip.title, trip.id)"
-            >
-              <mat-icon class="button-icon" fontIcon="delete"></mat-icon>
+            <div class="menu-container" (click)="$event.stopPropagation()">
+              <div class="menu-dots">•••</div>
+              <div class="dropdown-menu">
+                <div
+                  class="dropdown-item"
+                  id="edit"
+                  (click)="completeTrip($event, trip.title, trip.id)"
+                >
+                  Complete
+                </div>
+                <div
+                  class="dropdown-item"
+                  id="delete"
+                  (click)="deleteTrip($event, trip.title, trip.id)"
+                >
+                  Delete
+                </div>
+              </div>
             </div>
           </div>
           }

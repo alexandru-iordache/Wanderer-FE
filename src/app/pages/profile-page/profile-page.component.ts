@@ -47,6 +47,24 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     );
   }
 
+  onFollowClick(): void {
+    if (this.userProfileDto === null){
+      alert('User profile is not loaded yet.');
+      // TO DO: Handle this case more gracefully
+      return;
+    }
+
+    this.userService.changeFollowingStatus(this.userId!).subscribe({
+      next: (response) => {
+        this.userProfileDto!.isFollowing = !this.userProfileDto!.isFollowing;
+        this.userProfileDto!.followersCount += this.userProfileDto!.isFollowing ? 1 : -1;
+      },
+      error: (error) => {
+        console.error('Error changing following status:', error);
+      },
+    });
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => {
       subscription.unsubscribe();
