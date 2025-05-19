@@ -53,9 +53,15 @@ export class TripService {
     };
   }
 
-  changeTripStatus(id: Uuid, isCompleted: boolean): Observable<TripDto> {
+  completeTrip(id: Uuid): Observable<TripDto> {
     return this.http
-      .post(`${this.apiUrl}/${id}/complete`, { isCompleted: isCompleted}, { headers: this.createHeaders() })
+      .post(`${this.apiUrl}/${id}/complete`, {}, { headers: this.createHeaders(),  observe: 'response' })
+      .pipe(map((response: any) => response.body as TripDto));
+  }
+
+  publishTrip(id: Uuid): Observable<TripDto> {
+    return this.http
+      .post(`${this.apiUrl}/${id}/publish`, {}, { headers: this.createHeaders(),  observe: 'response' })
       .pipe(map((response: any) => response.body as TripDto));
   }
 

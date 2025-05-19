@@ -49,6 +49,17 @@ export class TripStateService {
   getIsSaved() {
     return this.isSaved.asObservable();
   }
+  resetTripState() {
+    this.cityVisits.next([]);
+    this.selectedCityVisit.next(null);
+    this.cityToEdit.next(undefined);
+    this.currentDayIndex.next(0);
+    this.cityToAdd.next(undefined);
+    this.startDate.next(new Date());
+    this.waypointToAdd.next(undefined);
+    this.waypointToEdit.next(undefined);
+    this.trip.next(undefined);
+  }
 
   // Cities
   getCityVisits() {

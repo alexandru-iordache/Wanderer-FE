@@ -37,6 +37,7 @@ import { ModalService } from './services/modal.service';
 import { ModalComponent } from './shared/components/modal/modal.component';
 import { AccountPageComponent } from './pages/account-page/account-page.component';
 import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
+import { TripPanelComponent } from './shared/components/trip-panel/trip-panel.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { ProfilePageComponent } from './pages/profile-page/profile-page.componen
     MyTripsPageComponent,
     ModalComponent,
     AccountPageComponent,
-    ProfilePageComponent
+    ProfilePageComponent,
+    TripPanelComponent
   ],
   imports: [
     BrowserModule,

@@ -6,18 +6,22 @@ import {
   HttpErrorResponse,
 } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, map, Observable } from 'rxjs';
 import { AddUserDto } from '../interfaces/dtos/request/add-user-dto';
 import { UserDto } from '../interfaces/dtos/response/user-dto';
 import { UserStatsDto } from '../interfaces/dtos/response/user-stats-dto';
 import { UpdateUserDto } from '../interfaces/dtos/request/update-user-dto';
 import { UserProfileDto } from '../interfaces/dtos/response/user-profile-dto';
 import { Uuid } from '../shared/helpers/uuid';
+import { FilterOptionsDto } from '../interfaces/dtos/filter-options-dto';
+import { TripDto } from '../interfaces/dtos/request/base-trip-dto';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
+  private userStatsChanged = new BehaviorSubject<number>(0);
+
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   async createUser(user: AddUserDto) {
@@ -97,6 +101,19 @@ export class UserService {
       .pipe(map((response: any) => response.body as UserDto));
   }
 
+  getUserTrips(
+    userId: Uuid,
+    isOrderedByDate: boolean,
+    filterOptions: FilterOptionsDto
+  ): Observable<TripDto[]> {
+    return this.http
+      .get(this.createGetRoute(userId, isOrderedByDate, filterOptions), {
+        headers: this.createHeaders(),
+        observe: 'response',
+      })
+      .pipe(map((response: any) => response.body as TripDto[]));
+  }
+
   getUserProfile(userId: string): Observable<UserProfileDto> {
     return this.http
       .get(environment.apiUrl + `/api/users/${userId}/profile`, {
@@ -115,6 +132,14 @@ export class UserService {
       .pipe(map((response: any) => response.body as UserStatsDto));
   }
 
+  updateUserStatsChanged() {
+    this.userStatsChanged.next(this.userStatsChanged.value + 1);
+  }
+
+  getUserStatsChanged(): Observable<number> {
+    return this.userStatsChanged.asObservable();
+  }
+
   private createHeaders(): HttpHeaders {
     const token =
       sessionStorage.getItem('idToken') || localStorage.getItem('idToken');
@@ -127,5 +152,31 @@ export class UserService {
     headers = headers.append('X-UserId', userId || '');
 
     return headers;
+  }
+
+  private createGetRoute(
+    userId: Uuid,
+    isOrderedByDate: boolean,
+    filterOptions: FilterOptionsDto
+  ): string {
+    const params = new URLSearchParams();
+
+    if (filterOptions.completionStatus) {
+      params.append('status', filterOptions.completionStatus);
+    }
+    if (filterOptions.minDate) {
+      params.append('minDate', filterOptions.minDate.toISOString());
+    }
+    if (filterOptions.maxDate) {
+      params.append('maxDate', filterOptions.maxDate.toISOString());
+    }
+    if(filterOptions.isPublished) {
+      params.append('isPublished', filterOptions.isPublished.toString());
+    }
+
+    return (
+      environment.apiUrl +
+      `/api/users/${userId}/trips?isOrderedByDate=${isOrderedByDate}&${params.toString()}`
+    );
   }
 }

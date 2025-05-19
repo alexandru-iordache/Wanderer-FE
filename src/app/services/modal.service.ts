@@ -34,6 +34,15 @@ export class ModalService {
     });
   }
 
+  confirmCompleteTrip(entityType: string, entityName: string): Promise<boolean> {
+    return this.confirm({
+      header: `Complete ${entityName}`,
+      message: `Are you sure you want to complete the ${entityName} trip?`,
+      confirmText: 'Confirm',
+      discardText: 'Discard',
+    });
+  }
+
   alert(message: string, header: string = 'Alert'): Promise<boolean> {
     return this.confirm({
       header: header,
