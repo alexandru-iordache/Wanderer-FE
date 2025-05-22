@@ -220,10 +220,15 @@ export class SignInPageComponent implements OnInit {
 
   private async SaveAccessTokenToStorage(rememberMe: boolean) {
     var accessId = await this.authService.getIdToken();
+    if (!accessId) {
+      console.error('Failed to get valid ID token');
+      return;
+    }
+    
     if (rememberMe) {
-      localStorage.setItem('idToken', accessId!);
+      localStorage.setItem('idToken', accessId);
     } else {
-      sessionStorage.setItem('idToken', accessId!);
+      sessionStorage.setItem('idToken', accessId);
     }
   }
 

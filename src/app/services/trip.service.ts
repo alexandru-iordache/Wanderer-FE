@@ -29,7 +29,10 @@ export class TripService {
     };
   }
 
-  getTrips(isOrderedByDate: boolean, filterOptions: FilterOptionsDto): Observable<TripDto[]> {    
+  getTrips(
+    isOrderedByDate: boolean,
+    filterOptions: FilterOptionsDto
+  ): Observable<TripDto[]> {
     return this.http
       .get(this.createGetRoute(isOrderedByDate, filterOptions), {
         headers: this.createHeaders(),
@@ -55,13 +58,21 @@ export class TripService {
 
   completeTrip(id: Uuid): Observable<TripDto> {
     return this.http
-      .post(`${this.apiUrl}/${id}/complete`, {}, { headers: this.createHeaders(),  observe: 'response' })
+      .post(
+        `${this.apiUrl}/${id}/complete`,
+        {},
+        { headers: this.createHeaders(), observe: 'response' }
+      )
       .pipe(map((response: any) => response.body as TripDto));
   }
 
   publishTrip(id: Uuid): Observable<TripDto> {
     return this.http
-      .post(`${this.apiUrl}/${id}/publish`, {}, { headers: this.createHeaders(),  observe: 'response' })
+      .post(
+        `${this.apiUrl}/${id}/publish`,
+        {},
+        { headers: this.createHeaders(), observe: 'response' }
+      )
       .pipe(map((response: any) => response.body as TripDto));
   }
 
@@ -79,18 +90,13 @@ export class TripService {
     };
   }
 
-  async updateTrip(id: Uuid, trip: TripDto) {
-    const response = await firstValueFrom(
-      this.http.put(`${this.apiUrl}` + `/${id}`, trip, {
+  updateTrip(id: Uuid, trip: TripDto) {
+    return this.http
+      .put(`${this.apiUrl}` + `/${id}`, trip, {
         observe: 'response',
         headers: this.createHeaders(),
       })
-    );
-    return {
-      statusCode: response.status,
-      statusText: response.statusText,
-      body: response.body as TripDto,
-    };
+      .pipe(map((response: any) => response.body as TripDto));
   }
 
   private createHeaders(): HttpHeaders {
@@ -107,7 +113,10 @@ export class TripService {
     return headers;
   }
 
-  private createGetRoute(isOrderedByDate: boolean, filterOptions: FilterOptionsDto): string {
+  private createGetRoute(
+    isOrderedByDate: boolean,
+    filterOptions: FilterOptionsDto
+  ): string {
     const params = new URLSearchParams();
 
     if (filterOptions.completionStatus) {
@@ -120,6 +129,8 @@ export class TripService {
       params.append('maxDate', filterOptions.maxDate.toISOString());
     }
 
-    return `${this.apiUrl}?isOrderedByDate=${isOrderedByDate}&${params.toString()}`;
+    return `${
+      this.apiUrl
+    }?isOrderedByDate=${isOrderedByDate}&${params.toString()}`;
   }
 }

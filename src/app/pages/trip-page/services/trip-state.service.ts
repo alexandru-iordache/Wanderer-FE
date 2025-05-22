@@ -67,6 +67,7 @@ export class TripStateService {
   }
   updateCityVisits(cities: BaseCityVisitDto[]) {
     this.cityVisits.next(cities);
+    this.isSaved.next(false);
     console.log('Cities: ', cities);
   }
 
@@ -161,6 +162,7 @@ export class TripStateService {
     );
 
     this.updateCityVisits([...cityVisitsValue]);
+    this.updateIsSaved(false);
 
     return true;
   }
@@ -199,7 +201,7 @@ export class TripStateService {
         }
       });
     this.updateCityVisits([...cityVisitsValue]);
-
+    this.updateIsSaved(false);
     console.log('City: ' + cityVisit.city + ' deleted succesfully.');
   }
 
@@ -229,6 +231,7 @@ export class TripStateService {
     }
 
     this.updateCityVisits([...cityVisitsValue]);
+    this.updateIsSaved(false);
     console.log('Waypoint: ' + waypoint.name + ' deleted succesfully.');
   }
 

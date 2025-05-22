@@ -1,0 +1,6 @@
+<div class="snackbar-container">
+  <div class="snackbar-content" [ngClass]="!successfullFeedback ? 'error' : ''">
+    <span class="message">{{ message }}</span>
+    <button class="close-button" (click)="onClose()">×</button>
+  </div>
+</div>

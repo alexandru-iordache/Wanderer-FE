@@ -8,6 +8,7 @@ import { UserStatsDto } from '../../interfaces/dtos/response/user-stats-dto';
 import { UserService } from '../../services/user.service';
 import { FilterOptionsDto } from '../../interfaces/dtos/filter-options-dto';
 import { Uuid } from '../../shared/helpers/uuid';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-my-trips-page',
@@ -40,14 +41,11 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, private modalService: ModalService) {
      this.userId = localStorage.getItem('userId') as Uuid;
   }
 
   ngOnInit(): void {
-    this.getAllUserStats();
-    this.getCompletedUserStats();
-    
     this.subscriptions.push(
       this.userService.getUserStatsChanged().subscribe({
         next: (userStatsChanged) => {
@@ -55,7 +53,7 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
           this.getCompletedUserStats();
         },
         error: (error) => {
-          // IMPORTANT: SNACKBAR SERVICE
+          this.modalService.snackbar('Error loading user stats.', 10000, false);
           console.error('Error fetching user stats:', error);
         },
       })
@@ -70,8 +68,8 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
           this.userTotalStats = userStats as UserStatsDto;
         },
         error: (error) => {
-          // IMPORTANT: SNACKBAR SERVICE
-          alert('Error fetching user stats');
+          this.modalService.snackbar('Error loading user stats.', 10000, false);
+          console.error('Error fetching user stats:', error);
         },
       });
   }
@@ -84,8 +82,8 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
           this.userCompletedStats = userStats as UserStatsDto;
         },
         error: (error) => {
-          // IMPORTANT: SNACKBAR SERVICE
-          alert('Error fetching user stats');
+          this.modalService.snackbar('Error loading user stats.', 10000, false);
+          console.error('Error fetching user stats:', error);
         },
       });
   }

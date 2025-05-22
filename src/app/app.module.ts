@@ -38,6 +38,7 @@ import { ModalComponent } from './shared/components/modal/modal.component';
 import { AccountPageComponent } from './pages/account-page/account-page.component';
 import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
 import { TripPanelComponent } from './shared/components/trip-panel/trip-panel.component';
+import { SnackbarComponent } from './shared/components/snackbar/snackbar.component';
 
 @NgModule({
   declarations: [
@@ -57,11 +58,11 @@ import { TripPanelComponent } from './shared/components/trip-panel/trip-panel.co
     WaypointListComponent,
     WaypointFormComponent,
     HeaderComponent,
-    MyTripsPageComponent,
-    ModalComponent,
+    MyTripsPageComponent,    ModalComponent,
     AccountPageComponent,
     ProfilePageComponent,
-    TripPanelComponent
+    TripPanelComponent,
+    SnackbarComponent
   ],
   imports: [
     BrowserModule,

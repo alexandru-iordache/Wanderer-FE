@@ -3,15 +3,15 @@ import { ActivatedRoute } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 import { ModalView } from '../helpers/modal-view.enum';
-import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
 import { SelectedCityVisitDto } from '../../interfaces/dtos/selected-city-dto';
 import { TripStateService } from './services/trip-state.service';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Uuid } from '../../shared/helpers/uuid';
 import { TripService } from '../../services/trip.service';
 import { BaseCityVisitDto } from '../../interfaces/dtos/request/base-city-visit-dto';
 import { BaseWaypointVisitDto } from '../../interfaces/dtos/request/base-waypoint-visit-dto';
 import { TripDto } from '../../interfaces/dtos/request/base-trip-dto';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-trip-page',
@@ -55,7 +55,8 @@ export class TripPageComponent implements OnInit, OnDestroy {
     private changeDetector: ChangeDetectorRef,
     private tripStateService: TripStateService,
     private tripService: TripService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private modalService: ModalService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -137,7 +138,8 @@ export class TripPageComponent implements OnInit, OnDestroy {
     try {
       const response = await this.tripService.getTripById(this.tripId!);
       if (response.statusCode !== 200) {
-        // Important: Snackbar service
+        this.modalService.snackbar(
+        'Error loading existing trip.', 100000, false);
         return;
       }
 
@@ -147,6 +149,8 @@ export class TripPageComponent implements OnInit, OnDestroy {
       this.tripStateService.updateCityVisits(trip.cityVisits);
       this.tripStateService.updateStartDate(trip.startDate);
     } catch (error) {
+      this.modalService.snackbar(
+        'Error loading existing trip.', 100000, false);
       console.error('[Create-Trip-Page] Error loading existing trip.', error);
     }
   }

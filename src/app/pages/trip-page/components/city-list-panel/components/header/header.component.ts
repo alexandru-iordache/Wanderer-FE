@@ -11,6 +11,7 @@ import {
   BaseCityVisitDto,
   CityVisitDto,
 } from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
+import { ModalService } from '../../../../../../services/modal.service';
 
 @Component({
   selector: 'app-header',
@@ -25,7 +26,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private tripStateService: TripStateService,
     private tripService: TripService,
-    private router: Router
+    private router: Router,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -52,19 +54,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
     try {
       let response;
       if (this.trip.id !== undefined) {
-        response = await this.tripService.updateTrip(
-          this.trip.id,
-          this.trip as TripDto
-        );
-
-        const tripDto = response.body as TripDto;
-
-        this.tripStateService.updateTrip(tripDto);
-        this.tripStateService.updateCityVisits(
-          tripDto.cityVisits as CityVisitDto[]
-        );
-
-        this.tripStateService.updateIsSaved(true);
+        this.tripService
+          .updateTrip(this.trip.id, this.trip as TripDto)
+          .subscribe({
+            next: (response) => {
+              var updatedTrip = response as TripDto;
+              this.tripStateService.updateTrip(updatedTrip);
+              this.tripStateService.updateCityVisits(
+                updatedTrip.cityVisits as CityVisitDto[]
+              );
+              this.tripStateService.updateIsSaved(true);
+              this.modalService.snackbar("Trip updated succesfully", 5000);
+            },
+            error: (error) => {
+              this.modalService.snackbar("Error updating trip", 5000);
+            },
+          });
       } else {
         response = await this.tripService.createTrip(this.trip);
 

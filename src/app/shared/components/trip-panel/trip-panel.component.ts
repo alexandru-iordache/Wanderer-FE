@@ -24,18 +24,19 @@ import { Uuid } from '../../helpers/uuid';
 })
 export class TripPanelComponent implements OnInit {
   @Input() areCurrentUserTrips: boolean = false;
-  @Input() userId: Uuid = "";
+  @Input() userId: Uuid = '';
 
   @ViewChild('minDate') minDateInput?: ElementRef<HTMLInputElement>;
   @ViewChild('maxDate') maxDateInput?: ElementRef<HTMLInputElement>;
-  @ViewChildren('allStatus, completedStatus, notStatus') completionRadioButtons?: QueryList<ElementRef<HTMLInputElement>>;
-  
+  @ViewChildren('allStatus, completedStatus, notStatus')
+  completionRadioButtons?: QueryList<ElementRef<HTMLInputElement>>;
+
   areFiltersOpened: boolean = false;
   trips: TripDto[] = [];
   filterOptions: FilterOptionsDto = {
     minDate: undefined,
     maxDate: undefined,
-    completionStatus: 'All'
+    completionStatus: 'All',
   };
 
   private subscriptions: Subscription[] = [];
@@ -52,15 +53,17 @@ export class TripPanelComponent implements OnInit {
     }
 
     this.subscriptions.push(
-      this.userService.getUserTrips(this.userId, true, this.filterOptions).subscribe({
-        next: (trips) => {
-          this.trips = trips as TripDto[];
-        },
-        error: (error) => {
-          // IMPORTANT: SNACKBAR SERVICE
-          console.error('Error fetching trips:', error);
-        },
-      }));
+      this.userService
+        .getUserTrips(this.userId, true, this.filterOptions)
+        .subscribe({
+          next: (trips) => {
+            this.trips = trips as TripDto[];
+          },
+          error: (error) => {
+            this.modalService.snackbar('Error fetching trips.', 10000, false);
+          },
+        })
+    );
   }
 
   getFormattedDate(date: Date): string {
@@ -144,37 +147,34 @@ export class TripPanelComponent implements OnInit {
 
     let tripToChangeStatus = this.trips.find((trip) => trip.id === tripId)!;
 
-    this.tripService
-      .completeTrip(tripId)
-      .subscribe({
-        next: (response) => {
-          tripToChangeStatus.isCompleted = true;
-          this.userService.updateUserStatsChanged();
-        },
-        error: (error) => {
-          // IMPORTANT: SNACKBAR SERVICE
-          console.error('Error completing trip:', error);
-        },
-      });
+    this.tripService.completeTrip(tripId).subscribe({
+      next: (response) => {
+        tripToChangeStatus.isCompleted = true;
+        this.userService.updateUserStatsChanged();
+        this.modalService.snackbar('Trip completed successfully.', 5000, true);
+      },
+      error: (error) => {
+        console.error('Error completing trip:', error);
+        this.modalService.snackbar('Error completing trip.', 10000, false);
+      },
+    });
   }
 
-  async publishTrip(event:MouseEvent, tripName: string, tripId: string) {
+  async publishTrip(event: MouseEvent, tripName: string, tripId: string) {
     event.stopPropagation();
 
     let tripToChangeStatus = this.trips.find((trip) => trip.id === tripId)!;
 
-    this.tripService
-      .publishTrip(tripId)
-      .subscribe({
-        next: (response) => {
-          tripToChangeStatus.isPublished = true;
-          this.userService.updateUserStatsChanged();
-        },
-        error: (error) => {
-          // IMPORTANT: SNACKBAR SERVICE
-          console.error('Error publishing trip:', error);
-        },
-      });
+    this.tripService.publishTrip(tripId).subscribe({
+      next: (response) => {
+        tripToChangeStatus.isPublished = true;
+        this.userService.updateUserStatsChanged();
+      },
+      error: (error) => {
+        console.error('Error publishing trip:', error);
+        this.modalService.snackbar('Error publishing trip.', 10000, false);
+      },
+    });
   }
 
   async deleteTrip(
@@ -194,9 +194,10 @@ export class TripPanelComponent implements OnInit {
     var response = this.tripService.deleteTrip(tripId);
     if ((await response).statusCode === 204) {
       this.trips = this.trips.filter((trip) => trip.id !== tripId);
+      this.modalService.snackbar('Trip deleted succesfully.', 5000, true);
     } else {
-      // IMPORTANT: SNACKBAR SERVICE
       console.error('Error deleting trip:', response);
+      this.modalService.snackbar('Error publishing trip.', 10000, false);
     }
   }
 }
