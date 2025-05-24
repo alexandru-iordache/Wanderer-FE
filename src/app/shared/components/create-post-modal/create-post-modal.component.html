@@ -1,0 +1,70 @@
+<div class="modal-backdrop">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        Create post for trip {{ trip!.title }}
+      </div>
+    </div>
+    <div class="modal-content">
+      <div class="title-container">
+        <input
+          #titleTextarea
+          class="title-input"
+          placeholder="Choose a title for your trip post..."
+          (input)="onTitleInput($event)"
+          maxlength="50"
+        />
+        <div
+          class="char-counter"
+          [ngClass]="{ 'limit-reached': titleCharCount === MAX_TITLE_LENGTH }"
+        >
+          {{ titleCharCount }}/{{ MAX_TITLE_LENGTH }}
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Description</div>
+        <textarea
+          #descriptionTextarea
+          class="description-input"
+          placeholder="Share your experiences on this trip..."
+          (input)="onTextareaInput()"
+        ></textarea>
+      </div>
+      <div class="section">
+        <div class="section-label">Trip Images</div>
+        @if(isAddImageFlowOpened === false){
+        <div class="images-gallery">
+          <div class="add-image-button" (click)="addImage()">
+            <span class="material-icons">add</span>
+          </div>
+          @for(image of uploadedImages; track image.imageUrl) {
+            <app-image-view
+                [imageInfo]="image"
+                [width]="'100px'"
+                [height]="'100px'"
+                [onRemove]="onImageRemoved.bind(this, image)"
+                [borderRadius]="'20px'"
+            ></app-image-view>
+        }
+        </div>
+        } @else {
+        <app-image-selection-section
+          [cities]="cities"
+          style="width: 100%;  min-height: 120px;"
+          (imageSelectionResponse)="onImageSelectionResponse($event)"
+        ></app-image-selection-section>
+        }
+      </div>
+      @if(isAddImageFlowOpened === false){
+      <div class="modal-actions">
+        <button class="modal-button discard-button" (click)="discard.emit()">
+          Discard
+        </button>
+        <button class="modal-button confirm-button" (click)="confirm.emit()">
+          Create Post
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+</div>

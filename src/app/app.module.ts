@@ -39,6 +39,9 @@ import { AccountPageComponent } from './pages/account-page/account-page.componen
 import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
 import { TripPanelComponent } from './shared/components/trip-panel/trip-panel.component';
 import { SnackbarComponent } from './shared/components/snackbar/snackbar.component';
+import { CreatePostModalComponent } from './shared/components/create-post-modal/create-post-modal.component';
+import { ImageSelectionSectionComponent } from './shared/components/create-post-modal/components/image-selection-section/image-selection-section.component';
+import { ImageViewComponent } from './shared/components/image-view/image-view.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +65,10 @@ import { SnackbarComponent } from './shared/components/snackbar/snackbar.compone
     AccountPageComponent,
     ProfilePageComponent,
     TripPanelComponent,
-    SnackbarComponent
+    SnackbarComponent,
+    CreatePostModalComponent,
+    ImageSelectionSectionComponent,
+    ImageViewComponent
   ],
   imports: [
     BrowserModule,

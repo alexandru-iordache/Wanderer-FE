@@ -163,18 +163,32 @@ export class TripPanelComponent implements OnInit {
   async publishTrip(event: MouseEvent, tripName: string, tripId: string) {
     event.stopPropagation();
 
-    let tripToChangeStatus = this.trips.find((trip) => trip.id === tripId)!;
+    const publishConfirmed = await this.modalService.confirmPublishTrip(
+      tripName
+    );
+    if (!publishConfirmed) {
+      return;
+    }
 
-    this.tripService.publishTrip(tripId).subscribe({
-      next: (response) => {
-        tripToChangeStatus.isPublished = true;
-        this.userService.updateUserStatsChanged();
-      },
-      error: (error) => {
-        console.error('Error publishing trip:', error);
-        this.modalService.snackbar('Error publishing trip.', 10000, false);
-      },
-    });
+     let tripToPublish = this.trips.find((trip) => trip.id === tripId)!;
+
+    const createPostConfirmed = await this.modalService.confirmCreatePost(
+      tripName
+    );
+    if (!createPostConfirmed) {
+      this.tripService.publishTrip(tripId).subscribe({
+        next: (response) => {
+          tripToPublish.isPublished = true;
+          this.userService.updateUserStatsChanged();
+        },
+        error: (error) => {
+          console.error('Error publishing trip:', error);
+          this.modalService.snackbar('Error publishing trip.', 10000, false);
+        },
+      });
+    }
+
+    const createPostModal = await this.modalService.createPost(tripToPublish);
   }
 
   async deleteTrip(

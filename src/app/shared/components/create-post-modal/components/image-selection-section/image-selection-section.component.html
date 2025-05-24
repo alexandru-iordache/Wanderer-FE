@@ -1,0 +1,70 @@
+<div class="image-upload-container">
+  <div class="location-selection">
+    <div class="city-dropdown">
+      <label for="citySelect">Select a city:</label>
+      <select id="citySelect" (change)="onCityChange($event)" class="dropdown">
+        <option value="null">None</option>
+        @for(city of cities; track city.id) {
+        <option [value]="city.id">{{ city.name }}</option>
+        }
+      </select>
+    </div>
+
+    @if(showWaypointDropdown) {
+    <div class="waypoint-dropdown">
+      <label for="waypointSelect">Select a waypoint:</label>
+      <select
+        id="waypointSelect"
+        (change)="onWaypointChange($event)"
+        class="dropdown"
+      >
+        <option value="null">None</option>
+        @for(waypoint of selectedCity?.waypoints; track waypoint.id) {
+        <option [value]="waypoint.id">
+          {{ waypoint.name }} ({{ waypoint.type }})
+        </option>
+        }
+      </select>
+    </div>
+    }
+
+    <div class="file-input-container">
+      <label for="fileInput" class="file-input-label"> Upload </label>
+      <input
+        id="fileInput"
+        type="file"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        class="file-input"
+      />
+    </div>
+  </div>
+  @if(uploadedImage) {
+  <div class="image-preview">
+    <div class="selected-file-container">
+      <span class="selected-file-name" title="{{ uploadedImage.name }}">{{
+        uploadedImage.name
+      }}</span>
+      <span class="remove-icon" (click)="removeSelectedImage()">×</span>
+    </div>
+  </div>
+  }
+
+  <div class="button-container">
+    <button
+      type="button"
+      class="cancel-button"
+      (click)="cancelImageSelection()"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="confirm-button"
+      (click)="confirmImageSelection()"
+      [disabled]="uploadedImage === null"
+    >
+      Confirm
+    </button>
+  </div>
+</div>

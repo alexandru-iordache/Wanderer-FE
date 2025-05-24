@@ -1,0 +1,45 @@
+<div 
+  class="image-container" 
+  [style.width]="width" 
+  [style.height]="height"
+  [style.border-radius]="borderRadius"
+  [title]="locationLabel || ''"
+  (click)="openModal($event)"
+>
+  <img [src]="imageInfo.imageUrl" alt="Image" />
+  
+  @if(onRemove) {
+    <div class="remove-button" (click)="onRemove()" (click)="stopPropagation($event)">
+      <span class="material-icons">close</span>
+    </div>
+  }
+  
+  @if(locationLabel) {
+    <div class="location-label">
+      <span class="location-text">{{ locationLabel }}</span>
+    </div>
+  }
+</div>
+
+<!-- Image Modal -->
+@if(showModal) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="image-modal" (click)="stopPropagation($event)">
+      <div class="modal-content">
+        <div class="image-wrapper">
+          <img [src]="imageInfo.imageUrl" alt="Image" />
+        </div>
+        
+        @if(locationLabel) {
+          <div class="modal-location-label">
+            <span>{{ locationLabel }}</span>
+          </div>
+        }
+      </div>
+      
+      <button class="close-button" (click)="closeModal()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </div>
+}

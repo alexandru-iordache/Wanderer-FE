@@ -1,11 +1,19 @@
 <div class="my-trips-page">
   <div class="section left">
-    <div class="calendar-panel">
+    <!-- <div class="calendar-panel">
       <div class="panel-header">Calendar</div>
       <div class="separator"></div>
-    </div>
+    </div> -->
     <div class="stats-panel">
       <div class="panel-header">Your stats</div>
+      <div class="info-section">
+        <mat-icon class="button-icon" fontIcon="info"></mat-icon>
+        <div class="info-content">
+          This panel shows your travel progress. The numbers indicate
+          completed/total counts for each category of your journey. The progress
+          bars visualize your achievements so far.
+        </div>
+      </div>
       <div class="separator"></div>
       <div class="stats-content">
         <div class="stat-item">
@@ -105,9 +113,7 @@
     </div>
   </div>
   <div class="section right">
-    <app-trip-panel
-    [areCurrentUserTrips]="true"
-    [userId]="userId">
-  </app-trip-panel>
+    <app-trip-panel [areCurrentUserTrips]="true" [userId]="userId">
+    </app-trip-panel>
   </div>
 </div>

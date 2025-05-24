@@ -2,7 +2,11 @@
   <div class="panel-header">
     {{ areCurrentUserTrips ? "Your Trips" : "Trips" }}
   </div>
-  <div class="separator"></div>
+  <div class="info-section">
+    <mat-icon class="button-icon" fontIcon="info"></mat-icon>
+    <div class="info-content">There you can see all your trips, including the ones you have
+    completed.</div>
+  </div>
   <div class="options-section">
     <div
       id="filters"
@@ -65,17 +69,25 @@
   </div>
   } @else {
   <div class="panel-content">
-    @if (trips.length === 0) {
+    
+    @if (trips.length === 0) { 
+      
       @if(areCurrentUserTrips === true) {
-    <div class="empty-trips-list">
-      <p>You don't have any trips yet.</p>
-      <p><a routerLink="/trip" class="create-trip-link">Create</a> one now!</p>
-    </div>
-  }
+      <div class="empty-trips-list">
+        <p>You don't have any trips yet.</p>
+        <p><a routerLink="/trip" class="create-trip-link">Create</a> one now!</p>
+      </div>
+      } 
+      
       @else {
-           <div class="empty-trips-list">This wanderer does not have any published trips.</div>
-      }
-    } @else {
+      <div class="empty-trips-list">
+        This wanderer does not have any published trips.
+      </div>
+      } 
+    
+    } 
+    
+    @else {
     <div class="trips-list">
       @for (trip of trips; track $index) {
       <div class="trip-button">

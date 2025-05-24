@@ -1,0 +1,198 @@
+@import "../../../../../../styles.scss";
+
+.image-upload-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.location-selection {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.image-preview {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.city-dropdown,
+.waypoint-dropdown {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+label {
+  font-family: $primary-font;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: $secondary-color;
+}
+
+.dropdown {
+  width: 150px;
+  padding: 8px 12px;
+  font-family: $primary-font;
+  font-size: 14px;
+  border: 1px solid $secondary-color;
+  border-radius: 8px;
+  background-color: transparent;
+  color: $secondary-color;
+  cursor: pointer;
+  appearance: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  option {
+    color: $secondary-color;
+    background-color: $forth-color;
+  }
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-label {
+  margin-bottom: 0px;
+  display: inline-block;
+  padding: 10px 14px;
+  background-color: transparent;
+  color: $secondary-color;
+  font-family: $primary-font;
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid $secondary-color;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    color: $primary-color;
+    background-color: $secondary-color-highlight;
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.confirm-button,
+.cancel-button {
+  padding: 8px 16px;
+  font-family: $primary-font;
+  font-weight: 500;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-button {
+  background-color: $secondary-color;
+  color: $primary-color;
+
+  &:hover:not(:disabled) {
+    background-color: $secondary-color-highlight;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.cancel-button {
+  background-color: $third-color;
+  border: 1px solid $third-color;
+  color: $primary-color;
+
+  &:hover {
+    background-color: rgba($third-color, 0.1);
+  }
+}
+
+.selection-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background-color: rgba($secondary-color, 0.05);
+  border-radius: 8px;
+  margin-top: 5px;
+
+  .info-label {
+    font-family: $primary-font;
+    font-weight: 600;
+    font-size: 14px;
+    color: $secondary-color;
+  }
+
+  .info-value {
+    font-family: $primary-font;
+    font-weight: 500;
+    font-size: 14px;
+    color: $secondary-color;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 15px 20px;
+  border-top: 1px solid rgba($secondary-color, 0.1);
+  margin-top: 20px;
+}
+
+.selected-file-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba($secondary-color, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.selected-file-name {
+  font-family: $primary-font;
+  font-size: 14px;
+  font-weight: 500;
+  color: $secondary-color;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 30px);
+}
+
+.remove-icon {
+  font-size: 18px;
+  font-weight: bold;
+  color: $secondary-color;
+  cursor: pointer;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+
+  &:hover {
+    color: $third-color;
+  }
+}

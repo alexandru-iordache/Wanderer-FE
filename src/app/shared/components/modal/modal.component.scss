@@ -56,14 +56,16 @@
   margin-top: 20px;
 
   button {
-    min-width: 40px;
-
     &.discard-button {
       @extend .negative-feedback-button;
+
+      min-width: 70px;
     }
 
     &.confirm-button {
       @extend .positive-feedback-button;
+
+      min-width: 70px;
     }
   }
 }

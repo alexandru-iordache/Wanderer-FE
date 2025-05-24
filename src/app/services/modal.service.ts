@@ -8,12 +8,19 @@ import {
 } from '@angular/core';
 import { ModalComponent } from '../shared/components/modal/modal.component';
 import { SnackbarComponent } from '../shared/components/snackbar/snackbar.component';
+import { CreatePostModalComponent } from '../shared/components/create-post-modal/create-post-modal.component';
+import { Uuid } from '../shared/helpers/uuid';
+import { TripDto } from '../interfaces/dtos/request/base-trip-dto';
 
 export interface ModalOptions {
   header: string;
   message: string;
   confirmText?: string;
   discardText?: string;
+}
+
+export interface CreatePostModalOptions {
+  trip: TripDto;
 }
 
 export interface SnackbarOptions {
@@ -27,11 +34,17 @@ export interface SnackbarOptions {
 })
 export class ModalService {
   private modalComponentRef: ComponentRef<ModalComponent> | null = null;
+  private createPostModalComponentRef: ComponentRef<CreatePostModalComponent> | null =
+    null;
   private snackbarComponentRef: ComponentRef<SnackbarComponent> | null = null;
 
   constructor(private appRef: ApplicationRef) {}
 
-  snackbar(message: string, duration: number = 5000, successfullFeedback: boolean = true): void {
+  snackbar(
+    message: string,
+    duration: number = 5000,
+    successfullFeedback: boolean = true
+  ): void {
     this.showSnackbar({ message, duration, successfullFeedback });
   }
 
@@ -87,6 +100,32 @@ export class ModalService {
     });
   }
 
+  confirmPublishTrip(entityName: string): Promise<boolean> {
+    return this.confirm({
+      header: `Publish Trip ${entityName}`,
+      message: `Are you sure you want to publish this trip?`,
+      confirmText: 'Confirm',
+      discardText: 'Discard',
+    });
+  }
+
+  confirmCreatePost(entityName: string): Promise<boolean> {
+    return this.confirm({
+      header: `Create Post for Trip ${entityName}`,
+      message: `Do you want also to create a post for this trip?`,
+      confirmText: 'Yes',
+      discardText: 'No',
+    });
+  }
+
+  createPost(
+   trip: TripDto
+  ){
+    return new Promise<boolean>((resolve) => {
+      this.openCreatePostModal({ trip }, resolve);
+    });
+  }
+
   confirm(options: ModalOptions): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       this.openModal(options, resolve);
@@ -133,11 +172,58 @@ export class ModalService {
     document.body.appendChild(domElement);
   }
 
+  private openCreatePostModal(
+    options: CreatePostModalOptions,
+    resolve: (value: boolean) => void
+  ): void {
+    this.closeModal();
+
+    const modalElement = document.createElement('div');
+    this.createPostModalComponentRef = this.appRef.bootstrap(
+      CreatePostModalComponent,
+      modalElement
+    );
+
+    let instance = this.createPostModalComponentRef!
+      .instance as CreatePostModalComponent;
+
+    instance.trip = options.trip;
+
+    const confirmSub = instance.confirm.subscribe(() => {
+      confirmSub.unsubscribe();
+      discardSub.unsubscribe();
+      this.closeModal();
+      resolve(true);
+    });
+
+    const discardSub = instance.discard.subscribe(() => {
+      confirmSub.unsubscribe();
+      discardSub.unsubscribe();
+      this.closeModal();
+      resolve(false);
+    });
+
+    this.appRef.attachView(this.createPostModalComponentRef!.hostView);
+
+    const domElement = (this.createPostModalComponentRef!.hostView as any).rootNodes[0];
+    document.body.appendChild(domElement);
+    
+    if (instance.ngOnInit) {
+      instance.ngOnInit();
+    }
+  }
+
   private closeModal(): void {
     if (this.modalComponentRef) {
       this.appRef.detachView(this.modalComponentRef.hostView);
       this.modalComponentRef.destroy();
       this.modalComponentRef = null;
+    }
+
+    if (this.createPostModalComponentRef) {
+      this.appRef.detachView(this.createPostModalComponentRef.hostView);
+      this.createPostModalComponentRef.destroy();
+      this.createPostModalComponentRef = null;
     }
   }
 
