@@ -188,7 +188,7 @@ export class TripPanelComponent implements OnInit {
       });
     }
 
-    const createPostModal = await this.modalService.createPost(tripToPublish);
+    const createPostModal = await this.modalService.createPost(tripToPublish.id);
   }
 
   async deleteTrip(

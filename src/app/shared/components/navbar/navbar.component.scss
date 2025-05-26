@@ -103,13 +103,18 @@ h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: background-color 0.3s ease-out;
 
-  &:hover {
+  .dropdown-menu {
+    transition: display 0.3s ease-out;
+    transition-delay: 0.3s;
+  }
+
+  &:hover, &:focus-within {
     z-index: 0;
     background-color: $primary-color-highlight;
-
+    
     .dropdown-menu {
-      transition: all 0.5s;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;

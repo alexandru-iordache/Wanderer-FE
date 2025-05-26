@@ -3,7 +3,7 @@ import {
   PostCityDto,
   PostWaypointDto,
 } from '../../../../../interfaces/dtos/post-location-dto';
-import { ImageInfoDto } from '../../../../../interfaces/dtos/image-info-dto';
+import { AddImageInfoDto, BaseImageInfoDto } from '../../../../../interfaces/dtos/request/base-image-info-dto';
 import { PostService } from '../../../../../services/post.service';
 import { ModalService } from '../../../../../services/modal.service';
 
@@ -15,7 +15,7 @@ import { ModalService } from '../../../../../services/modal.service';
 export class ImageSelectionSectionComponent implements OnInit {
   @Input() cities: PostCityDto[] = [];
   @Output() imageSelectionResponse = new EventEmitter<{
-    imageInfo: ImageInfoDto | null;
+    imageInfo: BaseImageInfoDto | null;
     imageUploaded: boolean;
   }>();
 
@@ -113,11 +113,12 @@ export class ImageSelectionSectionComponent implements OnInit {
       next: (imageUrl) => {
         const imageInfo = {
           imageUrl: imageUrl,
-          cityId: this.selectedCityId,
+          cityPlaceId: this.selectedCity?.placeId || null,
           cityName: this.selectedCity?.name,
-          waypointId: this.selectedWaypointId,
+          waypointPlaceId: this.selectedWaypoint?.placeId || null,
           waypointName: this.selectedWaypoint?.name,
-        } as ImageInfoDto;
+          placeId: this.selectedCity?.placeId || null,
+        } as AddImageInfoDto;
 
         this.imageSelectionResponse.emit({
           imageUploaded: true,

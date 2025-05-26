@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ImageInfoDto } from '../../../interfaces/dtos/image-info-dto';
+import { BaseImageInfoDto } from '../../../interfaces/dtos/request/base-image-info-dto';
 
 @Component({
   selector: 'app-image-view',
@@ -7,7 +7,7 @@ import { ImageInfoDto } from '../../../interfaces/dtos/image-info-dto';
   styleUrl: './image-view.component.scss'
 })
 export class ImageViewComponent implements OnInit {
-  @Input() imageInfo!: ImageInfoDto;
+  @Input() imageInfo!: BaseImageInfoDto;
   @Input() width: string = '200px';
   @Input() height: string = '200px';
   @Input() borderRadius: string = '8px';

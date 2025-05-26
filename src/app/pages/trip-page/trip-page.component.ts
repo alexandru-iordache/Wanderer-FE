@@ -136,7 +136,7 @@ export class TripPageComponent implements OnInit, OnDestroy {
 
   private async loadExistingTrip() {
     try {
-      const response = await this.tripService.getTripById(this.tripId!);
+      const response = await this.tripService.getTripByIdAsync(this.tripId!);
       if (response.statusCode !== 200) {
         this.modalService.snackbar(
         'Error loading existing trip.', 100000, false);

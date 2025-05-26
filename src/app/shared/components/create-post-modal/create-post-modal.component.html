@@ -50,7 +50,7 @@
         } @else {
         <app-image-selection-section
           [cities]="cities"
-          style="width: 100%;  min-height: 120px;"
+          style="width: 100%;"
           (imageSelectionResponse)="onImageSelectionResponse($event)"
         ></app-image-selection-section>
         }
@@ -60,7 +60,7 @@
         <button class="modal-button discard-button" (click)="discard.emit()">
           Discard
         </button>
-        <button class="modal-button confirm-button" (click)="confirm.emit()">
+        <button class="modal-button confirm-button" (click)="onCreatePost()">
           Create Post
         </button>
       </div>

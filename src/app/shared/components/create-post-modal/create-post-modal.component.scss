@@ -201,6 +201,12 @@
   }
 }
 
+.modal-actions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .modal-button {
   padding: 10px 20px;
   font-family: $primary-font;
@@ -214,19 +220,21 @@
   &.confirm-button {
     background-color: $secondary-color;
     color: $primary-color;
+    margin-left: 10px;
 
     &:hover {
       background-color: $secondary-color-highlight;
+      cursor: pointer;
     }
   }
 
   &.discard-button {
-    background-color: transparent;
-    border: 1px solid $secondary-color;
-    color: $secondary-color;
+    background-color: $third-color;
+    color: $primary-color;
 
     &:hover {
-      background-color: rgba($secondary-color, 0.1);
+      background-color: $third-color-highlight;
+      cursor: pointer;
     }
   }
 }

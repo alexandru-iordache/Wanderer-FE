@@ -20,7 +20,7 @@ export interface ModalOptions {
 }
 
 export interface CreatePostModalOptions {
-  trip: TripDto;
+  tripId: Uuid;
 }
 
 export interface SnackbarOptions {
@@ -119,10 +119,10 @@ export class ModalService {
   }
 
   createPost(
-   trip: TripDto
+   tripId: Uuid
   ){
     return new Promise<boolean>((resolve) => {
-      this.openCreatePostModal({ trip }, resolve);
+      this.openCreatePostModal({ tripId: tripId }, resolve);
     });
   }
 
@@ -187,7 +187,7 @@ export class ModalService {
     let instance = this.createPostModalComponentRef!
       .instance as CreatePostModalComponent;
 
-    instance.trip = options.trip;
+    instance.tripId = options.tripId;
 
     const confirmSub = instance.confirm.subscribe(() => {
       confirmSub.unsubscribe();

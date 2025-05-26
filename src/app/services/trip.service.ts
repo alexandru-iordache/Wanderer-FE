@@ -14,7 +14,7 @@ export class TripService {
 
   constructor(private http: HttpClient) {}
 
-  async getTripById(id: string) {
+  async getTripByIdAsync(id: string) {
     const response = await firstValueFrom(
       this.http.get(`${this.apiUrl}/${id}`, {
         observe: 'response',
@@ -27,6 +27,15 @@ export class TripService {
       statusText: response.statusText,
       body: response.body as TripDto,
     };
+  }
+
+  getTripById(id: Uuid) {
+    return this.http
+      .get(`${this.apiUrl}/${id}`, {
+        observe: 'response',
+        headers: this.createHeaders(),
+      })
+      .pipe(map((response: any) => response.body as TripDto));
   }
 
   getTrips(

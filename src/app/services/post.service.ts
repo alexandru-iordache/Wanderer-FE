@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs';
+import { AddPostDto, PostDto } from '../interfaces/dtos/request/base-post-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +25,19 @@ export class PostService {
         map((response: any) => {
           const object = response.body as { imageUrl: string };
           return object.imageUrl; 
+        })
+      );
+  }
+
+  createPost(post: AddPostDto) {
+    return this.http
+      .post(`${this.apiUrl}`, post, {
+        headers: this.createHeaders(),
+      })
+      .pipe(
+        map((response: any) => {
+          const object = response.body as PostDto;
+          return object; 
         })
       );
   }
