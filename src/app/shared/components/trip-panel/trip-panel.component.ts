@@ -7,7 +7,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import { TripDto } from '../../../interfaces/dtos/request/base-trip-dto';
+import { TripDto } from '../../../interfaces/dtos/base-dtos/base-trip-dto';
 import { UiHelper } from '../../helpers/ui-helper';
 import { TripService } from '../../../services/trip.service';
 import { ModalService } from '../../../services/modal.service';

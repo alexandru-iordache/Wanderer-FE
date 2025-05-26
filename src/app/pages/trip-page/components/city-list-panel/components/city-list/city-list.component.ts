@@ -3,7 +3,7 @@ import { PanelView } from '../../../../../helpers/panel-view.enum';
 import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
 import { SelectedCityVisitDto } from '../../../../../../interfaces/dtos/selected-city-dto';
-import { BaseCityVisitDto } from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
+import { BaseCityVisitDto } from '../../../../../../interfaces/dtos/base-dtos/base-city-visit-dto';
 import { UiHelper } from '../../../../../../shared/helpers/ui-helper';
 
 @Component({

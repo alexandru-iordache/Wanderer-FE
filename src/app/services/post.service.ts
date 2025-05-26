@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs';
-import { AddPostDto, PostDto } from '../interfaces/dtos/request/base-post-dto';
+import { AddPostDto, PostDto } from '../interfaces/dtos/base-dtos/base-post-dto';
 
 @Injectable({
   providedIn: 'root',

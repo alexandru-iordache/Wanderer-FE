@@ -14,7 +14,7 @@ import { UpdateUserDto } from '../interfaces/dtos/request/update-user-dto';
 import { UserProfileDto } from '../interfaces/dtos/response/user-profile-dto';
 import { Uuid } from '../shared/helpers/uuid';
 import { FilterOptionsDto } from '../interfaces/dtos/filter-options-dto';
-import { TripDto } from '../interfaces/dtos/request/base-trip-dto';
+import { TripDto } from '../interfaces/dtos/base-dtos/base-trip-dto';
 
 @Injectable({
   providedIn: 'root',

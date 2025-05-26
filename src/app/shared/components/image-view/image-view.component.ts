@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BaseImageInfoDto } from '../../../interfaces/dtos/request/base-image-info-dto';
+import { BaseImageInfoDto } from '../../../interfaces/dtos/base-dtos/base-image-info-dto';
 
 @Component({
   selector: 'app-image-view',

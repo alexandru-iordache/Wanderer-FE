@@ -1,5 +1,5 @@
 import { AbstractControl, FormGroup, ValidatorFn } from '@angular/forms';
-import { BaseWaypointVisitDto } from '../../interfaces/dtos/request/base-waypoint-visit-dto';
+import { BaseWaypointVisitDto } from '../../interfaces/dtos/base-dtos/base-waypoint-visit-dto';
 
 export function minimumAgeValidator(minAge: number): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {

@@ -8,9 +8,9 @@ import { TripStateService } from './services/trip-state.service';
 import { Subscription } from 'rxjs';
 import { Uuid } from '../../shared/helpers/uuid';
 import { TripService } from '../../services/trip.service';
-import { BaseCityVisitDto } from '../../interfaces/dtos/request/base-city-visit-dto';
-import { BaseWaypointVisitDto } from '../../interfaces/dtos/request/base-waypoint-visit-dto';
-import { TripDto } from '../../interfaces/dtos/request/base-trip-dto';
+import { BaseCityVisitDto } from '../../interfaces/dtos/base-dtos/base-city-visit-dto';
+import { BaseWaypointVisitDto } from '../../interfaces/dtos/base-dtos/base-waypoint-visit-dto';
+import { TripDto } from '../../interfaces/dtos/base-dtos/base-trip-dto';
 import { ModalService } from '../../services/modal.service';
 
 @Component({

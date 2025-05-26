@@ -3,7 +3,7 @@ import {
   PostCityDto,
   PostWaypointDto,
 } from '../../../../../interfaces/dtos/post-location-dto';
-import { AddImageInfoDto, BaseImageInfoDto } from '../../../../../interfaces/dtos/request/base-image-info-dto';
+import { AddImageInfoDto, BaseImageInfoDto } from '../../../../../interfaces/dtos/base-dtos/base-image-info-dto';
 import { PostService } from '../../../../../services/post.service';
 import { ModalService } from '../../../../../services/modal.service';
 

@@ -16,9 +16,9 @@ import { CityTransferDto } from '../../../../../../interfaces/dtos/city-transfer
 import {
   AddCityVisitDto,
   BaseCityVisitDto,
-} from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
-import { BaseDayVisitDto } from '../../../../../../interfaces/dtos/request/base-day-visit-dto';
-import { BaseWaypointVisitDto } from '../../../../../../interfaces/dtos/request/base-waypoint-visit-dto';
+} from '../../../../../../interfaces/dtos/base-dtos/base-city-visit-dto';
+import { BaseDayVisitDto } from '../../../../../../interfaces/dtos/base-dtos/base-day-visit-dto';
+import { BaseWaypointVisitDto } from '../../../../../../interfaces/dtos/base-dtos/base-waypoint-visit-dto';
 
 @Component({
   selector: 'app-city-form',

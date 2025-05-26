@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { CityTransferDto } from '../../../interfaces/dtos/city-transfer-dto';
 import { SelectedCityVisitDto } from '../../../interfaces/dtos/selected-city-dto';
-import { BaseCityVisitDto } from '../../../interfaces/dtos/request/base-city-visit-dto';
+import { BaseCityVisitDto } from '../../../interfaces/dtos/base-dtos/base-city-visit-dto';
 import {
   AddWaypointVisitDto,
   BaseWaypointVisitDto,
-} from '../../../interfaces/dtos/request/base-waypoint-visit-dto';
-import { BaseTripDto } from '../../../interfaces/dtos/request/base-trip-dto';
+} from '../../../interfaces/dtos/base-dtos/base-waypoint-visit-dto';
+import { BaseTripDto } from '../../../interfaces/dtos/base-dtos/base-trip-dto';
 
 @Injectable({
   providedIn: 'root',

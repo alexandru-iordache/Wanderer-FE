@@ -14,7 +14,7 @@ import { City } from '../../../../interfaces/models/city';
 import { CityTransferDto } from '../../../../interfaces/dtos/city-transfer-dto';
 import { LatLngBound } from '../../../../interfaces/dtos/lat-lang-bound';
 import { TripStateService } from '../../services/trip-state.service';
-import { BaseTripDto } from '../../../../interfaces/dtos/request/base-trip-dto';
+import { BaseTripDto } from '../../../../interfaces/dtos/base-dtos/base-trip-dto';
 
 @Component({
   selector: 'app-create-trip-modal',

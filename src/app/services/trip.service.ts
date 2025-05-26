@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom, map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AddTripDto, TripDto } from '../interfaces/dtos/request/base-trip-dto';
+import { AddTripDto, TripDto } from '../interfaces/dtos/base-dtos/base-trip-dto';
 import { Uuid } from '../shared/helpers/uuid';
 import { FilterOptionsDto } from '../interfaces/dtos/filter-options-dto';
 

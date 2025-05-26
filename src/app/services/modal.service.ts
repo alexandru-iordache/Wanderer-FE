@@ -10,7 +10,7 @@ import { ModalComponent } from '../shared/components/modal/modal.component';
 import { SnackbarComponent } from '../shared/components/snackbar/snackbar.component';
 import { CreatePostModalComponent } from '../shared/components/create-post-modal/create-post-modal.component';
 import { Uuid } from '../shared/helpers/uuid';
-import { TripDto } from '../interfaces/dtos/request/base-trip-dto';
+import { TripDto } from '../interfaces/dtos/base-dtos/base-trip-dto';
 
 export interface ModalOptions {
   header: string;

@@ -10,10 +10,10 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { Uuid } from '../../helpers/uuid';
-import { TripDto } from '../../../interfaces/dtos/request/base-trip-dto';
+import { TripDto } from '../../../interfaces/dtos/base-dtos/base-trip-dto';
 import { PostCityDto } from '../../../interfaces/dtos/post-location-dto';
-import { BaseImageInfoDto } from '../../../interfaces/dtos/request/base-image-info-dto';
-import { AddPostDto } from '../../../interfaces/dtos/request/base-post-dto';
+import { BaseImageInfoDto } from '../../../interfaces/dtos/base-dtos/base-image-info-dto';
+import { AddPostDto } from '../../../interfaces/dtos/base-dtos/base-post-dto';
 import { PostService } from '../../../services/post.service';
 import { ModalService } from '../../../services/modal.service';
 import { Subscription } from 'rxjs';

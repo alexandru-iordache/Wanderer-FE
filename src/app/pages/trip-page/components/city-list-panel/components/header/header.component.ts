@@ -5,12 +5,12 @@ import { Subscription } from 'rxjs';
 import {
   BaseTripDto,
   TripDto,
-} from '../../../../../../interfaces/dtos/request/base-trip-dto';
+} from '../../../../../../interfaces/dtos/base-dtos/base-trip-dto';
 import { TripService } from '../../../../../../services/trip.service';
 import {
   BaseCityVisitDto,
   CityVisitDto,
-} from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
+} from '../../../../../../interfaces/dtos/base-dtos/base-city-visit-dto';
 import { ModalService } from '../../../../../../services/modal.service';
 
 @Component({
