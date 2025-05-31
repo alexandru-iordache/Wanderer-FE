@@ -1,84 +1,118 @@
 <div class="profile-page">
-  <div class="profile-info">
-    <div class="user-avatar">
-      {{
-        userProfileDto?.profileName !== null
-          ? userProfileDto!.profileName.charAt(0)
-          : "N/A"
-      }}
-    </div>
-    <div class="profile-info-content">
-      <div class="profile-info-row">
-        <h2>{{ userProfileDto?.profileName }}</h2>
-        <span class="profile-info-value">{{
-          userProfileDto?.profileDescription
-        }}</span>
-      </div>
-      <div class="profile-info-row">
-        <label class="profile-info-label">Home City</label>
-        <span class="profile-info-value"
-          >{{ userProfileDto?.homeCity?.city }},
-          {{ userProfileDto?.homeCity?.country }}</span
-        >
-      </div>
-      <div class="profile-info-row">
-        <label class="profile-info-label">Visited Countries</label>
-        <span class="profile-info-value">
-          {{
-            userProfileDto?.visitedCountries
-              ? userProfileDto!.visitedCountries.join(", ")
-              : ""
-          }}
-        </span>
-      </div>
-      <div class="profile-info-row">
-        <label class="profile-info-label">Visited Cities</label>
-        <span class="profile-info-value">
-          {{
-            userProfileDto?.visitedCities
-              ? userProfileDto!.visitedCities.join(", ")
-              : ""
-          }}
-        </span>
-      </div>
-      <div class="profile-info-row">
-        <label class="profile-info-label">Followers</label>
-        <span class="profile-info-value"
-          >{{ userProfileDto?.followersCount ?? "??" }}
-        </span>
-      </div>
-      <div class="profile-info-row">
-        <label class="profile-info-label">Following</label>
-        <span class="profile-info-value">{{
-          userProfileDto?.followingCount ?? "??"
-        }}</span>
-      </div>
-      <div class="profile-info-row button">
+  <div class="view-toggle">
+    <div class="toggle-bar" [class.background]="activeView === 'posts'">
+      <div class="toggle-container">
         <div
-          class="follow-button"
-          [ngClass]="
-            userProfileDto?.isFollowing === true ? 'unfollow' : 'follow'
-          "
-          (click)="onFollowClick()"
+          class="toggle-option"
+          [class.active]="activeView === 'profile'"
+          (click)="setActiveView('profile')"
         >
-          @if(!userProfileDto?.isFollowing){
-          <mat-icon class="follow-icon" id="follow" fontIcon="add"></mat-icon>
-          <span class="follow-message" id="follow">Follow</span>
-          } @else {
-          <mat-icon
-            class="follow-icon"
-            id="unfollow"
-            fontIcon="clear"
-          ></mat-icon>
-          <span class="follow-message" id="unfollow">Following</span>
-          }
+          Profile
+        </div>
+        <div
+          class="toggle-option"
+          [class.active]="activeView === 'posts'"
+          (click)="setActiveView('posts')"
+        >
+          Posts
         </div>
       </div>
     </div>
   </div>
-  <div class="trips-info">
-    <app-trip-panel
-      [areCurrentUserTrips]="false"
-      [userId]="userId!"></app-trip-panel>
+  <div class="view-content-wrapper" *ngIf="activeView === 'profile'">
+    <div class="profile-content-container">
+      <div class="profile-info">
+        <div class="user-avatar">
+          {{
+            userProfileDto?.profileName !== null
+              ? userProfileDto!.profileName.charAt(0)
+              : "N/A"
+          }}
+        </div>
+        <div class="profile-info-content">
+          <div class="profile-info-row">
+            <h2>{{ userProfileDto?.profileName }}</h2>
+            <span class="profile-info-value">{{
+              userProfileDto?.profileDescription
+            }}</span>
+          </div>
+          <div class="profile-info-row">
+            <label class="profile-info-label">Home City</label>
+            <span class="profile-info-value"
+              >{{ userProfileDto?.homeCity?.city }},
+              {{ userProfileDto?.homeCity?.country }}</span
+            >
+          </div>
+          <div class="profile-info-row">
+            <label class="profile-info-label">Visited Countries</label>
+            <span class="profile-info-value">
+              {{
+                userProfileDto?.visitedCountries
+                  ? userProfileDto!.visitedCountries.join(", ")
+                  : ""
+              }}
+            </span>
+          </div>
+          <div class="profile-info-row">
+            <label class="profile-info-label">Visited Cities</label>
+            <span class="profile-info-value">
+              {{
+                userProfileDto?.visitedCities
+                  ? userProfileDto!.visitedCities.join(", ")
+                  : ""
+              }}
+            </span>
+          </div>
+          <div class="profile-info-row">
+            <label class="profile-info-label">Followers</label>
+            <span class="profile-info-value"
+              >{{ userProfileDto?.followersCount ?? "??" }}
+            </span>
+          </div>
+          <div class="profile-info-row">
+            <label class="profile-info-label">Following</label>
+            <span class="profile-info-value">{{
+              userProfileDto?.followingCount ?? "??"
+            }}</span>
+          </div>
+          <div class="profile-info-row button">
+            <div
+              class="follow-button"
+              [ngClass]="
+                userProfileDto?.isFollowing === true ? 'unfollow' : 'follow'
+              "
+              (click)="onFollowClick()"
+            >
+              @if(!userProfileDto?.isFollowing){
+              <mat-icon
+                class="follow-icon"
+                id="follow"
+                fontIcon="add"
+              ></mat-icon>
+              <span class="follow-message" id="follow">Follow</span>
+              } @else {
+              <mat-icon
+                class="follow-icon"
+                id="unfollow"
+                fontIcon="clear"
+              ></mat-icon>
+              <span class="follow-message" id="unfollow">Following</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trips-info">
+        <app-trip-panel
+          [areCurrentUserTrips]="false"
+          [userId]="userId!"
+        ></app-trip-panel>
+      </div>
+    </div>
+  </div>
+
+  <div class="view-content-wrapper" *ngIf="activeView === 'posts'">
+    <app-view-posts [userId]="userId!"></app-view-posts>
   </div>
 </div>

@@ -9,6 +9,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs'; 
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -42,6 +44,8 @@ import { SnackbarComponent } from './shared/components/snackbar/snackbar.compone
 import { CreatePostModalComponent } from './shared/components/create-post-modal/create-post-modal.component';
 import { ImageSelectionSectionComponent } from './shared/components/create-post-modal/components/image-selection-section/image-selection-section.component';
 import { ImageViewComponent } from './shared/components/image-view/image-view.component';
+import { ViewPostsComponent } from './shared/components/view-posts/view-posts.component';
+import { PostViewComponent } from './shared/components/post-view/post-view.component';
 
 @NgModule({
   declarations: [
@@ -61,14 +65,17 @@ import { ImageViewComponent } from './shared/components/image-view/image-view.co
     WaypointListComponent,
     WaypointFormComponent,
     HeaderComponent,
-    MyTripsPageComponent,    ModalComponent,
+    MyTripsPageComponent,
+    ModalComponent,
     AccountPageComponent,
     ProfilePageComponent,
     TripPanelComponent,
     SnackbarComponent,
     CreatePostModalComponent,
     ImageSelectionSectionComponent,
-    ImageViewComponent
+    ImageViewComponent,
+    ViewPostsComponent,
+    PostViewComponent
   ],
   imports: [
     BrowserModule,
@@ -79,9 +86,10 @@ import { ImageViewComponent } from './shared/components/image-view/image-view.co
     MatSidenavModule,
     MatIconModule,
     MatListModule,
-    MatButtonModule,
-    MatProgressBarModule,
+    MatButtonModule,    MatProgressBarModule,
     MatTabsModule,
+    MatButtonToggleModule,
+    MatProgressSpinnerModule,
     GoogleMapsModule,
     HttpClientModule
   ],

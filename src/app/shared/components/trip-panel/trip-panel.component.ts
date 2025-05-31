@@ -12,7 +12,6 @@ import { UiHelper } from '../../helpers/ui-helper';
 import { TripService } from '../../../services/trip.service';
 import { ModalService } from '../../../services/modal.service';
 import { UserService } from '../../../services/user.service';
-import { UserStatsDto } from '../../../interfaces/dtos/response/user-stats-dto';
 import { FilterOptionsDto } from '../../../interfaces/dtos/filter-options-dto';
 import { Subscription } from 'rxjs';
 import { Uuid } from '../../helpers/uuid';
@@ -127,6 +126,8 @@ export class TripPanelComponent implements OnInit {
     this.filterOptions.completionStatus =
       checkedRadioButton!.nativeElement.value;
 
+    this.filterOptions.isPublished = !this.areCurrentUserTrips;
+
     this.subscriptions[0]?.unsubscribe();
     this.subscriptions[0] = this.tripService
       .getTrips(true, this.filterOptions)
@@ -170,7 +171,7 @@ export class TripPanelComponent implements OnInit {
       return;
     }
 
-     let tripToPublish = this.trips.find((trip) => trip.id === tripId)!;
+    let tripToPublish = this.trips.find((trip) => trip.id === tripId)!;
 
     const createPostConfirmed = await this.modalService.confirmCreatePost(
       tripName
@@ -188,7 +189,14 @@ export class TripPanelComponent implements OnInit {
       });
     }
 
-    const createPostModal = await this.modalService.createPost(tripToPublish.id);
+    const createPostModalResponse = await this.modalService.createPost(
+      tripToPublish.id
+    );
+    if (createPostModalResponse) {
+      this.modalService.snackbar('Post created successfully.', 5000, true);
+    } else {
+      this.modalService.snackbar('Error creating post.', 10000, false);
+    }
   }
 
   async deleteTrip(

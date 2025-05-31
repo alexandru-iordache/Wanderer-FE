@@ -15,6 +15,7 @@ import { UserProfileDto } from '../interfaces/dtos/response/user-profile-dto';
 import { Uuid } from '../shared/helpers/uuid';
 import { FilterOptionsDto } from '../interfaces/dtos/filter-options-dto';
 import { TripDto } from '../interfaces/dtos/base-dtos/base-trip-dto';
+import { PostDto } from '../interfaces/dtos/base-dtos/base-post-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -114,6 +115,15 @@ export class UserService {
       .pipe(map((response: any) => response.body as TripDto[]));
   }
 
+  getUserPosts(userId: Uuid): Observable<PostDto[]> {
+    return this.http
+      .get(`${environment.apiUrl}/api/users/${userId}/posts`, {
+        headers: this.createHeaders(),
+        observe: 'response',
+      })
+      .pipe(map((response: any) => response.body as PostDto[]));
+  }
+
   getUserProfile(userId: string): Observable<UserProfileDto> {
     return this.http
       .get(environment.apiUrl + `/api/users/${userId}/profile`, {
@@ -170,7 +180,7 @@ export class UserService {
     if (filterOptions.maxDate) {
       params.append('maxDate', filterOptions.maxDate.toISOString());
     }
-    if(filterOptions.isPublished) {
+    if (filterOptions.isPublished) {
       params.append('isPublished', filterOptions.isPublished.toString());
     }
 

@@ -1,0 +1,19 @@
+<div class="post-container">
+  <div class="post-header">
+    <div class="user-info">
+      <div class="avatar" *ngIf="post?.userInfo?.avatarUrl">
+        <img [src]="post.userInfo.avatarUrl" [alt]="post.userInfo.profileName">
+      </div>
+      <div class="avatar fallback" *ngIf="!post?.userInfo?.avatarUrl">
+        {{ getFirstLetterOfName() }}
+      </div>
+      <div class="user-details">
+        <div class="username">{{ post.userInfo.profileName }}</div>
+        <div class="post-date">{{ formatDate(post.createdAt) }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="post-content">
+    <!-- Post content will go here in future updates -->
+  </div>
+</div>

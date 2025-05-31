@@ -137,6 +137,9 @@ export class TripService {
     if (filterOptions.maxDate) {
       params.append('maxDate', filterOptions.maxDate.toISOString());
     }
+    if (filterOptions.isPublished) {
+      params.append('isPublished', filterOptions.isPublished ? 'true' : 'false');
+    }
 
     return `${
       this.apiUrl

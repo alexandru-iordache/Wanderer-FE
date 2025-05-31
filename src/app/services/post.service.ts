@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { AddPostDto, PostDto } from '../interfaces/dtos/base-dtos/base-post-dto';
+import { Uuid } from '../shared/helpers/uuid';
 
 @Injectable({
   providedIn: 'root',

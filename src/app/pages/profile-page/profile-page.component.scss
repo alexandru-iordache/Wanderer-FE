@@ -5,9 +5,73 @@
   height: 100%;
   align-items: center;
   background-color: $primary-color;
+  max-height: calc(100vh - 90px);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.view-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  .toggle-bar {
+    min-width: 500px;
+    width: 500px;
+    padding: 10px 0px;
+    display: flex;
+    justify-content: center;
+
+    &.background {
+      background-color: $forth-color;
+    }
+  }
+
+  .toggle-container {
+    padding: 3px 5px;
+    border-radius: 10px;
+    background-color: $primary-color;
+    border: 1px solid $secondary-color;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .toggle-option {
+    background-color: $primary-color;
+    color: $secondary-color;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 0 2px;
+    cursor: pointer;
+    font-family: $primary-font;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    
+    &.active {
+      background-color: $secondary-color;
+      color: $primary-color;
+    }
+  }
+}
+
+.view-content-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow: visible; /* Allow content to be visible even if it overflows */
+}
+
+.profile-content-container {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+  width: 100%;
 }
 
 .profile-info {
@@ -19,14 +83,20 @@
   align-items: center;
   font-family: $primary-font;
   color: $secondary-color;
-  // border-radius: 20px;
-  // border: 2px solid $secondary-color;
   padding: 10px;
 }
 
 .trips-info {
   width: 48%;
   min-width: 250px;
+}
+
+.posts-view {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  flex: 1;
 }
 
 .user-avatar {

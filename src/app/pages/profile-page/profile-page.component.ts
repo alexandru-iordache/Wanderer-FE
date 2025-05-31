@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 export class ProfilePageComponent implements OnInit, OnDestroy {
   userId: Uuid | null = null;
   userProfileDto: UserProfileDto | null = null;
+  activeView: string = 'profile';
 
   private subscriptions: Subscription[] = [];
 
@@ -48,7 +49,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   }
 
   onFollowClick(): void {
-    if (this.userProfileDto === null){
+    if (this.userProfileDto === null) {
       alert('User profile is not loaded yet.');
       // TO DO: Handle this case more gracefully
       return;
@@ -57,12 +58,18 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     this.userService.changeFollowingStatus(this.userId!).subscribe({
       next: (response) => {
         this.userProfileDto!.isFollowing = !this.userProfileDto!.isFollowing;
-        this.userProfileDto!.followersCount += this.userProfileDto!.isFollowing ? 1 : -1;
+        this.userProfileDto!.followersCount += this.userProfileDto!.isFollowing
+          ? 1
+          : -1;
       },
       error: (error) => {
         console.error('Error changing following status:', error);
       },
     });
+  }
+
+  setActiveView(view: string): void {
+    this.activeView = view;
   }
 
   ngOnDestroy(): void {
