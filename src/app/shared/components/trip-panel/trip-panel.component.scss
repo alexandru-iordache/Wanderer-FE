@@ -23,7 +23,7 @@
 }
 
 .options-section {
-  width: 80%;
+  max-width: 500px;
   color: $secondary-color;
   font-family: $primary-font;
   font-weight: 500;
@@ -157,10 +157,12 @@ input[type="radio"]:checked {
   justify-content: flex-start;
   align-items: center;
   padding-top: 10px;
+  overflow-y: auto;
 }
 
 .info-section {
-  width: 400px;
+  width: 90%;
+  max-width: 400px;
   padding-bottom: 10px;
   display: flex;
   justify-content: flex-start;
@@ -185,16 +187,21 @@ input[type="radio"]:checked {
 }
 
 .trips-list {
-  width: 80%;
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .trip-button {
   position: relative;
   max-width: 400px;
   width: 100%;
+  min-width: 200px;
   height: 40px;
-  margin-top: 5px;
-  padding: 0px 5px;
+  margin-top: 8px;
+  padding: 0px 10px;
   border-radius: 10px;
   background-color: $primary-color;
   border: 2px solid $secondary-color;
@@ -225,10 +232,10 @@ input[type="radio"]:checked {
     justify-content: space-between;
     align-items: center;
   }
-
   .button-text-container {
     display: flex;
     align-items: center;
+    max-width: 65%;
   }
 
   .button-text {
@@ -239,7 +246,7 @@ input[type="radio"]:checked {
     color: $secondary-color;
 
     &.name {
-      max-width: 120px;
+      max-width: 150px;
       display: inline-block;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -254,13 +261,12 @@ input[type="radio"]:checked {
     font-size: 12px;
     color: $secondary-color;
   }
-
   &:hover {
     padding-right: 0px;
     transition: 0.2s;
 
-    .button-info {
-      width: 90%;
+    .button-info-container {
+      width: calc(100% - 30px);
     }
 
     .menu-container {
@@ -283,7 +289,7 @@ input[type="radio"]:checked {
 }
 
 .menu-container {
-  width: 7%;
+  width: 30px;
   height: 100%;
   margin: 0;
   margin-left: 2px;
@@ -312,17 +318,16 @@ input[type="radio"]:checked {
     writing-mode: vertical-lr;
     text-align: center;
   }
-
   .dropdown-menu {
     position: absolute;
     top: 100%;
-    right: -100%;
+    right: 0;
     background-color: $primary-color;
     border: 2px solid $secondary-color;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     z-index: 10;
-    min-width: 100px;
+    min-width: 120px;
     display: none;
 
     .dropdown-item {

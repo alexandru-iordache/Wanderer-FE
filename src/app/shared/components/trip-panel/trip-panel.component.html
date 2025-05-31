@@ -28,6 +28,7 @@
     </div>
   </div>
 
+   <!-- Filters opened -->
   @if(areFiltersOpened === true){
   <div class="filters-panel">
     <div class="filter-section">
@@ -75,7 +76,7 @@
       <button class="save-button" (click)="onSaveClicked($event)">Save</button>
     </div>
   </div>
-  } @else {
+  } @else { <!-- Filters not opened --> 
   <div class="panel-content">
     @if (trips.length === 0) { @if(areCurrentUserTrips === true) {
     <div class="empty-trips-list">
@@ -134,7 +135,15 @@
             >
               Delete
             </div>
-            } @else{ }
+            } @else{
+              <div
+              class="dropdown-item"
+              id="clone"
+              (click)="completeTrip($event, trip.title, trip.id)"
+            >
+              Clone
+            </div>
+             }
           </div>
         </div>
       </div>
