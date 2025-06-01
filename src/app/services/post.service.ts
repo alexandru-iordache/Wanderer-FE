@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { AddPostDto, PostDto } from '../interfaces/dtos/base-dtos/base-post-dto';
 import { Uuid } from '../shared/helpers/uuid';
+import { PostCommentDto } from '../interfaces/dtos/response/post-comment-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +42,28 @@ export class PostService {
           return object; 
         })
       );
+  }
+
+  createComment(postId: Uuid, comment: string): Observable<PostCommentDto> {
+    return this.http
+      .post<PostCommentDto>(`${this.apiUrl}/${postId}/comments`, { content: comment }, {
+        headers: this.createHeaders(),
+      });
+  }
+
+  getPostComments(postId: Uuid): Observable<PostCommentDto[]> {
+    return this.http.get<PostCommentDto[]>(
+      `${this.apiUrl}/${postId}/comments`,
+      {
+        headers: this.createHeaders(),
+      });
+  }
+
+  toggleLike(postId: Uuid) {
+    return this.http.post(`${this.apiUrl}/${postId}/like`, {}, {
+      headers: this.createHeaders(),
+    }).pipe(
+      map((response: any) => response));
   }
 
   private createHeaders(): HttpHeaders {

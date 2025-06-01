@@ -11,7 +11,10 @@ export interface BasePostDto {
     ownerId?: Uuid;
     images: BaseImageInfoDto[];
     userInfo?: UserInfoDto;
+    likesCount?: number;
+    commentsCount?: number;
+    isLiked?: boolean;
 }
 
 export type PostDto = Required<BasePostDto>;
-export type AddPostDto = Omit<BasePostDto, 'id' | 'createdAt' | 'ownerId' | 'userInfo'>;
+export type AddPostDto = Omit<BasePostDto, 'id' | 'createdAt' | 'ownerId' | 'userInfo' | 'likesCount' | 'commentsCount' | 'isLiked'>; 
