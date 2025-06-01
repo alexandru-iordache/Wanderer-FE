@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
@@ -20,6 +20,8 @@ import { ModalService } from '../../../../../../services/modal.service';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   trip!: BaseTripDto;
+  @Input() isCompleted: boolean = false;
+  @Input() isCurrentUserOwner: boolean = true;
 
   private subscriptions: Subscription[] = [];
 

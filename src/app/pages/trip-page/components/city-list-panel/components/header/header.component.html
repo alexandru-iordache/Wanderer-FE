@@ -3,8 +3,8 @@
     <h2>{{trip.title}}</h2>
   </div>
   <div class="trip-options">
-    <span (click)="onSaveClick()">Save</span>
-    <span>Edit</span>
-    <span>Description</span>
+    <span *ngIf="!isCompleted && isCurrentUserOwner" (click)="onSaveClick()">Save</span>
+    <span *ngIf="isCompleted || !isCurrentUserOwner">Clone</span>
+    <span *ngIf="!isCompleted && isCurrentUserOwner">Edit</span>
   </div>
 </div>

@@ -1,5 +1,8 @@
 <div class="create-trip-panel">
-  <app-header style="width: 100%"></app-header>
+  <app-header 
+    [isCompleted]="isCompleted"
+    [isCurrentUserOwner]="isCurrentUserOwner"
+    style="width: 100%"></app-header>
   <div class="panel-content">
     @switch (currentView) {
 
@@ -9,6 +12,8 @@
     <app-city-list
       [setCurrentView]="setCurrentView.bind(this)"
       [openDeleteModal]="openDeleteModal.bind(this)"
+      [isCompleted]="isCompleted"
+      [isCurrentUserOwner]="isCurrentUserOwner"
       style="width: 100%"
     >
     </app-city-list>
@@ -25,14 +30,14 @@
     >
       >
     </app-city-form>
-    }
-
-    <!-- Waypoints List View -->
+    }    <!-- Waypoints List View -->
 
     @case (PanelView.WaypointsListView) {
     <app-waypoint-list
       [setCurrentView]="setCurrentView.bind(this)"
       [openDeleteModal]="openDeleteModal.bind(this)"
+      [isCompleted]="isCompleted"
+      [isCurrentUserOwner]="isCurrentUserOwner"
       style="width: 100%"
     >
     </app-waypoint-list>

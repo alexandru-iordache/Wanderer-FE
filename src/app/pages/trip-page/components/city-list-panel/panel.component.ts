@@ -24,6 +24,8 @@ export class PanelComponent
   implements OnInit, OnChanges
 {
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
+  @Input() isCompleted: boolean = false;
+  @Input() isCurrentUserOwner: boolean = true;
 
   PanelView = PanelView;
 

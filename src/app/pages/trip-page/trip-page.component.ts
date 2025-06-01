@@ -38,7 +38,6 @@ export class TripPageComponent implements OnInit, OnDestroy {
   //Modal Shared Properties
   modalClosed: boolean = false;
   isEditMode: boolean = false;
-
   // Multiple Dependendants Properties
   cities: BaseCityVisitDto[] = [];
   selectedCity: SelectedCityVisitDto | null = null;
@@ -48,6 +47,8 @@ export class TripPageComponent implements OnInit, OnDestroy {
     data: BaseCityVisitDto | BaseWaypointVisitDto;
   } | null = null;
   isSaved: boolean = false;
+  isCompleted: boolean = false;
+  isCurrentUserOwner: boolean = true;
 
   private subscriptions: Subscription[] = [];
 
@@ -133,7 +134,6 @@ export class TripPageComponent implements OnInit, OnDestroy {
   closeDeleteModal() {
     this.selectedEntity = null;
   }
-
   private async loadExistingTrip() {
     try {
       const response = await this.tripService.getTripByIdAsync(this.tripId!);
@@ -144,6 +144,13 @@ export class TripPageComponent implements OnInit, OnDestroy {
       }
 
       const trip = response.body as TripDto;
+
+      // Set trip completion status
+      this.isCompleted = trip.isCompleted || false;
+      
+      // Check if current user is the owner
+      const currentUserId = localStorage.getItem("userId");
+      this.isCurrentUserOwner = trip.ownerId === currentUserId;
 
       this.tripStateService.updateTrip(trip);
       this.tripStateService.updateCityVisits(trip.cityVisits);

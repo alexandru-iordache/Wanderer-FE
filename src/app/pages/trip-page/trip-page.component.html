@@ -16,6 +16,8 @@
 </div>
 <app-panel
   [openDeleteModal]="openDeleteModal.bind(this)"
+  [isCompleted]="isCompleted"
+  [isCurrentUserOwner]="isCurrentUserOwner"
   *ngIf="modalClosed === true"
 ></app-panel>
 <div class="exit-city-button-container" *ngIf="selectedCity">

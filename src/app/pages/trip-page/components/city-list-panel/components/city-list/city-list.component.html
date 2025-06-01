@@ -13,8 +13,7 @@
       ({{ cityVisit.numberOfNights }}
       {{ cityVisit.numberOfNights === 1 ? "night" : "nights" }})
     </div>
-  </div>
-  <div class="menu-container" (click)="$event.stopPropagation()">
+  </div>  <div class="menu-container" (click)="$event.stopPropagation()" *ngIf="!isCompleted && isCurrentUserOwner">
     <div class="menu-dots">•••</div>
     <div class="dropdown-menu">
       <div class="dropdown-item" id="edit" (click)="onEditClick(cityVisit)">
@@ -27,9 +26,23 @@
   </div>
 </div>
 
-<div class="option-button" (click)="setCurrentView(PanelView.CityView)">
+<div class="option-button" (click)="setCurrentView(PanelView.CityView)" *ngIf="!isCompleted && isCurrentUserOwner">
   <span class="button-text-container">
     <div class="button-icon" id="add-icon"></div>
     <span class="button-text">Add new city</span>
   </span>
+</div>
+
+<div class="info-section" *ngIf="isCurrentUserOwner && isCompleted">
+  <mat-icon class="button-icon" fontIcon="info"></mat-icon>
+  <div class="info-content">
+    This trip was completed. It cannot be edited anymore.
+  </div>
+</div>
+
+<div class="info-section" *ngIf="!isCurrentUserOwner">
+  <mat-icon class="button-icon" fontIcon="info"></mat-icon>
+  <div class="info-content">
+    This trip is owned by another wanderer. Clone it if you like it.
+  </div>
 </div>

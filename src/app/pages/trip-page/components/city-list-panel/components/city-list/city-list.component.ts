@@ -15,6 +15,8 @@ import { UiHelper } from '../../../../../../shared/helpers/ui-helper';
 export class CityListComponent implements OnInit, OnDestroy {
   @Input() setCurrentView!: (panelView: PanelView) => void;
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
+  @Input() isCompleted: boolean = false;
+  @Input() isCurrentUserOwner: boolean = true;
 
   PanelView = PanelView;
   cityVisits: BaseCityVisitDto[] = [];

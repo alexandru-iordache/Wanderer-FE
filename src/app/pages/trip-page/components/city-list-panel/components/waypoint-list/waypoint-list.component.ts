@@ -20,6 +20,8 @@ import { UiHelper } from '../../../../../../shared/helpers/ui-helper';
 export class WaypointListComponent implements OnInit, OnDestroy {
   @Input() setCurrentView!: (panelView: PanelView) => void;
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
+  @Input() isCompleted: boolean = false;
+  @Input() isCurrentUserOwner: boolean = true;
 
   currentDayIndex: number = 0;
   selectedCityVisit: BaseCityVisitDto | null = null;
