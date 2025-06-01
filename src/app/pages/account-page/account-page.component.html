@@ -1,5 +1,21 @@
-<div class="my-trips-page">
-    <div class="user-avatar">{{userDetails?.profileName !== null ? userDetails!.profileName.charAt(0) : "C"}}</div>
+<div class="my-trips-page">    <div class="user-avatar" (click)="triggerFileInput()">
+        <div *ngIf="userDetails?.avatarUrl" class="avatar-image">
+            <img [src]="userDetails?.avatarUrl" alt="User avatar">
+        </div>
+        <div *ngIf="!userDetails?.avatarUrl" class="avatar-text">
+            {{userDetails?.profileName !== null ? userDetails!.profileName.charAt(0) : "N/A"}}
+        </div>
+        <div class="avatar-overlay">
+            <mat-icon>photo_camera</mat-icon>
+        </div>
+    </div>
+    <input 
+        type="file" 
+        #fileInput 
+        style="display: none" 
+        accept="image/*" 
+        (change)="onFileSelected($event)"
+    >
     <form class="form-section" [formGroup]="userDetailsForm" (ngSubmit)="onFormSubmit()">
         <div class="form-row-section">
             <label class="form-label">Email</label>

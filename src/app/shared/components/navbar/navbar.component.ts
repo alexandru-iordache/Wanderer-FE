@@ -22,7 +22,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   userDetails: UserDto | null = null;
   loading: boolean = false;
 
-  private authSubscription: Subscription | null = null;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private userService: UserService,
@@ -31,21 +31,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.authSubscription = this.authService
-      .getAuthState()
-      .subscribe((user) => {
+    this.subscriptions.push(
+      this.authService.getAuthState().subscribe((user) => {
         this.isLoggedIn = user != null ? true : false;
 
         if (this.isLoggedIn) {
           this.fetchUserDetails();
         }
-      });
+      }),
+      this.userService.getUserDetailsChanged().subscribe((userDetails) => {
+        if (userDetails) {
+          this.userDetails = userDetails;
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    if (this.authSubscription) {
-      this.authSubscription.unsubscribe();
-    }
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   onLogoutClicked(): void {
@@ -57,6 +60,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.userDetails = null;
         localStorage.removeItem('userId');
         localStorage.removeItem('profileName');
+        localStorage.removeItem('idToken');
+        sessionStorage.removeItem('idToken');
         sessionStorage.removeItem('userId');
         sessionStorage.removeItem('profileName');
         this.router.navigate(['/sign-in']);
@@ -72,15 +77,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private async fetchUserDetails(): Promise<void> {
     this.loading = true;
     try {
-      const userId =
-        localStorage.getItem('userId') || sessionStorage.getItem('userId');
-      const profileName =
-        localStorage.getItem('profileName') ||
-        sessionStorage.getItem('profileName');
-
-      if (userId && profileName) {
-        this.userDetails = { id: userId, profileName: profileName } as UserDto;
-      }
+      this.userService.getUserDetails().subscribe({
+        next: (userDetails) => {
+          this.userDetails = userDetails;
+          // this.userService.updateUserDetailsChanged(userDetails);
+        },
+        error: (error) => {
+          console.error('Error fetching user details:', error);
+          this.userDetails = null;
+          this.userService.updateUserDetailsChanged(null);
+        },
+      });
     } catch (error) {
       console.error('Error fetching user details:', error);
     } finally {

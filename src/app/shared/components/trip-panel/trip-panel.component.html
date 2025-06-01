@@ -28,7 +28,7 @@
     </div>
   </div>
 
-   <!-- Filters opened -->
+  <!-- Filters opened -->
   @if(areFiltersOpened === true){
   <div class="filters-panel">
     <div class="filter-section">
@@ -76,7 +76,8 @@
       <button class="save-button" (click)="onSaveClicked($event)">Save</button>
     </div>
   </div>
-  } @else { <!-- Filters not opened --> 
+  } @else {
+  <!-- Filters not opened -->
   <div class="panel-content">
     @if (trips.length === 0) { @if(areCurrentUserTrips === true) {
     <div class="empty-trips-list">
@@ -100,7 +101,9 @@
             ></mat-icon>
             } @else {
             <mat-icon class="button-icon" fontIcon="departure_board"></mat-icon
-            >}
+            >} @if(trip.isPublished && areCurrentUserTrips) {
+            <mat-icon class="button-icon" fontIcon="public"></mat-icon>
+            }
             <span class="button-text name">{{ trip.title }}</span>
           </span>
           <div class="date-text">
@@ -119,8 +122,7 @@
             >
               Complete
             </div>
-            }
-
+            } @if(trip.isPublished === false) {
             <div
               class="dropdown-item"
               id="publish"
@@ -128,6 +130,15 @@
             >
               Publish
             </div>
+            } @else {
+            <div
+              class="dropdown-item"
+              id="create"
+              (click)="createPostForTrip($event, trip.title, trip.id)"
+            >
+              Create Post
+            </div>
+            }
             <div
               class="dropdown-item"
               id="delete"
@@ -136,14 +147,14 @@
               Delete
             </div>
             } @else{
-              <div
+            <div
               class="dropdown-item"
               id="clone"
               (click)="completeTrip($event, trip.title, trip.id)"
             >
               Clone
             </div>
-             }
+            }
           </div>
         </div>
       </div>

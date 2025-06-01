@@ -8,12 +8,14 @@ import {
 } from '@angular/core';
 import { UserDto } from '../../interfaces/dtos/response/user-dto';
 import { UserService } from '../../services/user.service';
+import { PostService } from '../../services/post.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { minimumAgeValidator } from '../../shared/helpers/validators';
 import { HomeCityDto } from '../../interfaces/dtos/home-city-dto';
 import { LatLngBound } from '../../interfaces/dtos/lat-lang-bound';
 import { Subscription } from 'rxjs';
 import { UpdateUserDto } from '../../interfaces/dtos/request/update-user-dto';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-account-page',
@@ -22,18 +24,21 @@ import { UpdateUserDto } from '../../interfaces/dtos/request/update-user-dto';
 })
 export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('cityName') cityNameInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
 
   userDetails: UserDto | null = null;
   homeCity: HomeCityDto | null = null;
+  selectedFile: File | null = null;
 
   userDetailsForm: FormGroup = new FormGroup({});
 
   private subscriptions: Subscription[] = [];
   private cityAutocomplete: google.maps.places.Autocomplete | null = null;
-
   constructor(
     private userService: UserService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private modalService: ModalService,
+    private postService: PostService
   ) {}
 
   ngOnInit() {
@@ -61,14 +66,14 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private setForm() {
-  // Update form with user details
-  this.userDetailsForm.patchValue({
-    email: this.userDetails?.email || '',
-    profileName: this.userDetails?.profileName || '',
-    homeCity: this.userDetails?.homeCity?.city || '',
-    profileDescription: this.userDetails?.profileDescription || '',
-  });
-}
+    // Update form with user details
+    this.userDetailsForm.patchValue({
+      email: this.userDetails?.email || '',
+      profileName: this.userDetails?.profileName || '',
+      homeCity: this.userDetails?.homeCity?.city || '',
+      profileDescription: this.userDetails?.profileDescription || '',
+    });
+  }
 
   onFormSubmit() {
     if (this.userDetailsForm.invalid) {
@@ -78,6 +83,7 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const updatedUser: UpdateUserDto = {
       id: this.userDetails!.id,
+      avatarUrl: this.userDetails?.avatarUrl || '',
       profileName: this.userDetailsForm.get('profileName')!.value,
       homeCity: this.homeCity,
       profileDescription: this.userDetailsForm.get('profileDescription')!.value,
@@ -86,7 +92,8 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.push(
       this.userService.updateUser(updatedUser).subscribe({
         next: (response) => {
-          console.log('User updated successfully:', response);
+          this.modalService.snackbar(
+            'User details updated successfully.', 5000, true);
           this.userDetails = response as UserDto;
           this.setForm();
         },
@@ -95,6 +102,35 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
         },
       })
     );
+  }
+
+  triggerFileInput(): void {
+    this.fileInput?.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+
+      this.subscriptions.push(
+        this.postService.saveImage(this.selectedFile).subscribe({
+          next: (imageUrl: string) => {
+            if (this.userDetails) {
+              this.userDetails.avatarUrl = imageUrl;
+            }
+          },
+          error: (error) => {
+            console.error('Error uploading image:', error);
+            this.modalService.snackbar(
+              'Failed to upload image. Please try again.',
+              10000,
+              false
+            );
+          },
+        })
+      );
+    }
   }
 
   private initializeCityAutocomplete() {

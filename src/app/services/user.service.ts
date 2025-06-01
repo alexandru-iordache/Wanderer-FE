@@ -22,6 +22,7 @@ import { PostDto } from '../interfaces/dtos/base-dtos/base-post-dto';
 })
 export class UserService {
   private userStatsChanged = new BehaviorSubject<number>(0);
+  private userDetailsChanged = new BehaviorSubject<UserDto | null>(null);
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -148,6 +149,14 @@ export class UserService {
 
   getUserStatsChanged(): Observable<number> {
     return this.userStatsChanged.asObservable();
+  }
+
+  updateUserDetailsChanged(userDetails: UserDto | null) {
+    this.userDetailsChanged.next(userDetails);
+  }
+
+  getUserDetailsChanged(): Observable<UserDto | null> {
+    return this.userDetailsChanged.asObservable();
   }
 
   private createHeaders(): HttpHeaders {

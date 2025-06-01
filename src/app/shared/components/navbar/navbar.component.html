@@ -15,7 +15,10 @@
   } @else {
   <div class="navigation-container logged">
     <div class="user-info">
-      <div class="user-avatar">
+      <div class="user-avatar" *ngIf="userDetails?.avatarUrl">
+        <img [src]="userDetails?.avatarUrl" [alt]="userDetails?.profileName" />
+      </div>
+      <div class="user-avatar fallback" *ngIf="!userDetails?.avatarUrl">
         {{
           userDetails?.profileName !== null
             ? userDetails!.profileName.charAt(0)
@@ -23,9 +26,13 @@
         }}
       </div>
       <div class="user-options">
-        <div class="username">{{ userDetails?.profileName }}</div>
+        <div class="username" routerLink="/profile/{{ userDetails?.id }}">
+          {{ userDetails?.profileName }}
+        </div>
         <div class="dropdown-menu">
-          <div class="menu-option" routerLink="/account/{{ userDetails!.id }}">Edit Profile</div>
+          <div class="menu-option" routerLink="/account/{{ userDetails!.id }}">
+            Edit Profile
+          </div>
           <div class="menu-option" (click)="onLogoutClicked()">Logout</div>
         </div>
       </div>

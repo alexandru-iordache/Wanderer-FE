@@ -11,7 +11,11 @@
         {{ getFirstLetterOf(post.userInfo.profileName) }}
       </div>
       <div class="user-details">
-        <div class="username">{{ post.userInfo.profileName }}</div>
+        <div class="username">
+          <a [routerLink]="['/profile', post.ownerId]">{{
+            post.userInfo.profileName
+          }}</a>
+        </div>
         <div class="post-date">{{ formatDate(post.createdAt) }}</div>
       </div>
     </div>
@@ -52,7 +56,11 @@
               {{ getFirstLetterOf(comment.profileName) }}
             </div>
             <div class="comment-user-info">
-              <div class="comment-username">{{ comment.profileName }}</div>
+              <div class="comment-username">
+                <a [routerLink]="['/profile', comment.userId]">{{
+                  comment.profileName
+                }}</a>
+              </div>
               <div class="comment-date">
                 {{ formatDate(comment.createdAt) }}
               </div>

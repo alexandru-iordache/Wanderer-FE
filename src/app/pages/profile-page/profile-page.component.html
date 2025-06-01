@@ -20,9 +20,11 @@
     </div>
   </div>
   <div class="view-content-wrapper" *ngIf="activeView === 'profile'">
-    <div class="profile-content-container">
-      <div class="profile-info">
-        <div class="user-avatar">
+    <div class="profile-content-container">      <div class="profile-info">
+        <div class="user-avatar" *ngIf="userProfileDto?.avatarUrl">
+          <img [src]="userProfileDto?.avatarUrl" [alt]="userProfileDto?.profileName" />
+        </div>
+        <div class="user-avatar fallback" *ngIf="!userProfileDto?.avatarUrl">
           {{
             userProfileDto?.profileName !== null
               ? userProfileDto!.profileName.charAt(0)

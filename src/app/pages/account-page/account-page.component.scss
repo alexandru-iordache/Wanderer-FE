@@ -23,11 +23,53 @@
   font-weight: bold;
   font-size: 30px;
   text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+
+  .avatar-text {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $secondary-color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    mat-icon {
+      color: $primary-color;
+      font-size: 24px;
+    }
+  }
 
   &:hover {
-    color: $primary-color-highlight;
-    background-color: $secondary-color-highlight;
     cursor: pointer;
+
+    .avatar-overlay {
+      opacity: 1;
+    }
   }
 }
 
@@ -112,7 +154,7 @@ input {
 
   width: 100%;
   margin-top: 10px;
-  color: #ffffff;
+  color: $primary-color;
   background-color: $secondary-color;
 
   &:hover {

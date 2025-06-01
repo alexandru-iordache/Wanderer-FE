@@ -171,6 +171,11 @@ export class TripPanelComponent implements OnInit {
       return;
     }
 
+    await this.createPostForTrip(event, tripName, tripId);
+  }
+
+  async createPostForTrip(event: MouseEvent, tripName: string, tripId: string) {
+    event.stopPropagation();
     let tripToPublish = this.trips.find((trip) => trip.id === tripId)!;
 
     const createPostConfirmed = await this.modalService.confirmCreatePost(
@@ -184,18 +189,12 @@ export class TripPanelComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error publishing trip:', error);
-          this.modalService.snackbar('Error publishing trip.', 10000, false);
         },
       });
-    }
-
-    const createPostModalResponse = await this.modalService.createPost(
-      tripToPublish.id
-    );
-    if (createPostModalResponse) {
-      this.modalService.snackbar('Post created successfully.', 5000, true);
     } else {
-      this.modalService.snackbar('Error creating post.', 10000, false);
+      const createPostModalResponse = await this.modalService.createPost(
+        tripToPublish.id
+      );
     }
   }
 
