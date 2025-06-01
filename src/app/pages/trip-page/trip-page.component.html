@@ -4,7 +4,7 @@
     (viewChanged)="onViewChanged($event)"
     *ngIf="modalClosed === false && !isEditMode"
   ></app-create-trip-modal>
-  <div class="saved-status-container" *ngIf="modalClosed === true">
+  <div class="saved-status-container" *ngIf="modalClosed === true && !isCompleted && isCurrentUserOwner">
     @if (isSaved === true) {
     <mat-icon class="saved-status-icon" fontIcon="check_circle"></mat-icon>
     <span class="saved-status-message">Saved</span>
