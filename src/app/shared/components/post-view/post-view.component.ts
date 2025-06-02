@@ -3,6 +3,7 @@ import { PostDto } from '../../../interfaces/dtos/base-dtos/base-post-dto';
 import { PostService } from '../../../services/post.service';
 import { ModalService } from '../../../services/modal.service';
 import { PostCommentDto } from '../../../interfaces/dtos/response/post-comment-dto';
+import { PostBatch } from '../../../interfaces/enums/post-batch.enum';
 
 @Component({
   selector: 'app-post-view',

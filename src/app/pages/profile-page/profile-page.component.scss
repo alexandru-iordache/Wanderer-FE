@@ -5,7 +5,6 @@
   height: 100%;
   align-items: center;
   background-color: $primary-color;
-  max-height: calc(100vh - 90px);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -60,11 +59,8 @@
 }
 
 .view-content-wrapper {
-  flex: 1;
-  display: flex;
-  justify-content: center;
   width: 100%;
-  overflow: visible; /* Allow content to be visible even if it overflows */
+  overflow-x: auto;
 }
 
 .profile-content-container {
@@ -76,7 +72,6 @@
 
 .profile-info {
   width: 48%;
-  min-width: 250px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -89,14 +84,6 @@
 .trips-info {
   width: 48%;
   min-width: 250px;
-}
-
-.posts-view {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  flex: 1;
 }
 
 .user-avatar {
@@ -133,12 +120,16 @@
 }
 
 .profile-info-row {
+  min-width: 300px;
   margin-bottom: 10px;
   display: block;
 
   &.button {
     display: flex;
     justify-content: flex-end;
+  }
+  &:last-of-type {
+    margin-bottom: 0;
   }
 }
 

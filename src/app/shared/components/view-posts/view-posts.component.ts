@@ -3,6 +3,7 @@ import { Uuid } from '../../../shared/helpers/uuid';
 import { PostService } from '../../../services/post.service';
 import { PostDto } from '../../../interfaces/dtos/base-dtos/base-post-dto';
 import { UserService } from '../../../services/user.service';
+import { PostBatch } from '../../../interfaces/enums/post-batch.enum';
 
 @Component({
   selector: 'app-view-posts',
@@ -11,6 +12,7 @@ import { UserService } from '../../../services/user.service';
 })
 export class ViewPostsComponent implements OnInit {
   @Input() userId!: Uuid;
+  @Input() batchType: PostBatch = PostBatch.USER_POSTS;
   
   userPosts: PostDto[] = [];
   isLoading = false;
@@ -18,7 +20,9 @@ export class ViewPostsComponent implements OnInit {
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.loadUserPosts();
+    if(this.batchType){
+      this.loadUserPosts();
+    }
   }
 
   loadUserPosts(): void {

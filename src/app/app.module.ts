@@ -18,7 +18,7 @@ import { AppComponent } from './app.component';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { SignInPageComponent } from './pages/sign-in-page/sign-in-page.component';
-import { DahsboardPageComponent } from './pages/dahsboard-page/dahsboard-page.component';
+import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 import { TripPageComponent } from './pages/trip-page/trip-page.component';
 import { MapComponent } from './pages/trip-page/components/map/map.component';
@@ -53,7 +53,7 @@ import { PostViewComponent } from './shared/components/post-view/post-view.compo
     NavbarComponent,
     HomePageComponent,
     SignInPageComponent,
-    DahsboardPageComponent,
+    DashboardPageComponent,
     SidebarComponent,
     TripPageComponent,
     MapComponent,

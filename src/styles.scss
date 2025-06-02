@@ -117,6 +117,7 @@ body {
 body {
   background-color: $primary-color;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  overflow-x: hidden;
 }
 
 * {

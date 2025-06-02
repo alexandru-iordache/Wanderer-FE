@@ -20,9 +20,13 @@
     </div>
   </div>
   <div class="view-content-wrapper" *ngIf="activeView === 'profile'">
-    <div class="profile-content-container">      <div class="profile-info">
+    <div class="profile-content-container">
+      <div class="profile-info">
         <div class="user-avatar" *ngIf="userProfileDto?.avatarUrl">
-          <img [src]="userProfileDto?.avatarUrl" [alt]="userProfileDto?.profileName" />
+          <img
+            [src]="userProfileDto?.avatarUrl"
+            [alt]="userProfileDto?.profileName"
+          />
         </div>
         <div class="user-avatar fallback" *ngIf="!userProfileDto?.avatarUrl">
           {{
@@ -114,7 +118,8 @@
     </div>
   </div>
 
-  <div class="view-content-wrapper" *ngIf="activeView === 'posts'">
-    <app-view-posts [userId]="userId!"></app-view-posts>
-  </div>
+  <app-view-posts
+    [userId]="userId!"
+    *ngIf="activeView === 'posts'"
+  ></app-view-posts>
 </div>

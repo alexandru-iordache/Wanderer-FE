@@ -12,7 +12,7 @@
       </div>
       <div class="user-details">
         <div class="username">
-          <a [routerLink]="['/profile', post.ownerId]">{{
+          <a routerLink="/profile/{{ post.ownerId }}">{{
             post.userInfo.profileName
           }}</a>
         </div>
@@ -57,7 +57,7 @@
             </div>
             <div class="comment-user-info">
               <div class="comment-username">
-                <a [routerLink]="['/profile', comment.userId]">{{
+                <a routerLink="/profile/{{ comment.userId }}">{{
                   comment.profileName
                 }}</a>
               </div>
