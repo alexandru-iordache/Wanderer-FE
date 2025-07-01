@@ -4,6 +4,8 @@ import { PostService } from '../../../services/post.service';
 import { ModalService } from '../../../services/modal.service';
 import { PostCommentDto } from '../../../interfaces/dtos/response/post-comment-dto';
 import { PostBatch } from '../../../interfaces/enums/post-batch.enum';
+import { TripService } from '../../../services/trip.service';
+import { Uuid } from '../../helpers/uuid';
 
 @Component({
   selector: 'app-post-view',
@@ -18,9 +20,30 @@ export class PostViewComponent {
 
   constructor(
     private postService: PostService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private tripService: TripService
   ) {}
   
+  cloneTrip(tripId: Uuid) {
+    this.tripService.cloneTrip(tripId).subscribe({
+      next: (trip) => {
+        this.modalService.snackbar(
+          'Trip cloned successfully!',
+          5000,
+          true
+        );
+      },
+      error: (error) => {
+        this.modalService.snackbar(
+          'Error cloning trip. Please try again later.',
+          10000,
+          false
+        );
+        console.error('Error cloning trip:', error);
+      },
+    });
+  }
+
   getFirstLetterOf(name: string): string {
     if (name) {
       return name.charAt(0).toUpperCase();

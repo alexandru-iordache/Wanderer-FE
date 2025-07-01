@@ -12,6 +12,7 @@ import {
   CityVisitDto,
 } from '../../../../../../interfaces/dtos/base-dtos/base-city-visit-dto';
 import { ModalService } from '../../../../../../services/modal.service';
+import { Uuid } from '../../../../../../shared/helpers/uuid';
 
 @Component({
   selector: 'app-header',
@@ -82,4 +83,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
       console.error('Error creating trip:', error);
     }
   }
+
+    cloneTrip() {
+      this.tripService.cloneTrip(this.trip.id!).subscribe({
+        next: (trip) => {
+          this.modalService.snackbar(
+            'Trip cloned successfully!',
+            5000,
+            true
+          );
+        },
+        error: (error) => {
+          this.modalService.snackbar(
+            'Error cloning trip. Please try again later.',
+            10000,
+            false
+          );
+          console.error('Error cloning trip:', error);
+        },
+      });
+    }
 }

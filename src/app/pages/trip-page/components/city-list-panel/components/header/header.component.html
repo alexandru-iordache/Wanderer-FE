@@ -4,7 +4,7 @@
   </div>
   <div class="trip-options">
     <span *ngIf="!isCompleted && isCurrentUserOwner" (click)="onSaveClick()">Save</span>
-    <span *ngIf="isCompleted || !isCurrentUserOwner">Clone</span>
+    <span *ngIf="isCompleted || !isCurrentUserOwner" (click)="cloneTrip()">Clone</span>
     <span *ngIf="!isCompleted && isCurrentUserOwner">Edit</span>
   </div>
 </div>

@@ -85,6 +85,16 @@ export class TripService {
       .pipe(map((response: any) => response.body as TripDto));
   }
 
+  cloneTrip(id: Uuid): Observable<TripDto> {
+    return this.http
+      .post(
+        `${this.apiUrl}/${id}/clone`,
+        {},
+        { headers: this.createHeaders(), observe: 'response' }
+      )
+      .pipe(map((response: any) => response.body as TripDto));
+  }
+
   async createTrip(trip: AddTripDto) {
     const response = await firstValueFrom(
       this.http.post(`${this.apiUrl}`, trip, {
