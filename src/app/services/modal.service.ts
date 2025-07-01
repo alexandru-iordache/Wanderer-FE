@@ -9,6 +9,7 @@ import {
 import { ModalComponent } from '../shared/components/modal/modal.component';
 import { SnackbarComponent } from '../shared/components/snackbar/snackbar.component';
 import { CreatePostModalComponent } from '../shared/components/create-post-modal/create-post-modal.component';
+import { ImageViewModalComponent } from '../shared/components/image-view-modal/image-view-modal.component';
 import { Uuid } from '../shared/helpers/uuid';
 import { TripDto } from '../interfaces/dtos/base-dtos/base-trip-dto';
 
@@ -21,6 +22,11 @@ export interface ModalOptions {
 
 export interface CreatePostModalOptions {
   tripId: Uuid;
+}
+
+export interface ImageViewModalOptions {
+  imageUrl: string;
+  locationLabel?: string | null;
 }
 
 export interface SnackbarOptions {
@@ -36,6 +42,7 @@ export class ModalService {
   private modalComponentRef: ComponentRef<ModalComponent> | null = null;
   private createPostModalComponentRef: ComponentRef<CreatePostModalComponent> | null =
     null;
+  private imageViewModalComponentRef: ComponentRef<ImageViewModalComponent> | null = null;
   private snackbarComponentRef: ComponentRef<SnackbarComponent> | null = null;
 
   constructor(private appRef: ApplicationRef) {}
@@ -126,6 +133,10 @@ export class ModalService {
     });
   }
 
+  showImageModal(imageUrl: string, locationLabel?: string | null): void {
+    this.openImageModal({ imageUrl, locationLabel });
+  }
+
   confirm(options: ModalOptions): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       this.openModal(options, resolve);
@@ -213,6 +224,31 @@ export class ModalService {
     }
   }
 
+  private openImageModal(options: ImageViewModalOptions): void {
+    this.closeModal();
+
+    const modalElement = document.createElement('div');
+    this.imageViewModalComponentRef = this.appRef.bootstrap(
+      ImageViewModalComponent,
+      modalElement
+    );
+
+    let instance = this.imageViewModalComponentRef!.instance as ImageViewModalComponent;
+
+    instance.imageUrl = options.imageUrl;
+    instance.locationLabel = options.locationLabel;
+
+    const closeSub = instance.closeModal.subscribe(() => {
+      closeSub.unsubscribe();
+      this.closeModal();
+    });
+
+    this.appRef.attachView(this.imageViewModalComponentRef!.hostView);
+
+    const domElement = (this.imageViewModalComponentRef!.hostView as any).rootNodes[0];
+    document.body.appendChild(domElement);
+  }
+
   private closeModal(): void {
     if (this.modalComponentRef) {
       this.appRef.detachView(this.modalComponentRef.hostView);
@@ -224,6 +260,12 @@ export class ModalService {
       this.appRef.detachView(this.createPostModalComponentRef.hostView);
       this.createPostModalComponentRef.destroy();
       this.createPostModalComponentRef = null;
+    }
+
+    if (this.imageViewModalComponentRef) {
+      this.appRef.detachView(this.imageViewModalComponentRef.hostView);
+      this.imageViewModalComponentRef.destroy();
+      this.imageViewModalComponentRef = null;
     }
   }
 

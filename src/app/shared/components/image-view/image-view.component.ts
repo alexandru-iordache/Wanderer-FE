@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BaseImageInfoDto } from '../../../interfaces/dtos/base-dtos/base-image-info-dto';
+import { ModalService } from '../../../services/modal.service';
 
 @Component({
   selector: 'app-image-view',
@@ -13,9 +14,9 @@ export class ImageViewComponent implements OnInit {
   @Input() borderRadius: string = '8px';
   @Input() onRemove: (() => void) | null = null;
   
-  showModal: boolean = false;
-  
   locationLabel: string | null = null;
+  
+  constructor(private modalService: ModalService) {}
   
   ngOnInit(): void {
     this.generateLocationLabel();
@@ -34,14 +35,10 @@ export class ImageViewComponent implements OnInit {
   openModal(event: Event): void {
     event.stopPropagation();
     if (!(event.target as HTMLElement).closest('.remove-button')) {
-      this.showModal = true;
+      this.modalService.showImageModal(this.imageInfo.imageUrl, this.locationLabel);
     }
   }
-  
-  closeModal(): void {
-    this.showModal = false;
-  }
-  
+
   stopPropagation(event: Event): void {
     event.stopPropagation();
   }

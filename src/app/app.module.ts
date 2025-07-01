@@ -44,6 +44,7 @@ import { SnackbarComponent } from './shared/components/snackbar/snackbar.compone
 import { CreatePostModalComponent } from './shared/components/create-post-modal/create-post-modal.component';
 import { ImageSelectionSectionComponent } from './shared/components/create-post-modal/components/image-selection-section/image-selection-section.component';
 import { ImageViewComponent } from './shared/components/image-view/image-view.component';
+import { ImageViewModalComponent } from './shared/components/image-view-modal/image-view-modal.component';
 import { ViewPostsComponent } from './shared/components/view-posts/view-posts.component';
 import { PostViewComponent } from './shared/components/post-view/post-view.component';
 
@@ -74,6 +75,7 @@ import { PostViewComponent } from './shared/components/post-view/post-view.compo
     CreatePostModalComponent,
     ImageSelectionSectionComponent,
     ImageViewComponent,
+    ImageViewModalComponent,
     ViewPostsComponent,
     PostViewComponent
   ],

@@ -1,0 +1,19 @@
+<div class="modal-backdrop" (click)="close()">
+  <div class="image-modal" (click)="stopPropagation($event)">
+    <div class="modal-content">
+      <div class="image-wrapper">
+        <img [src]="imageUrl" alt="Image" />
+      </div>
+      
+      @if(locationLabel) {
+        <div class="modal-location-label">
+          <span>{{ locationLabel }}</span>
+        </div>
+      }
+    </div>
+    
+    <button class="close-button" (click)="close()">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+</div>
