@@ -125,6 +125,15 @@ export class UserService {
       .pipe(map((response: any) => response.body as PostDto[]));
   }
 
+  getUserFeed(userId: Uuid, top: number, skip: number): Observable<PostDto[]> {
+    return this.http
+      .get(`${environment.apiUrl}/api/users/${userId}/feed?top=${top}&skip=${skip}`, {
+        headers: this.createHeaders(),
+        observe: 'response',
+      })
+      .pipe(map((response: any) => response.body as PostDto[]));
+  }
+
   getUserProfile(userId: string): Observable<UserProfileDto> {
     return this.http
       .get(environment.apiUrl + `/api/users/${userId}/profile`, {

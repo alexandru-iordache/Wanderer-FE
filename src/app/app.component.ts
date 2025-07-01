@@ -12,7 +12,7 @@ import { GoogleMapsService } from './services/google-maps.service';
 export class AppComponent implements OnInit, OnDestroy {
   title = 'wanderer-fe';
 
-  isLoggedIn: boolean | null = null;
+  isLoggedIn: boolean = false;
   private authSubscription!: Subscription;
 
   constructor(private authService: AuthService, private googleMapsService: GoogleMapsService) {

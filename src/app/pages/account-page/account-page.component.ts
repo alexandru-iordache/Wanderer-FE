@@ -54,7 +54,7 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
     this.userDetailsForm = this.formBuilder.group({
       profileName: ['', [Validators.required]],
       email: ['', []],
-      homeCity: ['', [Validators.required]],
+      homeCity: ['', []],
       profileDescription: ['', [Validators.maxLength(200)]],
     });
 
@@ -77,7 +77,8 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onFormSubmit() {
     if (this.userDetailsForm.invalid) {
-      // IMPORTANT: Show error feedback
+      this.modalService.snackbar(
+        'Please fill in all required fields correctly.', 5000, false);
       return;
     }
 
@@ -96,6 +97,7 @@ export class AccountPageComponent implements OnInit, OnDestroy, AfterViewInit {
             'User details updated successfully.', 5000, true);
           this.userDetails = response as UserDto;
           this.setForm();
+          this.userService.updateUserStatsChanged();
         },
         error: (error) => {
           console.error('Error updating user:', error);

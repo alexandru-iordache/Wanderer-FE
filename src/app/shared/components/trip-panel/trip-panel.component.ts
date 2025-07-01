@@ -195,6 +195,9 @@ export class TripPanelComponent implements OnInit {
       const createPostModalResponse = await this.modalService.createPost(
         tripToPublish.id
       );
+      if (createPostModalResponse) {
+        tripToPublish.isPublished = true;
+      }
     }
   }
 

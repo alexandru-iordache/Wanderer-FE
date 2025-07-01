@@ -11,6 +11,7 @@ import { UserService } from '../../services/user.service';
 import { AddUserDto } from '../../interfaces/dtos/request/add-user-dto';
 import { FirebaseError } from 'firebase/app';
 import { UserDto } from '../../interfaces/dtos/response/user-dto';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-sign-in-page',
@@ -26,7 +27,8 @@ export class SignInPageComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -98,23 +100,26 @@ export class SignInPageComponent implements OnInit {
     try {
       const credential = await this.authService.signUp(email, password);
       if (credential.user == null) {
-        // IMPORTANT: Snackbar handling
-        console.log('Failed!');
+        this.modalService.snackbar(
+          'Failed to create user. Please try again later.',
+          10000,
+          false
+        );
         return;
       }
 
       await this.SaveAccessTokenToStorage(false);
 
       addUserDto = {
-        profileName: username ?? 'No name',
-        email: credential.user.email ?? 'No email',
+        profileName: username,
+        email: credential.user.email,
       } as AddUserDto;
     } catch (error) {
       // IMPORTANT: Snackbar handling
       if (error instanceof FirebaseError) {
         this.HandleFirebaseError(error);
       } else {
-        alert('Unexpected error: ' + error);
+        this.modalService.snackbar('Unexpected error.', 10000, false);
       }
       return;
     }
@@ -123,8 +128,6 @@ export class SignInPageComponent implements OnInit {
       var response = await this.userService.createUser(addUserDto);
       if (response.statusCode != 201) {
         await this.authService.signOut();
-        // IMPORTANT: Snackbar handling
-        console.log('Failed!');
         return;
       }
 
@@ -133,7 +136,12 @@ export class SignInPageComponent implements OnInit {
         response.body
       );
       if (!isSucces) {
-        alert('Error getting user details');
+        this.modalService.snackbar(
+          'Error saving user details to storage',
+          10000,
+          false
+        );
+
         await this.authService.signOut();
         return;
       }
@@ -141,8 +149,12 @@ export class SignInPageComponent implements OnInit {
       this.router.navigate(['/dashboard']);
       return;
     } catch (error) {
+      this.modalService.snackbar(
+        'Error creating user in database',
+        10000,
+        false
+      );
       await this.authService.signOut();
-      console.error('Error creating user in database', error);
       return;
     }
   }
@@ -169,7 +181,7 @@ export class SignInPageComponent implements OnInit {
       if (error instanceof FirebaseError) {
         this.HandleFirebaseError(error);
       } else {
-        alert('Unexpected error: ' + error);
+        this.modalService.snackbar('Unexpected error.', 10000, false);
       }
       return;
     }
@@ -179,9 +191,7 @@ export class SignInPageComponent implements OnInit {
       if (isNewUser) {
         const response = await this.userService.createUser(addUserDto);
         if (response.statusCode != 201 && response.statusCode != 409) {
-          // IMPORTANT: Snackbar handling
           await this.authService.signOut();
-          alert('Error creating user in database');
           return;
         }
         userDetails = response.body;
@@ -190,7 +200,11 @@ export class SignInPageComponent implements OnInit {
         if (response.statusCode != 200) {
           // IMPORTANT: Snackbar handling
           await this.authService.signOut();
-          alert('Error getting user details');
+          this.modalService.snackbar(
+            'Error getting user details',
+            10000,
+            false
+          );
           return;
         }
         userDetails = response.body;
@@ -198,7 +212,11 @@ export class SignInPageComponent implements OnInit {
 
       var isSucces = await this.TrySaveUserDetailsToStorage(false, userDetails);
       if (!isSucces) {
-        alert('Error saving user details to storage');
+        this.modalService.snackbar(
+          'Error saving user details to storage',
+          10000,
+          false
+        );
         await this.authService.signOut();
         return;
       }
@@ -206,10 +224,12 @@ export class SignInPageComponent implements OnInit {
       this.router.navigate(['/dashboard']);
       return;
     } catch (error) {
+      this.modalService.snackbar(
+        'Error creating user in database',
+        10000,
+        false
+      );
       await this.authService.signOut();
-      // IMPORTANT: Snackbar handling
-      alert('Unexpected error');
-      console.error('Error creating user in database', error);
       return;
     }
   }
@@ -224,7 +244,7 @@ export class SignInPageComponent implements OnInit {
       console.error('Failed to get valid ID token');
       return;
     }
-    
+
     if (rememberMe) {
       localStorage.setItem('idToken', accessId);
     } else {
@@ -246,8 +266,15 @@ export class SignInPageComponent implements OnInit {
         userDetails = userDetailsResponse.body;
       }
 
-      localStorage.setItem('userId', userDetails.id);
-      localStorage.setItem('profileName', userDetails.profileName);
+      if (rememberMe) {
+        localStorage.setItem('userId', userDetails.id);
+        localStorage.setItem('profileName', userDetails.profileName);
+      } else {
+        sessionStorage.setItem('userId', userDetails.id);
+        sessionStorage.setItem('profileName', userDetails.profileName);
+      }
+
+      this.userService.updateUserDetailsChanged(userDetails);
 
       return true;
     } catch (error) {
@@ -258,19 +285,19 @@ export class SignInPageComponent implements OnInit {
 
   private HandleFirebaseError(error: FirebaseError) {
     var errorCode = error.code;
-    var errorMessage = error.message;
 
+    let messageToShow = 'Unexcpected error occurred.';
     if (
       errorCode === 'auth/wrong-password' ||
       errorCode === 'auth/invalid-credential'
     ) {
-      alert('Wrong password.');
+      messageToShow = 'Credentials are invalid.';
     } else if (errorCode === 'auth/email-already-in-use') {
-      alert('Email already in use.');
+      messageToShow = 'Email is already in use.';
     } else if (errorCode === 'auth/cancelled-popup-request') {
       return;
-    } else {
-      alert('Error: ' + errorMessage);
     }
+
+    this.modalService.snackbar(messageToShow, 10000, false);
   }
 }

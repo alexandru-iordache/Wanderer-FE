@@ -18,6 +18,26 @@
   min-width: 500px;
   max-width: 500px;
   height: 40px;
-  background-color: $third-color;
+  background-color: $forth-color;
   z-index: 10;
+}
+
+.search-bar {
+  width: 70%;
+  height: 30px;
+  background-color: $primary-color;
+  margin: auto;
+  margin-top: 5px;
+  border-radius: 20px;
+  border: 1px solid $secondary-color;
+  color: rgba($secondary-color, 0.6);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  .placeholder {
+    font-family: $primary-font;
+    font-size: 14px;
+    margin-left: 10px;
+  }
 }

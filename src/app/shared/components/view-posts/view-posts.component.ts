@@ -20,8 +20,10 @@ export class ViewPostsComponent implements OnInit {
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    if(this.batchType){
+    if(this.batchType == PostBatch.USER_POSTS) {
       this.loadUserPosts();
+    } else {
+      this.loadUserFeed();
     }
   }
 
@@ -35,6 +37,21 @@ export class ViewPostsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error fetching user posts:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadUserFeed(): void {
+    this.isLoading = true;
+    
+    this.userService.getUserFeed(this.userId, 20, 0).subscribe({
+      next: (posts) => {
+        this.userPosts = posts;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error fetching user feed:', error);
         this.isLoading = false;
       }
     });

@@ -42,7 +42,10 @@ export class MyTripsPageComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(private userService: UserService, private modalService: ModalService) {
-     this.userId = localStorage.getItem('userId') as Uuid;
+    this.userId = localStorage.getItem('userId') as Uuid;
+    if (this.userId === null) {
+      this.userId = sessionStorage.getItem('userId') as Uuid;
+    }
   }
 
   ngOnInit(): void {

@@ -17,8 +17,8 @@ import { Router } from '@angular/router';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
-export class NavbarComponent implements OnInit, OnDestroy {
-  isLoggedIn: boolean = false;
+export class NavbarComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() isLoggedIn: boolean = false;
   userDetails: UserDto | null = null;
   loading: boolean = false;
 
@@ -32,19 +32,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.authService.getAuthState().subscribe((user) => {
-        this.isLoggedIn = user != null ? true : false;
-
-        if (this.isLoggedIn) {
-          this.fetchUserDetails();
-        }
-      }),
       this.userService.getUserDetailsChanged().subscribe((userDetails) => {
         if (userDetails) {
           this.userDetails = userDetails;
+          this.isLoggedIn = true;
         }
       })
     );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isLoggedIn'] && this.isLoggedIn) {
+      this.fetchUserDetails();
+    } else {
+      this.userDetails = null;
+    }
   }
 
   ngOnDestroy(): void {

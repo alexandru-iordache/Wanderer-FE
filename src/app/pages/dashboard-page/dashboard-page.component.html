@@ -1,4 +1,8 @@
 <div class="dashboard-page">
-  <div class="search-bar-wrapper"></div>
-  <app-view-posts [userId]="userId"></app-view-posts>
+  <div class="search-bar-wrapper">
+    <div class="search-bar">
+      <span class="placeholder">Search trips or users</span>
+    </div>
+  </div>
+  <app-view-posts [userId]="userId" [batchType]="batchType"></app-view-posts>
 </div>
