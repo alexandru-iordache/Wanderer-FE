@@ -1,8 +1,11 @@
 <div class="dashboard-page">
   <div class="search-bar-wrapper">
-    <div class="search-bar">
-      <span class="placeholder">Search trips or users</span>
-    </div>
+    <app-search-bar 
+      placeholder="Search trips or users"
+      [value]="searchValue"
+      (valueChange)="onSearchValueChange($event)"
+      (search)="onSearch($event)">
+    </app-search-bar>
   </div>
   <app-view-posts [userId]="userId" [batchType]="batchType"></app-view-posts>
 </div>

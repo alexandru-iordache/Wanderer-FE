@@ -1,0 +1,221 @@
+@import "../../../../styles.scss";
+
+.search-bar-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: 40px;
+  margin: 0 auto;
+}
+
+.search-input-wrapper {
+  width: 70%;
+  height: 30px;
+  background-color: $primary-color;
+  margin: auto;
+  margin-top: 5px;
+  border-radius: 20px;
+  border: 1px solid $secondary-color;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    border-color: $third-color;
+    box-shadow: 0 0 0 2px rgba($third-color, 0.2);
+  }
+
+  &:hover {
+    border-color: rgba($secondary-color, 0.8);
+  }
+}
+
+.search-icon {
+  color: rgba($secondary-color, 0.6);
+  font-size: 18px;
+  margin-left: 12px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: $primary-font;
+  font-size: 14px;
+  color: $secondary-color;
+  padding: 0;
+  height: 100%;
+
+  &::placeholder {
+    color: rgba($secondary-color, 0.6);
+    font-family: $primary-font;
+    font-size: 14px;
+  }
+
+  &:focus::placeholder {
+    color: rgba($secondary-color, 0.4);
+  }
+}
+
+.clear-icon {
+  color: rgba($secondary-color, 0.6);
+  font-size: 16px;
+  margin-right: 12px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    color: $secondary-color;
+  }
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 75%;
+  left: 15%;
+  width: 70%;
+  background-color: $primary-color;
+  border: 1px solid $secondary-color;
+  border-top: none;
+  border-radius: 0 0 15px 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.results-container {
+  max-height: 260px; // Approximately 5 items (52px each = 260px)
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba($secondary-color, 0.1);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba($secondary-color, 0.3);
+    border-radius: 3px;
+    
+    &:hover {
+      background: rgba($secondary-color, 0.5);
+    }
+  }
+  
+  // Firefox scrollbar styling
+  scrollbar-width: thin;
+  scrollbar-color: rgba($secondary-color, 0.3) rgba($secondary-color, 0.1);
+}
+
+.loading-item {
+  padding: 12px 16px;
+  text-align: center;
+  color: rgba($secondary-color, 0.6);
+  font-family: $primary-font;
+  font-size: 14px;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid rgba($secondary-color, 0.1);
+
+  &:hover {
+    background-color: rgba($secondary-color, 0.05);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.result-avatar {
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .avatar-fallback {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: $secondary-color;
+    color: $primary-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: $primary-font;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .trip-icon {
+    color: $secondary-color;
+    font-size: 24px;
+  }
+}
+
+.result-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.result-name {
+  font-family: $primary-font;
+  font-size: 14px;
+  font-weight: 500;
+  color: $secondary-color;
+  margin-bottom: 2px;
+}
+
+.result-type {
+  font-family: $primary-font;
+  font-size: 12px;
+  color: rgba($secondary-color, 0.6);
+  text-transform: capitalize;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .search-bar-container {
+    max-width: 90%;
+    margin: 0 auto;
+  }
+
+  .search-input-wrapper {
+    width: 85%;
+  }
+
+  .search-dropdown {
+    left: 7.5%;
+    width: 85%;
+  }
+
+  .results-container {
+    max-height: 220px; // Slightly smaller for mobile
+  }
+}

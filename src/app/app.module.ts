@@ -45,8 +45,10 @@ import { CreatePostModalComponent } from './shared/components/create-post-modal/
 import { ImageSelectionSectionComponent } from './shared/components/create-post-modal/components/image-selection-section/image-selection-section.component';
 import { ImageViewComponent } from './shared/components/image-view/image-view.component';
 import { ImageViewModalComponent } from './shared/components/image-view-modal/image-view-modal.component';
+import { SearchBarComponent } from './shared/components/search-bar/search-bar.component';
 import { ViewPostsComponent } from './shared/components/view-posts/view-posts.component';
 import { PostViewComponent } from './shared/components/post-view/post-view.component';
+import { PlatformService } from './services/platform.service';
 
 @NgModule({
   declarations: [
@@ -76,6 +78,7 @@ import { PostViewComponent } from './shared/components/post-view/post-view.compo
     ImageSelectionSectionComponent,
     ImageViewComponent,
     ImageViewModalComponent,
+    SearchBarComponent,
     ViewPostsComponent,
     PostViewComponent
   ],
@@ -95,7 +98,7 @@ import { PostViewComponent } from './shared/components/post-view/post-view.compo
     GoogleMapsModule,
     HttpClientModule
   ],
-  providers: [TripService, TripStateService, TokenRefreshService, ModalService],
+  providers: [TripService, TripStateService, PlatformService, TokenRefreshService, ModalService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -10,11 +10,22 @@ import { PostBatch } from '../../interfaces/enums/post-batch.enum';
 export class DashboardPageComponent {
   userId: Uuid;
   batchType: PostBatch = PostBatch.USER_FEED;
+  searchValue: string = '';
 
   constructor() {
     this.userId = localStorage.getItem('userId') as Uuid;
     if (this.userId === null) {
       this.userId = sessionStorage.getItem('userId') as Uuid;
     }
+  }
+
+  onSearchValueChange(value: string): void {
+    this.searchValue = value;
+    // TODO: Implement search functionality
+  }
+
+  onSearch(value: string): void {
+    // TODO: Implement search logic
+    console.log('Searching for:', value);
   }
 }
