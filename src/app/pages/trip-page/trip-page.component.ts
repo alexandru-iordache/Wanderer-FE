@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.dev';
 import { ModalView } from '../helpers/modal-view.enum';
 import { SelectedCityVisitDto } from '../../interfaces/dtos/selected-city-dto';
 import { TripStateService } from './services/trip-state.service';
@@ -149,7 +149,7 @@ export class TripPageComponent implements OnInit, OnDestroy {
       this.isCompleted = trip.isCompleted || false;
       
       // Check if current user is the owner
-      const currentUserId = localStorage.getItem("userId");
+      const currentUserId = sessionStorage.getItem("userId") || localStorage.getItem("userId");
       this.isCurrentUserOwner = trip.ownerId === currentUserId;
 
       this.tripStateService.updateTrip(trip);

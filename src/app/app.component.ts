@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { Subscription, map, take } from 'rxjs';
-import { environment } from '../environments/environment';
+import { environment } from '../environments/environment.dev';
 import { GoogleMapsService } from './services/google-maps.service';
 import { TokenRefreshService } from './services/token-refresh.service';
 

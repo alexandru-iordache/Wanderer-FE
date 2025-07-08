@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  wanderer-fe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - API_URL=http://localhost:5000
+      - FIREBASE_API_KEY=AIzaSyD61GcNQH1DZHCyKp6x4a0P4sVuwyq1S-A
+      - FIREBASE_AUTH_DOMAIN=wanderer-2db43.firebaseapp.com
+      - FIREBASE_PROJECT_ID=wanderer-2db43
+      - FIREBASE_STORAGE_BUCKET=wanderer-2db43.appspot.com
+      - FIREBASE_MESSAGING_SENDER_ID=215652753193
+      - FIREBASE_APP_ID=1:215652753193:web:90ec227ac682e5a1e7a138
+      - GOOGLE_MAPS_API_KEY=AIzaSyDkzaWrCA5MpIq3aZBePvxAnWBJQ4Vp37E
+      - GOOGLE_MAP_ID=891ee26853c57f4
+    restart: unless-stopped
+    container_name: wanderer-frontend
+
+  # Uncomment and configure if you have a backend service
+  # wanderer-backend:
+  #   image: your-backend-image:latest
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - NODE_ENV=production
+  #   restart: unless-stopped
+  #   container_name: wanderer-backend
+
+networks:
+  default:
+    name: wanderer-network
