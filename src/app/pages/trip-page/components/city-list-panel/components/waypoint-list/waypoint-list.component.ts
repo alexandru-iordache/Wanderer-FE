@@ -8,8 +8,8 @@ import {
 import { PanelView } from '../../../../../helpers/panel-view.enum';
 import { TripStateService } from '../../../../services/trip-state.service';
 import { Subscription } from 'rxjs';
-import { BaseCityVisitDto } from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
-import { BaseWaypointVisitDto } from '../../../../../../interfaces/dtos/request/base-waypoint-visit-dto';
+import { BaseCityVisitDto } from '../../../../../../interfaces/dtos/base-dtos/base-city-visit-dto';
+import { BaseWaypointVisitDto } from '../../../../../../interfaces/dtos/base-dtos/base-waypoint-visit-dto';
 import { UiHelper } from '../../../../../../shared/helpers/ui-helper';
 
 @Component({
@@ -20,6 +20,8 @@ import { UiHelper } from '../../../../../../shared/helpers/ui-helper';
 export class WaypointListComponent implements OnInit, OnDestroy {
   @Input() setCurrentView!: (panelView: PanelView) => void;
   @Input() openDeleteModal!: (type: 'city' | 'waypoint', data: any) => void;
+  @Input() isCompleted: boolean = false;
+  @Input() isCurrentUserOwner: boolean = true;
 
   currentDayIndex: number = 0;
   selectedCityVisit: BaseCityVisitDto | null = null;

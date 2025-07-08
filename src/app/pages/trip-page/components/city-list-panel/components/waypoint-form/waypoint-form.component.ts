@@ -18,8 +18,8 @@ import {
   FOOD_WAYPOINT_TYPES,
   RECREATIONAL_WAYPOINT_TYPES,
 } from '../../../../../../shared/helpers/preferred-waypoint-types';
-import { BaseCityVisitDto, CityVisitDto } from '../../../../../../interfaces/dtos/request/base-city-visit-dto';
-import { BaseWaypointVisitDto, AddWaypointVisitDto } from '../../../../../../interfaces/dtos/request/base-waypoint-visit-dto';
+import { BaseCityVisitDto, CityVisitDto } from '../../../../../../interfaces/dtos/base-dtos/base-city-visit-dto';
+import { BaseWaypointVisitDto, AddWaypointVisitDto } from '../../../../../../interfaces/dtos/base-dtos/base-waypoint-visit-dto';
 
 @Component({
   selector: 'app-waypoint-form',

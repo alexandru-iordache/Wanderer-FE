@@ -1,0 +1,46 @@
+<div class="my-trips-page">    <div class="user-avatar" (click)="triggerFileInput()">
+        <div *ngIf="userDetails?.avatarUrl" class="avatar-image">
+            <img [src]="userDetails?.avatarUrl" alt="User avatar">
+        </div>
+        <div *ngIf="!userDetails?.avatarUrl" class="avatar-text">
+            {{userDetails?.profileName !== null ? userDetails!.profileName.charAt(0) : "N/A"}}
+        </div>
+        <div class="avatar-overlay">
+            <mat-icon>photo_camera</mat-icon>
+        </div>
+    </div>
+    <input 
+        type="file" 
+        #fileInput 
+        style="display: none" 
+        accept="image/*" 
+        (change)="onFileSelected($event)"
+    >
+    <form class="form-section" [formGroup]="userDetailsForm" (ngSubmit)="onFormSubmit()">
+        <div class="form-row-section">
+            <label class="form-label">Email</label>
+            <input type="input" class="disabled" formControlName="email" placeholder="Enter your email"  [class.disabled-input]="userDetailsForm.get('email')?.disabled">
+        </div>
+        <div class="form-row-section">
+            <label class="form-label">Profile name</label>
+            <input type="input" formControlName="profileName" placeholder="Enter your profile name">
+            <small *ngIf="userDetailsForm.get('profileName')?.invalid 
+                && userDetailsForm.get('profileName')?.touched" class="text-danger">
+                Profile name is required!
+            </small>
+        </div>
+        <div class="form-row-section">
+            <label class="form-label">Profile Description</label>
+            <textarea class="description" formControlName="profileDescription" placeholder="Say something about yourself"></textarea>
+            <small *ngIf="userDetailsForm.get('profileDescription')?.invalid 
+                && userDetailsForm.get('profileDescription')?.touched" class="text-danger">
+                The maximum length is 200 characters!
+            </small>
+        </div>
+        <div class="form-row-section">
+            <label class="form-label">Home City</label>
+            <input  #cityName type="input" formControlName="homeCity" placeholder="Enter your home city">
+        </div>
+        <button type="submit" class="submit-button">Save</button>
+    </form>
+</div>

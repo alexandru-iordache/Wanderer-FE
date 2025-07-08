@@ -1,0 +1,22 @@
+<div 
+  class="image-container" 
+  [style.width]="width" 
+  [style.height]="height"
+  [style.border-radius]="borderRadius"
+  [title]="locationLabel || ''"
+  (click)="openModal($event)"
+>
+  <img [src]="imageInfo.imageUrl" alt="Image" />
+  
+  @if(onRemove) {
+    <div class="remove-button" (click)="onRemove()" (click)="stopPropagation($event)">
+      <span class="material-icons">close</span>
+    </div>
+  }
+  
+  @if(locationLabel) {
+    <div class="location-label">
+      <span class="location-text">{{ locationLabel }}</span>
+    </div>
+  }
+</div>

@@ -6,8 +6,11 @@ export interface BaseTripDto {
     title: string;
     startDate: Date;
     cityVisits: BaseCityVisitDto[];
+    isCompleted?: boolean;
+    isPublished?: boolean;
+    ownerId?: string;
 }
 
 export type TripDto = Required<BaseTripDto>;
-export type AddTripDto = Omit<BaseTripDto, 'id'>;
+export type AddTripDto = Omit<BaseTripDto, 'id' | 'isCompleted' | 'isPublished'>;
 export type UpdateTripDto = TripDto;

@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { CityTransferDto } from '../../../interfaces/dtos/city-transfer-dto';
 import { SelectedCityVisitDto } from '../../../interfaces/dtos/selected-city-dto';
-import { BaseCityVisitDto } from '../../../interfaces/dtos/request/base-city-visit-dto';
+import { BaseCityVisitDto } from '../../../interfaces/dtos/base-dtos/base-city-visit-dto';
 import {
   AddWaypointVisitDto,
   BaseWaypointVisitDto,
-} from '../../../interfaces/dtos/request/base-waypoint-visit-dto';
-import { BaseTripDto } from '../../../interfaces/dtos/request/base-trip-dto';
+} from '../../../interfaces/dtos/base-dtos/base-waypoint-visit-dto';
+import { BaseTripDto } from '../../../interfaces/dtos/base-dtos/base-trip-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -49,6 +49,17 @@ export class TripStateService {
   getIsSaved() {
     return this.isSaved.asObservable();
   }
+  resetTripState() {
+    this.cityVisits.next([]);
+    this.selectedCityVisit.next(null);
+    this.cityToEdit.next(undefined);
+    this.currentDayIndex.next(0);
+    this.cityToAdd.next(undefined);
+    this.startDate.next(new Date());
+    this.waypointToAdd.next(undefined);
+    this.waypointToEdit.next(undefined);
+    this.trip.next(undefined);
+  }
 
   // Cities
   getCityVisits() {
@@ -56,6 +67,7 @@ export class TripStateService {
   }
   updateCityVisits(cities: BaseCityVisitDto[]) {
     this.cityVisits.next(cities);
+    this.isSaved.next(false);
     console.log('Cities: ', cities);
   }
 
@@ -150,6 +162,7 @@ export class TripStateService {
     );
 
     this.updateCityVisits([...cityVisitsValue]);
+    this.updateIsSaved(false);
 
     return true;
   }
@@ -188,7 +201,7 @@ export class TripStateService {
         }
       });
     this.updateCityVisits([...cityVisitsValue]);
-
+    this.updateIsSaved(false);
     console.log('City: ' + cityVisit.city + ' deleted succesfully.');
   }
 
@@ -218,6 +231,7 @@ export class TripStateService {
     }
 
     this.updateCityVisits([...cityVisitsValue]);
+    this.updateIsSaved(false);
     console.log('Waypoint: ' + waypoint.name + ' deleted succesfully.');
   }
 

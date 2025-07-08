@@ -1,0 +1,56 @@
+@import "../../../../styles.scss";
+
+.snackbar-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  min-width: 250px;
+  max-width: 90%;
+  
+  .snackbar-content {
+    background-color: $secondary-color;
+    border: 2px solid $primary-color;
+    font-family: $primary-font;
+    color: $primary-color;
+    padding: 12px 24px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: $primary-font;
+    
+    &.error {
+      background-color: $third-color;
+
+      .close-button:hover {
+        background-color: $third-color-highlight;
+      }
+    }
+
+    .message {
+      flex: 1;
+      margin-right: 12px;
+    }
+    
+    .close-button {
+      all: unset;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+      color: $primary-color;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      
+      &:hover {
+        background-color: $secondary-color-highlight;
+      }
+    }
+  }
+}

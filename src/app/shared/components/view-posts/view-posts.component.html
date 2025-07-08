@@ -1,0 +1,18 @@
+<div class="user-posts-container">
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading posts...</div>
+  </div>
+
+  @if(isLoading === false && userPosts.length === 0){
+  <div class="no-posts">
+    <p>No posts available</p>
+  </div>
+  } @else {
+  <div class="posts-grid">
+    @for( post of userPosts; track post.id) {
+    <app-post-view [post]="post" class="post-item"> </app-post-view>
+    }
+  </div>
+  }
+</div>

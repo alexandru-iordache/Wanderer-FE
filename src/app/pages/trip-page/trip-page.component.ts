@@ -1,17 +1,17 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.dev';
 import { ModalView } from '../helpers/modal-view.enum';
-import { CityTransferDto } from '../../interfaces/dtos/city-transfer-dto';
 import { SelectedCityVisitDto } from '../../interfaces/dtos/selected-city-dto';
 import { TripStateService } from './services/trip-state.service';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Uuid } from '../../shared/helpers/uuid';
 import { TripService } from '../../services/trip.service';
-import { BaseCityVisitDto } from '../../interfaces/dtos/request/base-city-visit-dto';
-import { BaseWaypointVisitDto } from '../../interfaces/dtos/request/base-waypoint-visit-dto';
-import { TripDto } from '../../interfaces/dtos/request/base-trip-dto';
+import { BaseCityVisitDto } from '../../interfaces/dtos/base-dtos/base-city-visit-dto';
+import { BaseWaypointVisitDto } from '../../interfaces/dtos/base-dtos/base-waypoint-visit-dto';
+import { TripDto } from '../../interfaces/dtos/base-dtos/base-trip-dto';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-trip-page',
@@ -38,7 +38,6 @@ export class TripPageComponent implements OnInit, OnDestroy {
   //Modal Shared Properties
   modalClosed: boolean = false;
   isEditMode: boolean = false;
-
   // Multiple Dependendants Properties
   cities: BaseCityVisitDto[] = [];
   selectedCity: SelectedCityVisitDto | null = null;
@@ -48,6 +47,8 @@ export class TripPageComponent implements OnInit, OnDestroy {
     data: BaseCityVisitDto | BaseWaypointVisitDto;
   } | null = null;
   isSaved: boolean = false;
+  isCompleted: boolean = false;
+  isCurrentUserOwner: boolean = true;
 
   private subscriptions: Subscription[] = [];
 
@@ -55,7 +56,8 @@ export class TripPageComponent implements OnInit, OnDestroy {
     private changeDetector: ChangeDetectorRef,
     private tripStateService: TripStateService,
     private tripService: TripService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private modalService: ModalService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -132,26 +134,36 @@ export class TripPageComponent implements OnInit, OnDestroy {
   closeDeleteModal() {
     this.selectedEntity = null;
   }
-
   private async loadExistingTrip() {
     try {
-      const response = await this.tripService.getTripById(this.tripId!);
+      const response = await this.tripService.getTripByIdAsync(this.tripId!);
       if (response.statusCode !== 200) {
-        // Important: Snackbar service
+        this.modalService.snackbar(
+        'Error loading existing trip.', 100000, false);
         return;
       }
 
       const trip = response.body as TripDto;
 
+      // Set trip completion status
+      this.isCompleted = trip.isCompleted || false;
+      
+      // Check if current user is the owner
+      const currentUserId = sessionStorage.getItem("userId") || localStorage.getItem("userId");
+      this.isCurrentUserOwner = trip.ownerId === currentUserId;
+
       this.tripStateService.updateTrip(trip);
       this.tripStateService.updateCityVisits(trip.cityVisits);
       this.tripStateService.updateStartDate(trip.startDate);
     } catch (error) {
+      this.modalService.snackbar(
+        'Error loading existing trip.', 100000, false);
       console.error('[Create-Trip-Page] Error loading existing trip.', error);
     }
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.tripStateService.resetTripState();
   }
 }

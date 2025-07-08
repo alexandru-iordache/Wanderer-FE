@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom, map, Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { AddTripDto, TripDto } from '../interfaces/dtos/request/base-trip-dto';
+import { environment } from '../../environments/environment.dev';
+import { AddTripDto, TripDto } from '../interfaces/dtos/base-dtos/base-trip-dto';
 import { Uuid } from '../shared/helpers/uuid';
 import { FilterOptionsDto } from '../interfaces/dtos/filter-options-dto';
 
@@ -14,7 +14,7 @@ export class TripService {
 
   constructor(private http: HttpClient) {}
 
-  async getTripById(id: string) {
+  async getTripByIdAsync(id: string) {
     const response = await firstValueFrom(
       this.http.get(`${this.apiUrl}/${id}`, {
         observe: 'response',
@@ -29,7 +29,19 @@ export class TripService {
     };
   }
 
-  getTrips(isOrderedByDate: boolean, filterOptions: FilterOptionsDto): Observable<TripDto[]> {    
+  getTripById(id: Uuid) {
+    return this.http
+      .get(`${this.apiUrl}/${id}`, {
+        observe: 'response',
+        headers: this.createHeaders(),
+      })
+      .pipe(map((response: any) => response.body as TripDto));
+  }
+
+  getTrips(
+    isOrderedByDate: boolean,
+    filterOptions: FilterOptionsDto
+  ): Observable<TripDto[]> {
     return this.http
       .get(this.createGetRoute(isOrderedByDate, filterOptions), {
         headers: this.createHeaders(),
@@ -53,6 +65,36 @@ export class TripService {
     };
   }
 
+  completeTrip(id: Uuid): Observable<TripDto> {
+    return this.http
+      .post(
+        `${this.apiUrl}/${id}/complete`,
+        {},
+        { headers: this.createHeaders(), observe: 'response' }
+      )
+      .pipe(map((response: any) => response.body as TripDto));
+  }
+
+  publishTrip(id: Uuid): Observable<TripDto> {
+    return this.http
+      .post(
+        `${this.apiUrl}/${id}/publish`,
+        {},
+        { headers: this.createHeaders(), observe: 'response' }
+      )
+      .pipe(map((response: any) => response.body as TripDto));
+  }
+
+  cloneTrip(id: Uuid): Observable<TripDto> {
+    return this.http
+      .post(
+        `${this.apiUrl}/${id}/clone`,
+        {},
+        { headers: this.createHeaders(), observe: 'response' }
+      )
+      .pipe(map((response: any) => response.body as TripDto));
+  }
+
   async createTrip(trip: AddTripDto) {
     const response = await firstValueFrom(
       this.http.post(`${this.apiUrl}`, trip, {
@@ -67,18 +109,13 @@ export class TripService {
     };
   }
 
-  async updateTrip(id: Uuid, trip: TripDto) {
-    const response = await firstValueFrom(
-      this.http.put(`${this.apiUrl}` + `/${id}`, trip, {
+  updateTrip(id: Uuid, trip: TripDto) {
+    return this.http
+      .put(`${this.apiUrl}` + `/${id}`, trip, {
         observe: 'response',
         headers: this.createHeaders(),
       })
-    );
-    return {
-      statusCode: response.status,
-      statusText: response.statusText,
-      body: response.body as TripDto,
-    };
+      .pipe(map((response: any) => response.body as TripDto));
   }
 
   private createHeaders(): HttpHeaders {
@@ -95,7 +132,10 @@ export class TripService {
     return headers;
   }
 
-  private createGetRoute(isOrderedByDate: boolean, filterOptions: FilterOptionsDto): string {
+  private createGetRoute(
+    isOrderedByDate: boolean,
+    filterOptions: FilterOptionsDto
+  ): string {
     const params = new URLSearchParams();
 
     if (filterOptions.completionStatus) {
@@ -107,7 +147,12 @@ export class TripService {
     if (filterOptions.maxDate) {
       params.append('maxDate', filterOptions.maxDate.toISOString());
     }
+    if (filterOptions.isPublished) {
+      params.append('isPublished', filterOptions.isPublished ? 'true' : 'false');
+    }
 
-    return `${this.apiUrl}?isOrderedByDate=${isOrderedByDate}&${params.toString()}`;
+    return `${
+      this.apiUrl
+    }?isOrderedByDate=${isOrderedByDate}&${params.toString()}`;
   }
 }

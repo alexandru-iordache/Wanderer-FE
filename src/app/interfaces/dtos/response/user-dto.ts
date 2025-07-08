@@ -1,6 +1,10 @@
+import { HomeCityDto } from "../home-city-dto";
+
 export interface UserDto {
     id: string;
     profileName: string;
     email: string;
-    address: string | null;
+    avatarUrl?: string;
+    homeCity?: HomeCityDto;
+    profileDescription?: string;
 }

@@ -112,7 +112,6 @@
   position: absolute;
   bottom: 0px;
   left: 100px;
-  width: 100px;
   height: 30px;
   z-index: 99;
   border-top-right-radius: 20px;
@@ -121,9 +120,9 @@
   border-bottom: $secondary-color solid;
   background-color: $secondary-color;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
-  padding-left: 6px;
+  padding: 0px 8px;
   font-family: $primary-font;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   color: $primary-color;
   display: flex;

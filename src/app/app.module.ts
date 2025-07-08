@@ -9,14 +9,16 @@ import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs'; 
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { environment } from '../environments/environment';
+import { environment } from '../environments/environment.dev';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { SignInPageComponent } from './pages/sign-in-page/sign-in-page.component';
-import { DahsboardPageComponent } from './pages/dahsboard-page/dahsboard-page.component';
+import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 import { TripPageComponent } from './pages/trip-page/trip-page.component';
 import { MapComponent } from './pages/trip-page/components/map/map.component';
@@ -35,6 +37,18 @@ import { TokenRefreshService } from './services/token-refresh.service';
 import { MyTripsPageComponent } from './pages/my-trips-page/my-trips-page.component';
 import { ModalService } from './services/modal.service';
 import { ModalComponent } from './shared/components/modal/modal.component';
+import { AccountPageComponent } from './pages/account-page/account-page.component';
+import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
+import { TripPanelComponent } from './shared/components/trip-panel/trip-panel.component';
+import { SnackbarComponent } from './shared/components/snackbar/snackbar.component';
+import { CreatePostModalComponent } from './shared/components/create-post-modal/create-post-modal.component';
+import { ImageSelectionSectionComponent } from './shared/components/create-post-modal/components/image-selection-section/image-selection-section.component';
+import { ImageViewComponent } from './shared/components/image-view/image-view.component';
+import { ImageViewModalComponent } from './shared/components/image-view-modal/image-view-modal.component';
+import { SearchBarComponent } from './shared/components/search-bar/search-bar.component';
+import { ViewPostsComponent } from './shared/components/view-posts/view-posts.component';
+import { PostViewComponent } from './shared/components/post-view/post-view.component';
+import { PlatformService } from './services/platform.service';
 
 @NgModule({
   declarations: [
@@ -42,7 +56,7 @@ import { ModalComponent } from './shared/components/modal/modal.component';
     NavbarComponent,
     HomePageComponent,
     SignInPageComponent,
-    DahsboardPageComponent,
+    DashboardPageComponent,
     SidebarComponent,
     TripPageComponent,
     MapComponent,
@@ -55,7 +69,18 @@ import { ModalComponent } from './shared/components/modal/modal.component';
     WaypointFormComponent,
     HeaderComponent,
     MyTripsPageComponent,
-    ModalComponent
+    ModalComponent,
+    AccountPageComponent,
+    ProfilePageComponent,
+    TripPanelComponent,
+    SnackbarComponent,
+    CreatePostModalComponent,
+    ImageSelectionSectionComponent,
+    ImageViewComponent,
+    ImageViewModalComponent,
+    SearchBarComponent,
+    ViewPostsComponent,
+    PostViewComponent
   ],
   imports: [
     BrowserModule,
@@ -66,13 +91,14 @@ import { ModalComponent } from './shared/components/modal/modal.component';
     MatSidenavModule,
     MatIconModule,
     MatListModule,
-    MatButtonModule,
-    MatProgressBarModule,
+    MatButtonModule,    MatProgressBarModule,
     MatTabsModule,
+    MatButtonToggleModule,
+    MatProgressSpinnerModule,
     GoogleMapsModule,
     HttpClientModule
   ],
-  providers: [TripService, TripStateService, TokenRefreshService, ModalService],
+  providers: [TripService, TripStateService, PlatformService, TokenRefreshService, ModalService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

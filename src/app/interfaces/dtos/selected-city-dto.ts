@@ -1,4 +1,4 @@
-import { AddCityVisitDto, BaseCityVisitDto } from './request/base-city-visit-dto';
+import { AddCityVisitDto, BaseCityVisitDto } from './base-dtos/base-city-visit-dto';
 
 export class SelectedCityVisitDto {
   cityVisit: BaseCityVisitDto | null = null;

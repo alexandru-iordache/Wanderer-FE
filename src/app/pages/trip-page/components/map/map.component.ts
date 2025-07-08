@@ -21,8 +21,8 @@ import {
   FOOD_WAYPOINT_TYPES,
   RECREATIONAL_WAYPOINT_TYPES,
 } from '../../../../shared/helpers/preferred-waypoint-types';
-import { BaseCityVisitDto } from '../../../../interfaces/dtos/request/base-city-visit-dto';
-import { BaseWaypointVisitDto } from '../../../../interfaces/dtos/request/base-waypoint-visit-dto';
+import { BaseCityVisitDto } from '../../../../interfaces/dtos/base-dtos/base-city-visit-dto';
+import { BaseWaypointVisitDto } from '../../../../interfaces/dtos/base-dtos/base-waypoint-visit-dto';
 
 @Component({
   selector: 'app-map',

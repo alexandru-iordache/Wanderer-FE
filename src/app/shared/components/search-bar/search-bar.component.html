@@ -1,0 +1,51 @@
+<div class="search-bar-container">
+  <div class="search-input-wrapper">
+    <span class="search-icon material-icons">search</span>
+    <input
+      type="text"
+      class="search-input"
+      [placeholder]="placeholder"
+      [value]="value"
+      (input)="onInputChange($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+    />
+    @if(showClearButton && value) {
+    <span class="clear-icon material-icons" (click)="clearSearch()">close</span>
+    }
+  </div>
+
+  @if(showDropdown) {
+  <div class="search-dropdown">
+    @if(isLoading) {
+    <div class="loading-item">
+      <span class="loading-text">Searching...</span>
+    </div>
+    } @else {
+    <div class="results-container">
+      @for(result of searchResults; track result.id) {
+      <div class="search-result-item" (click)="onResultClick(result)">
+        <div class="result-avatar">
+          @if(result.type === 'user') { @if(result.avatarUrl) {
+          <img [src]="result.avatarUrl" [alt]="result.name" />
+          } @else {
+          <div class="avatar-fallback">
+            {{ getFirstLetterOf(result.name) }}
+          </div>
+          } } @else {
+          <span class="material-icons trip-icon">public</span>
+          }
+        </div>
+        <div class="result-content">
+          <div class="result-name">{{ result.name }}</div>
+          <div class="result-type">
+            {{ result.type === "user" ? "User" : "Trip" }}
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+</div>

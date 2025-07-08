@@ -6,6 +6,18 @@ import { firstValueFrom, map, take } from 'rxjs';
 export const authGuard: CanActivateFn = async (route, state) => {
   const router = inject(Router);
 
+  var userId = localStorage.getItem('userId');
+  var profileName = localStorage.getItem('profileName');
+
+  if(userId === null || profileName === null) {
+    userId = sessionStorage.getItem('userId');
+    profileName = sessionStorage.getItem('profileName');
+  }
+
+  if (userId === null || profileName === null) {
+    return false;
+  }
+
   if (await isAuthenticated()) {
     return true;
   }

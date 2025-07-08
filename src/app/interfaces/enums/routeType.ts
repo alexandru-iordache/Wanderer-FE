@@ -1,4 +1,0 @@
-enum RouteType {
-    InterCityRoute,
-    InterWaypointRoute
-}
